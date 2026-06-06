@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "LeadEngine by Novenworks"
+version = "1.0.0"
+id = "artifacts/lead-engine"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19500
+
+[services.development]
+run = "pnpm --filter @workspace/lead-engine run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/lead-engine", "run", "build" ]
+publicDir = "artifacts/lead-engine/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19500"
+BASE_PATH = "/"

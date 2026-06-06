@@ -1,0 +1,1 @@
+- [Session table setup](session-table.md) — connect-pg-simple's createTableIfMissing may fail silently; create the session table manually if sessions don't persist.

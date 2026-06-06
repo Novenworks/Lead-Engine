@@ -1,10 +1,20 @@
 import express, { type Express } from "express";
 import cors from "cors";
 import pinoHttp from "pino-http";
+import session from "express-session";
+import connectPgSimple from "connect-pg-simple";
+import { pool } from "@workspace/db";
 import router from "./routes";
 import { logger } from "./lib/logger";
 
+const PgSession = connectPgSimple(session);
+
 const app: Express = express();
+
+const sessionStore = new PgSession({ pool, createTableIfMissing: true });
+sessionStore.on("error", (err: Error) => {
+  logger.error({ err }, "Session store error");
+});
 
 app.use(
   pinoHttp({
@@ -25,9 +35,25 @@ app.use(
     },
   }),
 );
-app.use(cors());
+
+app.use(cors({ credentials: true, origin: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use(
+  session({
+    store: sessionStore,
+    secret: process.env.SESSION_SECRET || "leadengine-dev-secret",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      sameSite: "lax",
+    },
+  }),
+);
 
 app.use("/api", router);
 
