@@ -5,7 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { LogoIconBadge } from "@/components/Logo";
+import { LEMark, LEMarkBadge } from "@/components/Logo";
 
 const DEMO = { email: "demo@novenworks.com", password: "password123" };
 
@@ -34,18 +34,23 @@ export default function Login() {
   return (
     <div
       className="w-full min-h-screen flex items-center justify-center p-4"
-      style={{ background: "linear-gradient(135deg, #060d1a 0%, #0f172a 55%, #0d1f3c 100%)" }}
+      style={{ background: "linear-gradient(135deg, #060d1a 0%, #0B1220 55%, #0d1f3c 100%)" }}
     >
       <div className="w-full max-w-[440px] space-y-6">
 
-        {/* Logo + wordmark */}
+        {/* Logo mark + wordmark */}
         <div className="text-center flex flex-col items-center gap-4">
-          <LogoIconBadge size={64} />
+          <LEMarkBadge size={72} />
           <div>
-            <h1 className="text-[2rem] font-bold tracking-tight text-white leading-none">LeadEngine</h1>
-            <p className="text-xs font-semibold tracking-[0.24em] uppercase text-blue-400 mt-2">by Novenworks</p>
+            <h1 className="text-[2rem] font-bold tracking-tight leading-none">
+              <span className="text-white">Lead</span>
+              <span style={{ color: "#2563EB" }}>Engine</span>
+            </h1>
+            <p className="text-xs font-semibold tracking-[0.26em] uppercase mt-2" style={{ color: "rgba(147,197,253,0.7)" }}>
+              by Novenworks
+            </p>
           </div>
-          <p className="text-slate-400 text-sm max-w-xs leading-relaxed">
+          <p className="text-sm max-w-xs leading-relaxed" style={{ color: "rgba(148,163,184,0.85)" }}>
             Capture leads. Track conversations. Close more business.
           </p>
         </div>
@@ -88,7 +93,8 @@ export default function Login() {
               )}
               <Button
                 type="submit"
-                className="w-full h-11 mt-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm shadow-sm"
+                className="w-full h-11 mt-1 font-semibold text-sm shadow-sm"
+                style={{ background: "#2563EB" }}
                 disabled={login.isPending}
               >
                 {login.isPending ? "Signing in…" : "Sign In →"}
@@ -98,17 +104,23 @@ export default function Login() {
         </div>
 
         {/* Demo account */}
-        <div className="rounded-xl border border-white/10 bg-white/[0.06] backdrop-blur-sm p-5">
-          <div className="flex items-start justify-between gap-4">
+        <div className="rounded-xl border p-5" style={{ borderColor: "rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.05)" }}>
+          <div className="flex items-center justify-between gap-4">
             <div className="min-w-0">
-              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Demo Account</p>
+              <div className="flex items-center gap-2 mb-2">
+                <LEMark size={16} />
+                <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "rgba(148,163,184,0.7)" }}>
+                  Demo Account
+                </p>
+              </div>
               <p className="text-sm font-medium text-white">{DEMO.email}</p>
-              <p className="text-xs text-slate-400 mt-0.5 font-mono">password123</p>
+              <p className="text-xs font-mono mt-0.5" style={{ color: "rgba(148,163,184,0.7)" }}>password123</p>
             </div>
             <button
               type="button"
               onClick={fillDemo}
-              className="shrink-0 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition-colors whitespace-nowrap shadow-sm"
+              className="shrink-0 px-4 py-2 rounded-lg text-white text-xs font-semibold transition-colors whitespace-nowrap shadow-sm hover:opacity-90"
+              style={{ background: "#2563EB" }}
             >
               Use Demo Account
             </button>

@@ -3,49 +3,73 @@ interface LogoProps {
   className?: string;
 }
 
-export function LogoIcon({ size = 32, className }: LogoProps) {
+export function LEMark({ size = 32, className }: LogoProps) {
   return (
     <svg
       width={size}
       height={size}
-      viewBox="0 0 32 32"
+      viewBox="0 0 80 80"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
-      <path
-        d="M16 2L4 7.5V16c0 6.3 4.8 12.2 12 13.9 7.2-1.7 12-7.6 12-13.9V7.5L16 2z"
-        fill="#0f172a"
-        stroke="#1e3a5f"
-        strokeWidth="0.5"
-      />
-      <circle cx="16" cy="14.5" r="2.8" fill="#3b82f6" />
-      <circle cx="10.5" cy="10" r="2" fill="#60a5fa" />
-      <circle cx="21.5" cy="10" r="2" fill="#60a5fa" />
-      <circle cx="16" cy="21.5" r="2" fill="#60a5fa" />
-      <line x1="10.5" y1="10" x2="16" y2="14.5" stroke="#3b82f6" strokeWidth="1.3" strokeOpacity="0.9" />
-      <line x1="21.5" y1="10" x2="16" y2="14.5" stroke="#3b82f6" strokeWidth="1.3" strokeOpacity="0.9" />
-      <line x1="16" y1="14.5" x2="16" y2="21.5" stroke="#3b82f6" strokeWidth="1.3" strokeOpacity="0.9" />
-      <line x1="10.5" y1="10" x2="21.5" y2="10" stroke="#60a5fa" strokeWidth="0.9" strokeOpacity="0.55" />
+      <rect x="0" y="0" width="20" height="80" fill="#2563EB" />
+      <rect x="20" y="0" width="60" height="17" fill="#2563EB" />
+      <rect x="20" y="34" width="44" height="13" fill="#2563EB" />
+      <path d="M20 63 H80 L74 80 H20 Z" fill="#2563EB" />
     </svg>
   );
 }
 
-interface LogoWordmarkProps {
-  iconSize?: number;
-  dark?: boolean;
-  className?: string;
+export function LEMarkBadge({ size = 36 }: { size?: number }) {
+  const pad = size * 0.2;
+  const inner = size - pad * 2;
+  return (
+    <div
+      style={{
+        width: size,
+        height: size,
+        background: "#0B1220",
+        borderRadius: Math.round(size * 0.22),
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexShrink: 0,
+        boxShadow: "0 0 0 1.5px rgba(37,99,235,0.4)",
+      }}
+    >
+      <LEMark size={inner} />
+    </div>
+  );
 }
 
-export function LogoWordmark({ iconSize = 36, dark = false, className }: LogoWordmarkProps) {
+export function LEWordmark({
+  dark = true,
+  compact = false,
+  className,
+}: {
+  dark?: boolean;
+  compact?: boolean;
+  className?: string;
+}) {
+  const iconSize = compact ? 28 : 36;
   return (
     <div className={`flex items-center gap-3 ${className ?? ""}`}>
-      <LogoIconBadge size={iconSize} />
+      <LEMarkBadge size={iconSize} />
       <div className="flex flex-col leading-none">
-        <span className={`font-bold tracking-tight ${iconSize >= 40 ? "text-2xl" : "text-lg"} ${dark ? "text-white" : "text-slate-900"}`}>
-          LeadEngine
+        <span
+          className={`font-bold tracking-tight ${compact ? "text-base" : "text-lg"}`}
+          style={{ color: dark ? "#FFFFFF" : "#0B1220" }}
+        >
+          Lead<span style={{ color: "#2563EB" }}>Engine</span>
         </span>
-        <span className={`text-[10px] font-semibold tracking-[0.2em] uppercase mt-0.5 ${dark ? "text-blue-400" : "text-slate-500"}`}>
+        <span
+          className="font-semibold tracking-[0.2em] uppercase mt-0.5"
+          style={{
+            fontSize: compact ? "8px" : "9px",
+            color: dark ? "rgba(147,197,253,0.65)" : "#64748b",
+          }}
+        >
           by Novenworks
         </span>
       </div>
@@ -53,39 +77,7 @@ export function LogoWordmark({ iconSize = 36, dark = false, className }: LogoWor
   );
 }
 
-export function LogoIconBadge({ size = 36 }: { size?: number }) {
-  return (
-    <div
-      className="rounded-xl flex items-center justify-center shrink-0"
-      style={{
-        width: size,
-        height: size,
-        background: "linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)",
-        boxShadow: "0 0 0 1px rgba(59,130,246,0.3)",
-      }}
-    >
-      <svg
-        width={size * 0.65}
-        height={size * 0.65}
-        viewBox="0 0 22 22"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M11 1L2 5.5V11c0 4.3 3.3 8.4 9 9.8 5.7-1.4 9-5.5 9-9.8V5.5L11 1z"
-          fill="#0f172a"
-          stroke="#1e3a5f"
-          strokeWidth="0.5"
-        />
-        <circle cx="11" cy="10" r="2" fill="#3b82f6" />
-        <circle cx="7" cy="7" r="1.5" fill="#60a5fa" />
-        <circle cx="15" cy="7" r="1.5" fill="#60a5fa" />
-        <circle cx="11" cy="15" r="1.5" fill="#60a5fa" />
-        <line x1="7" y1="7" x2="11" y2="10" stroke="#3b82f6" strokeWidth="1" strokeOpacity="0.9" />
-        <line x1="15" y1="7" x2="11" y2="10" stroke="#3b82f6" strokeWidth="1" strokeOpacity="0.9" />
-        <line x1="11" y1="10" x2="11" y2="15" stroke="#3b82f6" strokeWidth="1" strokeOpacity="0.9" />
-        <line x1="7" y1="7" x2="15" y2="7" stroke="#60a5fa" strokeWidth="0.7" strokeOpacity="0.6" />
-      </svg>
-    </div>
-  );
-}
+export const LogoIconBadge = LEMarkBadge;
+export const LogoWordmark = LEWordmark;
+export const LogoIcon = LEMark;
+export const LogoIconBadge2 = LEMarkBadge;

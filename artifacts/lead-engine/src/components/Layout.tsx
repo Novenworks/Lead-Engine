@@ -26,7 +26,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
-import { LogoIconBadge } from "@/components/Logo";
+import { LEMarkBadge } from "@/components/Logo";
 
 interface NavItem {
   title: string;
@@ -71,9 +71,12 @@ export function MainLayout({ children }: { children: ReactNode }) {
       <Sidebar className="border-r bg-sidebar text-sidebar-foreground hidden md:flex">
         <SidebarHeader className="p-4 border-b border-sidebar-border">
           <div className="flex items-center gap-2.5">
-            <LogoIconBadge size={32} />
+            <LEMarkBadge size={32} />
             <div className="flex flex-col leading-none">
-              <span className="font-bold text-base tracking-tight">LeadEngine</span>
+              <span className="font-bold text-base tracking-tight">
+                <span className="text-sidebar-foreground">Lead</span>
+                <span style={{ color: "#2563EB" }}>Engine</span>
+              </span>
               <span className="text-[9px] font-semibold tracking-[0.18em] uppercase text-sidebar-foreground/50 mt-0.5">by Novenworks</span>
             </div>
           </div>
@@ -130,8 +133,10 @@ export function MainLayout({ children }: { children: ReactNode }) {
           <div className="flex items-center gap-2.5">
             <SidebarTrigger />
             <div className="flex items-center gap-2">
-              <LogoIconBadge size={24} />
-              <span className="font-bold text-sm">LeadEngine</span>
+              <LEMarkBadge size={24} />
+              <span className="font-bold text-sm">
+                <span>Lead</span><span style={{ color: "#2563EB" }}>Engine</span>
+              </span>
             </div>
           </div>
           <Button variant="ghost" size="icon" onClick={handleLogout} className="h-8 w-8">
