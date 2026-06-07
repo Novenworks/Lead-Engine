@@ -198,8 +198,8 @@ export const ListLeadsQueryParams = zod.object({
   "status": zod.coerce.string().optional(),
   "search": zod.coerce.string().optional(),
   "source": zod.coerce.string().optional(),
-  "dateFrom": zod.date().optional(),
-  "dateTo": zod.date().optional(),
+  "dateFrom": zod.coerce.string().optional().describe('ISO date string e.g. 2026-01-01'),
+  "dateTo": zod.coerce.string().optional().describe('ISO date string e.g. 2026-12-31'),
   "assignedToId": zod.coerce.number().optional()
 })
 

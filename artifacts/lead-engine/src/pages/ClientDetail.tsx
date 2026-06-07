@@ -1,15 +1,16 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams, Link } from "wouter";
 import { useGetClient, useUpdateClient, useGetEmbedCode, getGetClientQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormDescription } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Copy, Code, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
 
 export default function ClientDetail() {
   const { id } = useParams();
@@ -26,7 +27,9 @@ export default function ClientDetail() {
       businessName: "",
       ownerEmail: "",
       notificationEmail: "",
-      websiteUrl: ""
+      websiteUrl: "",
+      industry: "",
+      isActive: true,
     }
   });
 
@@ -36,7 +39,9 @@ export default function ClientDetail() {
         businessName: client.businessName,
         ownerEmail: client.ownerEmail,
         notificationEmail: client.notificationEmail,
-        websiteUrl: client.websiteUrl || ""
+        websiteUrl: client.websiteUrl || "",
+        industry: client.industry || "",
+        isActive: client.isActive,
       });
     }
   }, [client, form]);
@@ -44,7 +49,7 @@ export default function ClientDetail() {
   const onSubmit = (data: any) => {
     updateClient.mutate({
       id: clientId,
-      data
+      data: { ...data, industry: data.industry || null }
     }, {
       onSuccess: () => {
         toast({ title: "Client updated successfully" });
@@ -121,13 +126,47 @@ export default function ClientDetail() {
                     </FormItem>
                   )}
                 />
+                <div className="grid grid-cols-2 gap-3">
+                  <FormField
+                    control={form.control}
+                    name="websiteUrl"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Website URL</FormLabel>
+                        <FormControl><Input type="url" {...field} /></FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="industry"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Industry</FormLabel>
+                        <FormControl><Input {...field} placeholder="e.g. Landscaping" /></FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
                 <FormField
                   control={form.control}
-                  name="websiteUrl"
+                  name="isActive"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Website URL</FormLabel>
-                      <FormControl><Input type="url" {...field} /></FormControl>
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                      <div>
+                        <FormLabel>Account Active</FormLabel>
+                        <FormDescription className="text-xs">
+                          Inactive clients cannot submit new leads via the embed form.
+                        </FormDescription>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant={field.value ? "default" : "secondary"} className="text-xs">
+                          {field.value ? "Active" : "Inactive"}
+                        </Badge>
+                        <FormControl>
+                          <Switch checked={field.value} onCheckedChange={field.onChange} />
+                        </FormControl>
+                      </div>
                     </FormItem>
                   )}
                 />

@@ -31,7 +31,7 @@ function currency(v: number | undefined) {
 export default function Dashboard() {
   const { data: user } = useGetMe();
   const { data: stats, isLoading: statsLoading } = useGetDashboardStats();
-  const { data: recentLeads, isLoading: leadsLoading } = useGetRecentLeads({ limit: 8 });
+  const { data: recentLeads, isLoading: leadsLoading } = useGetRecentLeads({ limit: 50 });
   const { data: followUps, isLoading: followUpsLoading } = useGetFollowUpLeads({ limit: 5 });
   const [selectedLeadId, setSelectedLeadId] = useState<number | null>(null);
 

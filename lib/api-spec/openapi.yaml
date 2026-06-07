@@ -257,15 +257,15 @@ paths:
         - name: dateFrom
           in: query
           required: false
+          description: "ISO date string e.g. 2026-01-01"
           schema:
             type: string
-            format: date
         - name: dateTo
           in: query
           required: false
+          description: "ISO date string e.g. 2026-12-31"
           schema:
             type: string
-            format: date
         - name: assignedToId
           in: query
           required: false

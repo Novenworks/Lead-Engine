@@ -11,7 +11,13 @@ clientId?: number;
 status?: string;
 search?: string;
 source?: string;
-dateFrom?: Date;
-dateTo?: Date;
+/**
+ * ISO date string e.g. 2026-01-01
+ */
+dateFrom?: string;
+/**
+ * ISO date string e.g. 2026-12-31
+ */
+dateTo?: string;
 assignedToId?: number;
 };

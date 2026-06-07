@@ -128,6 +128,11 @@ router.post("/leads/capture", async (req, res): Promise<void> => {
     return;
   }
 
+  if (!client.isActive) {
+    res.status(403).json({ error: "Client account is inactive" });
+    return;
+  }
+
   const [lead] = await db
     .insert(leadsTable)
     .values({
