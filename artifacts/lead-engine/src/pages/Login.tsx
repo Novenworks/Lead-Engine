@@ -6,8 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LEMark, LEMarkBadge } from "@/components/Logo";
+import { TrendingUp, Users, AlertCircle, DollarSign } from "lucide-react";
 
 const DEMO = { email: "demo@novenworks.com", password: "password123" };
+
+const PREVIEW_METRICS = [
+  { label: "Total Leads", value: "147", icon: Users, color: "#60a5fa", bg: "rgba(37,99,235,0.18)", delay: "0ms" },
+  { label: "Pipeline Value", value: "$89.4k", icon: TrendingUp, color: "#34d399", bg: "rgba(16,185,129,0.15)", delay: "100ms" },
+  { label: "Follow-Ups Due", value: "12", icon: AlertCircle, color: "#fbbf24", bg: "rgba(245,158,11,0.15)", delay: "200ms" },
+  { label: "Revenue Won", value: "$32.1k", icon: DollarSign, color: "#4ade80", bg: "rgba(34,197,94,0.15)", delay: "300ms" },
+];
 
 export default function Login() {
   const [, setLocation] = useLocation();
@@ -32,68 +40,171 @@ export default function Login() {
   };
 
   return (
-    <div
-      className="w-full min-h-screen flex items-center justify-center p-4"
-      style={{ background: "linear-gradient(135deg, #060d1a 0%, #0B1220 55%, #0d1f3c 100%)" }}
-    >
-      <div className="w-full max-w-[440px] space-y-6">
+    <div className="w-full min-h-screen flex" style={{ background: "#0B1220" }}>
 
-        {/* Logo mark + wordmark */}
-        <div className="text-center flex flex-col items-center gap-4">
-          <LEMarkBadge size={72} />
-          <div>
-            <h1 className="text-[2rem] font-bold tracking-tight leading-none">
-              <span className="text-white">Lead</span>
-              <span style={{ color: "#2563EB" }}>Engine</span>
-            </h1>
-            <p className="text-xs font-semibold tracking-[0.26em] uppercase mt-2" style={{ color: "rgba(147,197,253,0.7)" }}>
+      {/* ── LEFT PANEL ── branding + animated metric preview */}
+      <div
+        className="hidden md:flex md:w-[55%] lg:w-[58%] flex-col justify-between p-10 lg:p-14 relative overflow-hidden"
+        style={{
+          background: "linear-gradient(145deg, #060d1a 0%, #0B1220 50%, #091628 100%)",
+          borderRight: "1px solid rgba(255,255,255,0.06)"
+        }}
+      >
+        {/* Subtle dot-grid overlay */}
+        <div style={{
+          position: "absolute", inset: 0, pointerEvents: "none",
+          backgroundImage: "radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px)",
+          backgroundSize: "28px 28px", opacity: 0.6
+        }} />
+        {/* Blue glow blob */}
+        <div style={{
+          position: "absolute", width: 520, height: 520, borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(37,99,235,0.10) 0%, transparent 65%)",
+          top: -160, left: -160, pointerEvents: "none"
+        }} />
+        {/* Bottom glow */}
+        <div style={{
+          position: "absolute", width: 380, height: 380, borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(16,185,129,0.06) 0%, transparent 70%)",
+          bottom: -80, right: -80, pointerEvents: "none"
+        }} />
+
+        {/* Logo lockup */}
+        <div className="flex items-center gap-3 relative z-10">
+          <LEMarkBadge size={36} />
+          <div className="leading-none">
+            <span className="font-bold text-[17px] tracking-tight text-white">
+              Lead<span style={{ color: "#2563EB" }}>Engine</span>
+            </span>
+            <p className="text-[9px] font-semibold tracking-[0.22em] uppercase mt-0.5" style={{ color: "rgba(147,197,253,0.45)" }}>
               by Novenworks
             </p>
           </div>
-          <p className="text-sm max-w-xs leading-relaxed" style={{ color: "rgba(148,163,184,0.85)" }}>
-            Capture leads. Track conversations. Close more business.
-          </p>
         </div>
 
-        {/* Login card */}
-        <div className="bg-white rounded-2xl shadow-2xl shadow-black/50 overflow-hidden">
-          <div className="px-8 pt-7 pb-2">
-            <h2 className="text-lg font-semibold text-slate-900">Sign in to your workspace</h2>
-            <p className="text-sm text-slate-500 mt-0.5">Enter your credentials to access your leads.</p>
+        {/* Hero copy + preview cards */}
+        <div className="relative z-10 space-y-10">
+          <div className="space-y-5">
+            <p className="text-xs font-semibold tracking-[0.18em] uppercase" style={{ color: "#2563EB" }}>
+              Local Business Growth Platform
+            </p>
+            <h1 className="text-4xl lg:text-[2.75rem] font-bold text-white leading-[1.15] tracking-tight">
+              Capture leads.<br />
+              Track follow-ups.<br />
+              <span style={{ color: "#2563EB" }}>Grow revenue.</span>
+            </h1>
+            <p className="text-[15px] leading-relaxed" style={{ color: "rgba(148,163,184,0.7)" }}>
+              One dashboard for every local business you manage.<br />
+              Built for the agencies and owners who drive growth.
+            </p>
           </div>
-          <div className="px-8 pb-8 pt-5">
+
+          {/* Animated metric preview cards */}
+          <div className="grid grid-cols-2 gap-3">
+            {PREVIEW_METRICS.map((m) => (
+              <div
+                key={m.label}
+                className="rounded-xl p-4 animate-in fade-in slide-in-from-bottom-4 duration-500"
+                style={{
+                  background: "rgba(255,255,255,0.04)",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                  backdropFilter: "blur(8px)",
+                  animationDelay: m.delay,
+                  animationFillMode: "both",
+                }}
+              >
+                <div className="flex items-center gap-2 mb-2.5">
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: m.bg }}>
+                    <m.icon size={14} color={m.color} />
+                  </div>
+                  <span className="text-xs font-medium" style={{ color: "rgba(148,163,184,0.75)" }}>{m.label}</span>
+                </div>
+                <div className="text-[1.6rem] font-bold text-white tracking-tight leading-none">{m.value}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <p className="text-xs relative z-10" style={{ color: "rgba(148,163,184,0.3)" }}>
+          © 2025 Novenworks · All rights reserved.
+        </p>
+      </div>
+
+      {/* ── RIGHT PANEL ── login form */}
+      <div className="flex-1 flex flex-col items-center justify-center p-6 sm:p-10">
+
+        {/* Mobile-only logo */}
+        <div className="md:hidden flex flex-col items-center gap-3 mb-8">
+          <LEMarkBadge size={56} />
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-white tracking-tight">
+              Lead<span style={{ color: "#2563EB" }}>Engine</span>
+            </h1>
+            <p className="text-[10px] font-semibold tracking-[0.22em] uppercase mt-1.5" style={{ color: "rgba(147,197,253,0.5)" }}>
+              by Novenworks
+            </p>
+          </div>
+        </div>
+
+        <div className="w-full max-w-[400px] space-y-5">
+
+          <div>
+            <h2 className="text-[1.5rem] font-bold text-white tracking-tight">Sign in</h2>
+            <p className="text-sm mt-1" style={{ color: "rgba(148,163,184,0.65)" }}>
+              Access your LeadEngine workspace
+            </p>
+          </div>
+
+          {/* Glass form card */}
+          <div
+            className="rounded-2xl p-6 space-y-4"
+            style={{
+              background: "rgba(255,255,255,0.04)",
+              border: "1px solid rgba(255,255,255,0.09)",
+              backdropFilter: "blur(12px)"
+            }}
+          >
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-1.5">
-                <Label htmlFor="email" className="text-sm font-medium text-slate-700">Email address</Label>
+                <Label htmlFor="email" className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "rgba(148,163,184,0.65)" }}>
+                  Email address
+                </Label>
                 <Input
                   id="email"
                   type="email"
                   autoComplete="email"
                   {...register("email", { required: "Email is required" })}
-                  className="h-11 bg-slate-50 border-slate-200 focus:border-blue-500 focus:ring-blue-500 text-slate-900 placeholder:text-slate-400"
                   placeholder="you@company.com"
+                  className="h-11 text-sm text-white placeholder:text-slate-600 border-white/10 focus:border-blue-500 focus-visible:ring-blue-500/30"
+                  style={{ background: "rgba(255,255,255,0.06)" }}
                 />
-                {errors.email && <span className="text-xs text-red-500">{errors.email.message as string}</span>}
+                {errors.email && <span className="text-xs text-red-400">{errors.email.message as string}</span>}
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="password" className="text-sm font-medium text-slate-700">Password</Label>
+                <Label htmlFor="password" className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "rgba(148,163,184,0.65)" }}>
+                  Password
+                </Label>
                 <Input
                   id="password"
                   type="password"
                   autoComplete="current-password"
                   {...register("password", { required: "Password is required" })}
-                  className="h-11 bg-slate-50 border-slate-200 focus:border-blue-500 focus:ring-blue-500 text-slate-900"
+                  className="h-11 text-sm text-white border-white/10 focus:border-blue-500 focus-visible:ring-blue-500/30"
+                  style={{ background: "rgba(255,255,255,0.06)" }}
                 />
-                {errors.password && <span className="text-xs text-red-500">{errors.password.message as string}</span>}
+                {errors.password && <span className="text-xs text-red-400">{errors.password.message as string}</span>}
               </div>
               {login.isError && (
-                <p className="text-xs text-red-600 bg-red-50 px-3 py-2.5 rounded-lg border border-red-100">
+                <div
+                  className="rounded-lg px-3 py-2.5 text-xs text-red-400"
+                  style={{ background: "rgba(239,68,68,0.09)", border: "1px solid rgba(239,68,68,0.2)" }}
+                >
                   Invalid email or password. Please try again.
-                </p>
+                </div>
               )}
               <Button
                 type="submit"
-                className="w-full h-11 mt-1 font-semibold text-sm shadow-sm"
+                className="w-full h-11 font-semibold text-sm text-white hover:opacity-90 transition-opacity"
                 style={{ background: "#2563EB" }}
                 disabled={login.isPending}
               >
@@ -101,32 +212,40 @@ export default function Login() {
               </Button>
             </form>
           </div>
-        </div>
 
-        {/* Demo account */}
-        <div className="rounded-xl border p-5" style={{ borderColor: "rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.05)" }}>
-          <div className="flex items-center justify-between gap-4">
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 mb-2">
-                <LEMark size={16} />
-                <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "rgba(148,163,184,0.7)" }}>
-                  Demo Account
-                </p>
+          {/* Demo account */}
+          <div
+            className="rounded-xl p-4"
+            style={{
+              background: "rgba(37,99,235,0.07)",
+              border: "1px solid rgba(37,99,235,0.22)"
+            }}
+          >
+            <div className="flex items-center justify-between gap-4">
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5 mb-1.5">
+                  <LEMark size={14} />
+                  <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "rgba(147,197,253,0.55)" }}>
+                    Demo Account
+                  </span>
+                </div>
+                <p className="text-sm font-medium text-white truncate">{DEMO.email}</p>
+                <p className="text-xs font-mono mt-0.5" style={{ color: "rgba(148,163,184,0.5)" }}>password123</p>
               </div>
-              <p className="text-sm font-medium text-white">{DEMO.email}</p>
-              <p className="text-xs font-mono mt-0.5" style={{ color: "rgba(148,163,184,0.7)" }}>password123</p>
+              <button
+                type="button"
+                onClick={fillDemo}
+                className="shrink-0 px-4 py-2 rounded-lg text-xs font-semibold transition-all whitespace-nowrap"
+                style={{ background: "rgba(37,99,235,0.22)", color: "#93c5fd", border: "1px solid rgba(37,99,235,0.35)" }}
+                onMouseEnter={e => { (e.target as HTMLElement).style.background = "rgba(37,99,235,0.38)"; }}
+                onMouseLeave={e => { (e.target as HTMLElement).style.background = "rgba(37,99,235,0.22)"; }}
+              >
+                Use Demo Account
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={fillDemo}
-              className="shrink-0 px-4 py-2 rounded-lg text-white text-xs font-semibold transition-colors whitespace-nowrap shadow-sm hover:opacity-90"
-              style={{ background: "#2563EB" }}
-            >
-              Use Demo Account
-            </button>
           </div>
-        </div>
 
+        </div>
       </div>
     </div>
   );

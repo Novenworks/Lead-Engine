@@ -1,7 +1,6 @@
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { Lead } from "@workspace/api-client-react";
-import { LeadBadge } from "./LeadBadge";
 import { format } from "date-fns";
 import { DollarSign, Tag } from "lucide-react";
 
@@ -18,21 +17,44 @@ export function LeadCard({ lead, onClick }: LeadCardProps) {
 
   const style = {
     transform: CSS.Translate.toString(transform),
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isDragging ? 0.4 : 1,
+    zIndex: isDragging ? 50 : undefined,
   };
 
   return (
     <div
       ref={setNodeRef}
-      style={style}
+      style={{
+        ...style,
+        background: isDragging ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.05)",
+        border: isDragging ? "1px solid rgba(37,99,235,0.5)" : "1px solid rgba(255,255,255,0.09)",
+        borderRadius: "10px",
+        padding: "12px",
+        cursor: isDragging ? "grabbing" : "grab",
+        transition: isDragging ? "none" : "background 0.15s, box-shadow 0.15s, transform 0.15s",
+        boxShadow: isDragging ? "0 8px 32px rgba(0,0,0,0.4)" : "0 1px 4px rgba(0,0,0,0.2)",
+        userSelect: "none",
+      }}
+      onMouseEnter={e => {
+        if (!isDragging) {
+          (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.08)";
+          (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 16px rgba(0,0,0,0.35)";
+          (e.currentTarget as HTMLElement).style.transform = style.transform ?? "translateY(-1px)";
+        }
+      }}
+      onMouseLeave={e => {
+        if (!isDragging) {
+          (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)";
+          (e.currentTarget as HTMLElement).style.boxShadow = "0 1px 4px rgba(0,0,0,0.2)";
+          (e.currentTarget as HTMLElement).style.transform = style.transform ?? "";
+        }
+      }}
       {...attributes}
-      className="bg-white rounded-lg border border-slate-200 p-3 shadow-sm hover:shadow-md hover:border-slate-300 transition-all cursor-grab active:cursor-grabbing select-none"
     >
-      {/* Drag handle area + click area */}
       <div {...listeners} className="mb-2">
         <div className="flex items-start justify-between gap-2">
           <button
-            className="font-medium text-sm text-slate-900 hover:text-primary text-left leading-tight"
+            className="font-semibold text-sm text-slate-100 hover:text-blue-300 text-left leading-tight transition-colors"
             onClick={(e) => { e.stopPropagation(); onClick(lead.id); }}
             onPointerDown={(e) => e.stopPropagation()}
           >
@@ -40,16 +62,16 @@ export function LeadCard({ lead, onClick }: LeadCardProps) {
           </button>
         </div>
         {lead.serviceInterest && (
-          <p className="text-xs text-slate-500 mt-0.5 truncate">{lead.serviceInterest}</p>
+          <p className="text-xs text-slate-600 mt-0.5 truncate">{lead.serviceInterest}</p>
         )}
       </div>
 
       <div className="flex items-center justify-between gap-1 mt-2">
-        <div className="flex items-center gap-2 text-xs text-slate-400 min-w-0">
+        <div className="flex items-center gap-1.5 text-xs text-slate-700 min-w-0">
           <span className="truncate">{format(new Date(lead.createdAt), "MMM d")}</span>
           {lead.source && (
             <>
-              <span>·</span>
+              <span className="text-slate-800">·</span>
               <span className="truncate flex items-center gap-0.5">
                 <Tag className="h-2.5 w-2.5 shrink-0" />
                 {lead.source}
@@ -58,7 +80,10 @@ export function LeadCard({ lead, onClick }: LeadCardProps) {
           )}
         </div>
         {lead.estimatedValue != null && (
-          <span className="text-xs font-medium text-green-600 flex items-center gap-0.5 shrink-0">
+          <span
+            className="text-xs font-bold flex items-center gap-0.5 shrink-0"
+            style={{ color: "#4ade80" }}
+          >
             <DollarSign className="h-3 w-3" />
             {lead.estimatedValue.toLocaleString()}
           </span>

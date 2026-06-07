@@ -3,28 +3,12 @@ import { Lead } from "@workspace/api-client-react";
 import { LeadCard } from "./LeadCard";
 import { cn } from "@/lib/utils";
 
-const STATUS_COLORS: Record<string, string> = {
-  New: "border-blue-400",
-  Contacted: "border-amber-400",
-  Booked: "border-purple-400",
-  Won: "border-emerald-400",
-  Lost: "border-red-300",
-};
-
-const STATUS_DOT: Record<string, string> = {
-  New: "bg-blue-400",
-  Contacted: "bg-amber-400",
-  Booked: "bg-purple-400",
-  Won: "bg-emerald-400",
-  Lost: "bg-red-400",
-};
-
-const STATUS_VALUE_COLOR: Record<string, string> = {
-  New: "text-blue-600",
-  Contacted: "text-amber-600",
-  Booked: "text-purple-600",
-  Won: "text-emerald-600",
-  Lost: "text-slate-400",
+const STATUS_ACCENT: Record<string, { stripe: string; dot: string; val: string; glow: string }> = {
+  New: { stripe: "#2563EB", dot: "#60a5fa", val: "#60a5fa", glow: "rgba(37,99,235,0.08)" },
+  Contacted: { stripe: "#f59e0b", dot: "#fbbf24", val: "#fbbf24", glow: "rgba(245,158,11,0.06)" },
+  Booked: { stripe: "#a855f7", dot: "#c084fc", val: "#c084fc", glow: "rgba(168,85,247,0.06)" },
+  Won: { stripe: "#22c55e", dot: "#4ade80", val: "#4ade80", glow: "rgba(34,197,94,0.07)" },
+  Lost: { stripe: "#475569", dot: "#64748b", val: "#64748b", glow: "transparent" },
 };
 
 interface KanbanColumnProps {
@@ -40,56 +24,75 @@ function currency(v: number) {
 
 export function KanbanColumn({ status, leads, onLeadClick }: KanbanColumnProps) {
   const { setNodeRef, isOver } = useDroppable({ id: status });
+  const accent = STATUS_ACCENT[status] ?? STATUS_ACCENT.Lost;
 
   const totalValue = leads.reduce((sum, l) => sum + (l.estimatedValue ?? 0), 0);
   const totalMrr = leads.reduce((sum, l) => sum + (l.monthlyRecurringValue ?? 0), 0);
 
   return (
-    <div className="flex flex-col min-w-[260px] max-w-[260px] shrink-0">
+    <div className="flex flex-col min-w-[265px] max-w-[265px] shrink-0">
       {/* Column header */}
-      <div className={cn(
-        "flex items-center gap-2 px-3 py-2.5 rounded-t-lg border-t-2 bg-slate-50 border-l border-r border-slate-200",
-        STATUS_COLORS[status]
-      )}>
-        <div className={cn("w-2 h-2 rounded-full shrink-0", STATUS_DOT[status])} />
-        <span className="font-semibold text-sm flex-1 truncate">{status}</span>
-        <span className="text-xs font-medium text-muted-foreground bg-white px-1.5 py-0.5 rounded border">
-          {leads.length}
-        </span>
-      </div>
-
-      {/* Value summary */}
-      <div className={cn(
-        "px-3 py-1.5 bg-slate-50 border-l border-r border-slate-200 text-xs flex items-center justify-between min-h-[28px]",
-      )}>
-        {totalValue > 0 ? (
-          <span className={cn("font-semibold", STATUS_VALUE_COLOR[status])}>
-            {currency(totalValue)} pipeline
+      <div
+        className="rounded-t-xl px-3 py-2.5"
+        style={{
+          background: "rgba(255,255,255,0.04)",
+          borderTop: `2px solid ${accent.stripe}`,
+          borderLeft: "1px solid rgba(255,255,255,0.08)",
+          borderRight: "1px solid rgba(255,255,255,0.08)",
+        }}
+      >
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full shrink-0" style={{ background: accent.dot }} />
+          <span className="font-bold text-sm text-white flex-1 truncate">{status}</span>
+          <span
+            className="text-[11px] font-bold px-2 py-0.5 rounded-full"
+            style={{ background: "rgba(255,255,255,0.07)", color: "#64748b" }}
+          >
+            {leads.length}
           </span>
-        ) : (
-          <span className="text-slate-300 text-[11px]">{leads.length === 0 ? "empty" : "no values set"}</span>
-        )}
-        {totalMrr > 0 && (
-          <span className="text-purple-500 font-medium text-[11px]">{currency(totalMrr)}/mo</span>
-        )}
+        </div>
+        {/* Value sub-line */}
+        <div className="mt-1.5 flex items-center justify-between min-h-[16px]">
+          {totalValue > 0 ? (
+            <span className="text-[11px] font-bold" style={{ color: accent.val }}>
+              {currency(totalValue)}
+            </span>
+          ) : (
+            <span className="text-[11px] text-slate-800">{leads.length === 0 ? "empty" : "no values"}</span>
+          )}
+          {totalMrr > 0 && (
+            <span className="text-[11px] font-semibold" style={{ color: "#c084fc" }}>
+              {currency(totalMrr)}/mo
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Drop zone */}
       <div
         ref={setNodeRef}
-        className={cn(
-          "flex-1 min-h-[200px] p-2 space-y-2 border border-t-0 border-slate-200 rounded-b-lg transition-colors",
-          isOver ? "bg-blue-50/80 border-blue-200" : "bg-slate-50/50",
-        )}
+        className="flex-1 min-h-[200px] p-2 space-y-2 rounded-b-xl transition-all duration-150"
+        style={{
+          background: isOver
+            ? "rgba(37,99,235,0.08)"
+            : `linear-gradient(180deg, rgba(255,255,255,0.025) 0%, ${accent.glow} 100%)`,
+          border: isOver
+            ? "1px solid rgba(37,99,235,0.3)"
+            : "1px solid rgba(255,255,255,0.07)",
+          borderTop: "none",
+        }}
       >
         {leads.map((lead) => (
           <LeadCard key={lead.id} lead={lead} onClick={onLeadClick} />
         ))}
         {leads.length === 0 && (
-          <div className={cn(
-            "h-16 flex items-center justify-center text-xs rounded-lg border-2 border-dashed transition-colors",
-            isOver ? "border-blue-300 text-blue-400 bg-blue-50" : "border-slate-200 text-slate-300",
-          )}>
+          <div
+            className="h-16 flex items-center justify-center text-xs rounded-lg transition-colors"
+            style={{
+              border: isOver ? "2px dashed rgba(37,99,235,0.4)" : "2px dashed rgba(255,255,255,0.07)",
+              color: isOver ? "#60a5fa" : "#334155",
+            }}
+          >
             Drop here
           </div>
         )}

@@ -1,0 +1,484 @@
+Redesign LeadEngine by Novenworks into a premium SaaS-style Local Business Growth Platform UI.
+
+Current issue:
+The app functions, but visually it still feels like a basic admin dashboard. It needs to feel like software worth paying for.
+
+Important:
+Do not break existing functionality.
+Do not add AI, SMS, or major new backend features in this task.
+Focus on UI/UX, positioning, navigation language, and premium product feel.
+
+Product positioning:
+LeadEngine
+BY NOVENWORKS
+
+Category:
+Local Business Growth Platform
+
+Core promise:
+Capture leads. Track follow-ups. Grow revenue.
+
+Design inspiration:
+
+* Linear
+* Stripe Dashboard
+* Vercel
+* Attio
+* Arc Browser
+* Growthstack-style premium gradients
+
+Visual direction:
+
+* Dark mode default
+* Premium gradients
+* Glassmorphism panels
+* Better spacing
+* More refined typography
+* Subtle motion
+* Revenue-focused dashboard
+* Clean SaaS polish
+* Modern local-business growth platform, not generic CRM
+
+---
+
+1. LANGUAGE CHANGE: CLIENTS → WORKSPACES
+
+---
+
+Replace customer-facing “Clients” language with “Workspaces.”
+
+Examples:
+
+* Clients page → Workspaces
+* Client selector → Workspace selector
+* Client/business → Workspace
+* “All clients” → “All workspaces”
+
+Keep database names as-is if easier, but the UI language should say Workspaces.
+
+Example workspaces:
+
+* Citrus & Sage
+* YardSanity
+* Kayla’s Auto Repair
+
+Admin manages workspaces.
+Owners belong to one workspace.
+
+---
+
+2. GLOBAL UI REDESIGN
+
+---
+
+Make the app feel premium.
+
+Use:
+
+* Dark navy / black background: #0B1220 or similar
+* Electric blue accents: #2563EB / #1D4ED8
+* Soft gradients
+* Glass panels with subtle borders
+* Smooth hover states
+* More spacing between sections
+* Rounded cards
+* High contrast typography
+* Subtle shadows/glow
+* Clean icon set
+
+Avoid:
+
+* Plain white admin dashboard look
+* Cramped tables
+* Generic Bootstrap-style cards
+* Overly bright default blue buttons everywhere
+
+Keep usability clean and readable.
+
+---
+
+3. LOGIN PAGE REDESIGN
+
+---
+
+The login page should feel like a polished SaaS landing/login hybrid.
+
+Desktop layout:
+
+* Full viewport
+* Two-column layout
+* Left side: branding + animated preview cards
+* Right side: login card
+* Centered vertically and horizontally
+* No narrow mobile column on desktop
+
+Left side content:
+LeadEngine
+BY NOVENWORKS
+
+Local Business Growth Platform
+
+Capture leads.
+Track follow-ups.
+Grow revenue.
+
+Add animated/glass preview metric cards:
+
+* Total Leads
+* Pipeline Value
+* Follow-Ups
+* Revenue Won
+
+These should feel like a product preview.
+
+Right side:
+Login card with:
+
+* Email
+* Password
+* Sign In
+
+Demo account:
+Only show:
+[demo@novenworks.com](mailto:demo@novenworks.com)
+password123
+
+Add button:
+Use Demo Account
+
+Clicking fills:
+[demo@novenworks.com](mailto:demo@novenworks.com)
+password123
+
+Mobile:
+
+* Single-column layout
+* Logo and tagline on top
+* Login card below
+* Demo account below
+* No overflow
+
+---
+
+4. SIDEBAR REDESIGN
+
+---
+
+Sidebar should feel more like a premium SaaS app.
+
+Top:
+
+* LE monogram logo
+* LeadEngine
+* Local Growth Platform or BY NOVENWORKS
+
+Navigation:
+
+* Dashboard
+* Leads
+* Pipeline
+* Workspaces
+* Settings
+
+Optional future-disabled items:
+
+* Forms
+* Reviews
+* Automations
+* Analytics
+
+If included, mark as “Soon” or hide for now.
+
+Footer:
+
+* Logged-in user
+* Role
+* Workspace name if owner
+* Logout button
+
+---
+
+5. DASHBOARD REDESIGN
+
+---
+
+Dashboard should emphasize business outcomes, not just counts.
+
+Header:
+Growth Overview
+Subtitle:
+Track leads, follow-ups, and revenue across your workspaces.
+
+For owner accounts:
+Show their workspace name.
+
+Top metric cards:
+
+* Total Leads
+* Pipeline Value
+* Follow-Ups Due
+* Revenue Won
+* MRR
+
+Make:
+
+* Pipeline Value visually prominent
+* Follow-Ups Due orange/red when > 0
+* Revenue Won green
+* MRR blue/purple
+
+Add subtle animated number entrance if possible.
+
+Use glass panels and gradients.
+
+Main sections:
+
+* Lead Status chart
+* Lead Source chart
+* Follow-Up Queue
+* Recent Activity
+
+Recent Activity should feel alive:
+
+* Lead Created
+* Lead Contacted
+* Status Changed
+* Lead Won
+* Note Added
+
+---
+
+6. LEADS PAGE REDESIGN
+
+---
+
+Make Leads feel like a modern CRM workspace.
+
+Header:
+Leads
+Subtitle:
+Manage every opportunity before it slips away.
+
+Top right:
+
+* New Lead button
+
+Use a polished search/filter bar:
+
+* Search
+* Status filter
+* Source filter
+* Date filter
+* Workspace filter for admin only
+
+Table on desktop:
+
+* Cleaner rows
+* More spacing
+* Hover effect
+* Status badges
+* Source badges
+* Estimated value bold/green
+* Quick actions:
+
+  * Call
+  * Email
+  * Notes
+
+Mobile:
+
+* Lead cards
+* Quick actions visible
+* Easy tap targets
+
+Clicking lead opens drawer.
+
+---
+
+7. PIPELINE PAGE REDESIGN
+
+---
+
+Pipeline should be one of the most polished screens.
+
+Header:
+Pipeline
+Subtitle:
+Move leads from first touch to won revenue.
+
+Top right:
+
+* New Lead button
+
+Kanban columns:
+
+* New
+* Contacted
+* Booked
+* Won
+* Lost
+
+Each column header:
+
+* Status name
+* Number of leads
+* Total pipeline value
+* MRR if available
+
+Lead card:
+
+* Lead name
+* Service requested
+* Workspace
+* Source
+* Estimated value
+* Small status/source indicator
+
+Make values highly visible.
+
+Clicking card opens drawer.
+
+Drag/drop should still work.
+
+---
+
+8. WORKSPACES PAGE
+
+---
+
+Rename Clients page to Workspaces.
+
+Header:
+Workspaces
+Subtitle:
+Manage each business connected to LeadEngine.
+
+Workspace cards/table should show:
+
+* Workspace name
+* Industry
+* Website
+* Active/inactive
+* Lead count
+* Pipeline value
+* Revenue won
+* MRR
+* Owner email
+
+Admin actions:
+
+* Create workspace
+* Edit workspace
+* Activate/deactivate workspace
+* Copy API key
+* Copy embed code
+
+Use premium cards, not plain table if possible.
+
+---
+
+9. LEAD DRAWER POLISH
+
+---
+
+Make lead drawer feel like a real sales workspace.
+
+Sections:
+
+* Header with lead name, status badge, workspace
+* Contact card
+* Opportunity details
+* Value fields
+* Notes
+* Activity timeline
+* Quick actions
+
+Quick actions:
+
+* Call
+* Email
+* Mark Contacted
+* Save Notes
+
+Make timeline visually polished.
+
+---
+
+10. MOTION / MICROINTERACTIONS
+
+---
+
+Add subtle motion only where appropriate:
+
+* Login preview cards gently fade/slide in
+* Dashboard metric cards animate in
+* Hover states on cards/buttons
+* Lead drawer slide animation
+* Pipeline card hover lift
+
+Do not make it flashy.
+Keep it fast and professional.
+
+---
+
+11. RESPONSIVE QA
+
+---
+
+Test:
+
+* 1440px desktop
+* laptop width
+* tablet
+* mobile
+
+Make sure:
+
+* Login is not stuck on the left
+* Dashboard is readable
+* Leads page works on mobile
+* Pipeline works with horizontal scroll on mobile
+* Drawer becomes full-screen on mobile
+* No unwanted horizontal overflow
+
+---
+
+12. PRESERVE FUNCTIONALITY
+
+---
+
+Do not break:
+
+* Login
+* [demo@novenworks.com](mailto:demo@novenworks.com) / password123
+* [admin@novenworks.com](mailto:admin@novenworks.com) / password123
+* [owner@kaylasautorepair.com](mailto:owner@kaylasautorepair.com) / password123
+* Owner scoping
+* Admin all-workspace access
+* Add Lead
+* Lead drawer
+* Pipeline drag/drop
+* Activity log
+* Dashboard stats
+* GitHub integration
+
+---
+
+13. TESTING + GIT
+
+---
+
+After implementation:
+
+* Test login desktop/mobile
+* Test demo account
+* Test admin account
+* Test owner account
+* Test Add Lead
+* Test status changes
+* Test pipeline drag/drop
+* Test workspace scoping
+* Test mobile views
+
+Commit and push with message:
+Redesign LeadEngine as premium growth platform UI

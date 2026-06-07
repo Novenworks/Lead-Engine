@@ -1,1 +1,2 @@
 - [Session table setup](session-table.md) — connect-pg-simple's createTableIfMissing may fail silently; create the session table manually if sessions don't persist.
+- [Dark mode approach](dark-mode-approach.md) — dark-by-default: add class="dark" to html element; use inline rgba styles over Tailwind dark: prefix for glass/glow effects.
