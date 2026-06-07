@@ -1,0 +1,14 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "NRFQuNEvvWARKMCCdMR7G"
+uri = "file://public-docs/LeadEngine-Technical-Analysis.pdf"
+type = "pdf"
+title = "LeadEngine — Technical Analysis Report"
+
+[[outputs]]
+id = "p9CzGvZKD0qBSLrLTzXgH"
+uri = "file://public-docs/LeadEngine-Features-For-Business-Owners.pdf"
+type = "pdf"
+title = "LeadEngine — Features for Business Owners"
