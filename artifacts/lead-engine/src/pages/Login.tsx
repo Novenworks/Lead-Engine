@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { LEMark, LEMarkBadge } from "@/components/Logo";
 import { TrendingUp, Users, AlertCircle, DollarSign } from "lucide-react";
 
-const DEMO = { email: "demo@novenworks.com", password: "password123" };
+const DEMO = { email: "admin@novenworks.com", password: "password123" };
 
 const PREVIEW_METRICS = [
   { label: "Total Leads", value: "147", icon: Users, color: "#60a5fa", bg: "rgba(37,99,235,0.18)", delay: "0ms" },

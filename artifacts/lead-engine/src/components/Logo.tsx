@@ -7,16 +7,17 @@ export function LEMark({ size = 32, className }: LogoProps) {
   return (
     <svg
       width={size}
-      height={size}
-      viewBox="0 0 80 80"
+      height={Math.round(size * 112 / 100)}
+      viewBox="0 0 100 112"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
-      <rect x="0" y="0" width="20" height="80" fill="#2563EB" />
-      <rect x="20" y="0" width="60" height="17" fill="#2563EB" />
-      <rect x="20" y="34" width="44" height="13" fill="#2563EB" />
-      <path d="M20 63 H80 L74 80 H20 Z" fill="#2563EB" />
+      {/* LE monogram: L vertical bar + 3 E bars with white-gap cutouts, angled bottom-right */}
+      <path
+        d="M0,0 H100 V20 H18 V42 H90 V59 H18 V76 H100 L88,112 H0 Z"
+        fill="#2563EB"
+      />
     </svg>
   );
 }
