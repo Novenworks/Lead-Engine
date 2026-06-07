@@ -7,12 +7,13 @@ import { LeadDrawer } from "@/components/LeadDrawer";
 import { useState } from "react";
 import {
   Users, TrendingUp, DollarSign, Repeat2, AlertCircle, Trophy,
-  Phone, ChevronRight
+  ChevronRight
 } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend,
 } from "recharts";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const STATUS_COLORS = {
   New: "#3b82f6",
@@ -35,13 +36,63 @@ export default function Dashboard() {
   const { data: followUps, isLoading: followUpsLoading } = useGetFollowUpLeads({ limit: 5 });
   const [selectedLeadId, setSelectedLeadId] = useState<number | null>(null);
 
+  const followUpCount = stats?.followUpCount ?? 0;
+
   const statItems = [
-    { title: "Total Leads", value: stats?.total ?? 0, icon: Users, color: "text-slate-600", bg: "bg-slate-100", format: (v: number) => String(v) },
-    { title: "Pipeline Value", value: stats?.pipelineValue ?? 0, icon: TrendingUp, color: "text-blue-600", bg: "bg-blue-50", format: currency },
-    { title: "Won Revenue", value: stats?.wonRevenue ?? 0, icon: DollarSign, color: "text-green-600", bg: "bg-green-50", format: currency },
-    { title: "MRR", value: stats?.mrr ?? 0, icon: Repeat2, color: "text-purple-600", bg: "bg-purple-50", format: currency },
-    { title: "Follow-ups Due", value: stats?.followUpCount ?? 0, icon: AlertCircle, color: "text-amber-600", bg: "bg-amber-50", format: (v: number) => String(v) },
-    { title: "Won Leads", value: stats?.won ?? 0, icon: Trophy, color: "text-emerald-600", bg: "bg-emerald-50", format: (v: number) => String(v) },
+    {
+      title: "Total Leads",
+      value: stats?.total ?? 0,
+      icon: Users,
+      color: "text-slate-600",
+      bg: "bg-slate-100",
+      border: "",
+      format: (v: number) => String(v),
+    },
+    {
+      title: "Pipeline Value",
+      value: stats?.pipelineValue ?? 0,
+      icon: TrendingUp,
+      color: "text-blue-600",
+      bg: "bg-blue-50",
+      border: "border-l-2 border-l-blue-400",
+      format: currency,
+    },
+    {
+      title: "Won Revenue",
+      value: stats?.wonRevenue ?? 0,
+      icon: DollarSign,
+      color: "text-emerald-600",
+      bg: "bg-emerald-50",
+      border: "border-l-2 border-l-emerald-400",
+      format: currency,
+    },
+    {
+      title: "MRR",
+      value: stats?.mrr ?? 0,
+      icon: Repeat2,
+      color: "text-purple-600",
+      bg: "bg-purple-50",
+      border: "border-l-2 border-l-purple-400",
+      format: currency,
+    },
+    {
+      title: "Follow-ups Due",
+      value: followUpCount,
+      icon: AlertCircle,
+      color: followUpCount > 0 ? "text-orange-600" : "text-amber-500",
+      bg: followUpCount > 0 ? "bg-orange-50" : "bg-amber-50",
+      border: followUpCount > 0 ? "border-l-2 border-l-orange-400" : "",
+      format: (v: number) => String(v),
+    },
+    {
+      title: "Won Leads",
+      value: stats?.won ?? 0,
+      icon: Trophy,
+      color: "text-emerald-600",
+      bg: "bg-emerald-50",
+      border: "",
+      format: (v: number) => String(v),
+    },
   ];
 
   const statusData = stats
@@ -54,7 +105,6 @@ export default function Dashboard() {
       ].filter((d) => d.value > 0)
     : [];
 
-  // Source distribution from recent leads
   const sourceMap: Record<string, number> = {};
   recentLeads?.forEach((l) => {
     const src = l.source || "Direct";
@@ -77,13 +127,13 @@ export default function Dashboard() {
       {/* Stats row */}
       <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
         {statItems.map((item) => (
-          <Card key={item.title} className="border-0 shadow-sm">
+          <Card key={item.title} className={cn("border-0 shadow-sm overflow-hidden", item.border)}>
             <CardContent className="p-4">
               <div className={`w-8 h-8 rounded-lg ${item.bg} flex items-center justify-center mb-2`}>
                 <item.icon className={`h-4 w-4 ${item.color}`} />
               </div>
-              <div className="text-xl font-bold tracking-tight">
-                {statsLoading ? <span className="animate-pulse text-slate-300">...</span> : item.format(item.value)}
+              <div className={cn("text-2xl font-bold tracking-tight", item.color)}>
+                {statsLoading ? <span className="animate-pulse text-slate-300">…</span> : item.format(item.value)}
               </div>
               <div className="text-xs text-muted-foreground mt-0.5">{item.title}</div>
             </CardContent>
@@ -94,7 +144,6 @@ export default function Dashboard() {
       {/* Charts row */}
       {!statsLoading && statusData.length > 0 && (
         <div className="grid gap-4 md:grid-cols-2">
-          {/* Status donut */}
           <Card className="border-0 shadow-sm">
             <CardHeader className="pb-2 pt-4 px-4">
               <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Lead Status</CardTitle>
@@ -114,7 +163,6 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          {/* Source bar */}
           {sourceData.length > 0 && (
             <Card className="border-0 shadow-sm">
               <CardHeader className="pb-2 pt-4 px-4">
@@ -124,7 +172,7 @@ export default function Dashboard() {
                 <ResponsiveContainer width="100%" height={180}>
                   <BarChart data={sourceData} layout="vertical" margin={{ left: 0, right: 16, top: 0, bottom: 0 }}>
                     <XAxis type="number" hide />
-                    <YAxis type="category" dataKey="name" tick={{ fontSize: 11 }} width={80} />
+                    <YAxis type="category" dataKey="name" tick={{ fontSize: 11 }} width={90} />
                     <Tooltip formatter={(value: number) => [value, "Leads"]} />
                     <Bar dataKey="value" fill="#3b82f6" radius={[0, 4, 4, 0]} />
                   </BarChart>
@@ -138,10 +186,10 @@ export default function Dashboard() {
       {/* Bottom row: Follow-ups + Recent */}
       <div className="grid gap-4 md:grid-cols-2">
         {/* Follow-up widget */}
-        <Card className="border-0 shadow-sm">
+        <Card className={cn("border-0 shadow-sm", followUpCount > 0 && "ring-1 ring-orange-200")}>
           <CardHeader className="pb-2 pt-4 px-4 flex flex-row items-center justify-between">
             <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Needs Follow-Up</CardTitle>
-            <AlertCircle className="h-4 w-4 text-amber-400" />
+            <AlertCircle className={cn("h-4 w-4", followUpCount > 0 ? "text-orange-500" : "text-amber-300")} />
           </CardHeader>
           <CardContent className="px-4 pb-4">
             {followUpsLoading ? (
@@ -195,7 +243,14 @@ export default function Dashboard() {
                         {lead.serviceInterest || "General"} · {format(new Date(lead.createdAt), "MMM d")}
                       </p>
                     </div>
-                    <LeadBadge status={lead.status} />
+                    <div className="flex items-center gap-2 shrink-0">
+                      {lead.estimatedValue != null && (
+                        <span className="text-xs font-semibold text-emerald-600">
+                          ${lead.estimatedValue.toLocaleString()}
+                        </span>
+                      )}
+                      <LeadBadge status={lead.status} />
+                    </div>
                   </button>
                 ))}
                 <div className="pt-2">

@@ -26,6 +26,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
+import { LogoIconBadge } from "@/components/Logo";
 
 interface NavItem {
   title: string;
@@ -62,7 +63,6 @@ export function MainLayout({ children }: { children: ReactNode }) {
   };
 
   const navItems = buildNavItems(user?.role);
-  // Mobile bottom nav: Dashboard, Leads, Pipeline, Settings (4 items)
   const mobileNavItems = navItems.filter((n) => ["Dashboard", "Leads", "Pipeline", "Settings"].includes(n.title));
 
   return (
@@ -70,9 +70,12 @@ export function MainLayout({ children }: { children: ReactNode }) {
       {/* Desktop sidebar */}
       <Sidebar className="border-r bg-sidebar text-sidebar-foreground hidden md:flex">
         <SidebarHeader className="p-4 border-b border-sidebar-border">
-          <div className="flex flex-col">
-            <h2 className="text-xl font-bold tracking-tight">LeadEngine</h2>
-            <p className="text-xs text-sidebar-foreground/60 uppercase tracking-wider font-semibold mt-1">by Novenworks</p>
+          <div className="flex items-center gap-2.5">
+            <LogoIconBadge size={32} />
+            <div className="flex flex-col leading-none">
+              <span className="font-bold text-base tracking-tight">LeadEngine</span>
+              <span className="text-[9px] font-semibold tracking-[0.18em] uppercase text-sidebar-foreground/50 mt-0.5">by Novenworks</span>
+            </div>
           </div>
         </SidebarHeader>
         <SidebarContent>
@@ -95,15 +98,26 @@ export function MainLayout({ children }: { children: ReactNode }) {
           </SidebarGroup>
         </SidebarContent>
         <SidebarFooter className="border-t border-sidebar-border p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex flex-col overflow-hidden mr-2">
-              <span className="text-sm font-medium truncate">{user?.name}</span>
-              <span className="text-xs text-sidebar-foreground/60 truncate">
-                {user?.role === "admin" ? "Admin" : user?.clientName}
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-full bg-blue-600/20 border border-blue-500/30 flex items-center justify-center shrink-0">
+              <span className="text-[10px] font-bold text-blue-400 uppercase">
+                {user?.name?.charAt(0) ?? "?"}
               </span>
             </div>
-            <Button variant="ghost" size="icon" onClick={handleLogout} className="text-sidebar-foreground hover:bg-sidebar-accent shrink-0">
-              <LogOut className="h-4 w-4" />
+            <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+              <span className="text-xs font-medium truncate">{user?.name}</span>
+              <span className="text-[10px] text-sidebar-foreground/50 truncate">
+                {user?.role === "admin" ? "Admin · Novenworks" : user?.clientName}
+              </span>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleLogout}
+              className="text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent shrink-0 h-7 w-7"
+              title="Sign out"
+            >
+              <LogOut className="h-3.5 w-3.5" />
             </Button>
           </div>
         </SidebarFooter>
@@ -113,9 +127,12 @@ export function MainLayout({ children }: { children: ReactNode }) {
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Mobile top bar */}
         <div className="md:hidden flex items-center justify-between px-4 py-3 border-b bg-white shrink-0">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             <SidebarTrigger />
-            <span className="font-bold text-sm">LeadEngine</span>
+            <div className="flex items-center gap-2">
+              <LogoIconBadge size={24} />
+              <span className="font-bold text-sm">LeadEngine</span>
+            </div>
           </div>
           <Button variant="ghost" size="icon" onClick={handleLogout} className="h-8 w-8">
             <LogOut className="h-4 w-4" />

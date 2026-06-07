@@ -1,0 +1,478 @@
+Upgrade LeadEngine by Novenworks with polish, branding, real demo clients, and CRM usability improvements.
+
+Important context:
+LeadEngine should no longer use Espresso Glow as a demo client. The current real/demo clients should be:
+
+* Citrus & Sage
+* YardSanity
+* Kayla's Auto Repair
+
+Create owner login for:
+
+[owner@kaylasautorepair.com](mailto:owner@kaylasautorepair.com)
+password123
+
+Keep existing admin login working:
+
+[admin@novenworks.com](mailto:admin@novenworks.com)
+password123
+
+Remove or deactivate Espresso Glow from demo data unless required for backwards compatibility. If removing risks breaking existing seeded data, mark Espresso Glow inactive and hide it from primary demo flows.
+
+Main goal:
+Make LeadEngine feel like a polished, sellable Novenworks product for local service businesses.
+
+Positioning:
+LeadEngine by Novenworks
+Capture leads. Track conversations. Close more business.
+
+Do not add AI, SMS, or automated email sequences yet. This task is UI polish, usability, and demo readiness.
+
+---
+
+1. BRANDING: LOGO + FAVICON
+
+---
+
+Create and apply a new LeadEngine logo concept:
+
+Shield + connected nodes
+
+Meaning:
+
+* Shield = protects leads from getting lost
+* Connected nodes = lead flow, CRM, automation, business growth
+* Fits Novenworks ecosystem
+
+Style:
+
+* Clean SaaS
+* Dark navy / black
+* Electric blue accent
+* Modern geometric
+* Simple enough for favicon
+
+Apply logo to:
+
+* Login screen
+* Sidebar
+* Browser favicon
+* App metadata/title where applicable
+
+Use LeadEngine wordmark:
+LeadEngine
+BY NOVENWORKS
+
+Make favicon match the shield + connected nodes icon.
+
+---
+
+2. LOGIN SCREEN REDESIGN
+
+---
+
+Current login screen feels unfinished and left-aligned.
+
+Redesign login screen:
+
+Layout:
+
+* Center login card vertically and horizontally
+* Full-height page
+* Subtle gradient background
+* Larger LeadEngine logo above the card
+* Product name and tagline above/beside card
+
+Text:
+
+LeadEngine
+BY NOVENWORKS
+
+Capture leads. Track conversations. Close more business.
+
+Login card:
+
+* Email
+* Password
+* Sign In button
+
+Add demo account card below the login fields:
+
+Demo Account
+[owner@kaylasautorepair.com](mailto:owner@kaylasautorepair.com)
+password123
+
+Make demo account clickable:
+
+* Clicking it auto-fills email and password
+* Optional button: “Use Demo Account”
+
+Also include small admin demo text if useful:
+Admin: [admin@novenworks.com](mailto:admin@novenworks.com) / password123
+
+The login screen should feel polished enough to show a prospect.
+
+---
+
+3. DEMO CLIENT DATA
+
+---
+
+Update seeded clients to prioritize:
+
+Citrus & Sage
+Industry: Wellness / Med Spa
+Website: use placeholder if none exists
+
+YardSanity
+Industry: Pet / Yard Service
+Website: yardsanity.com if available, otherwise placeholder
+
+Kayla's Auto Repair
+Industry: Auto Repair
+Website: placeholder
+
+Create owner login:
+[owner@kaylasautorepair.com](mailto:owner@kaylasautorepair.com)
+password123
+
+Kayla's owner should only see Kayla's Auto Repair leads.
+
+Add realistic Kayla's Auto Repair sample leads:
+
+* Brake repair inquiry
+* Oil change appointment
+* Check engine light
+* AC repair
+* Tire rotation
+* Transmission diagnostic
+
+Use lead sources:
+Google Business Profile
+Website
+Referral
+Phone Call
+
+Add estimated values:
+Brake repair: $450
+Check engine light diagnostic: $180
+AC repair: $650
+Transmission diagnostic: $300
+Oil change: $90
+Tire rotation: $60
+
+---
+
+4. DASHBOARD IMPROVEMENTS
+
+---
+
+Current dashboard is good but visually empty.
+
+Improve dashboard visual hierarchy.
+
+Top revenue/status cards:
+
+* Total Leads
+* Pipeline Value
+* Won Revenue
+* MRR
+* Follow-ups Due
+* Won Leads
+
+Make:
+
+* Pipeline Value card visually stronger with green accent
+* Won Revenue card green
+* Follow-ups Due card orange/red when > 0
+* MRR card purple/blue accent
+
+Make revenue numbers larger and easier to scan.
+
+Add Recent Activity feed:
+Show recent events like:
+
+* Lead Created
+* Lead Contacted
+* Lead Booked
+* Lead Won
+* Note Added
+* Status Changed
+
+Each activity item should show:
+
+* action
+* lead name
+* client/business
+* timestamp
+* small status/source icon if useful
+
+This makes the CRM feel alive.
+
+---
+
+5. LEADS PAGE IMPROVEMENTS
+
+---
+
+Improve the Leads page for daily usage.
+
+Add quick actions directly in each row/card:
+
+* Call
+* Email
+* Notes
+
+Use clean icons, not emoji.
+
+Clicking Call:
+
+* On mobile, open tel: link
+* On desktop, use tel: link if available
+
+Clicking Email:
+
+* mailto link
+
+Clicking Notes:
+
+* opens the lead drawer focused on notes
+
+Improve value visibility:
+
+* If estimated_value exists, show it bold and green
+* If monthly_recurring_value exists, show it with “/mo”
+* Revenue-driving leads should stand out visually
+
+Improve table/card spacing so the page feels more premium.
+
+---
+
+6. LEAD DETAIL DRAWER IMPROVEMENTS
+
+---
+
+Lead drawer is the power center.
+
+When a lead is clicked, open a drawer.
+
+Desktop:
+
+* Right-side drawer
+
+Mobile:
+
+* Full-screen modal
+
+Drawer should include:
+
+Header:
+
+* Lead name
+* Status badge
+* Client/business
+
+Contact section:
+
+* Phone
+* Email
+* Call button
+* Email button
+
+Opportunity section:
+
+* Service requested
+* Source
+* Estimated value
+* Monthly recurring value
+* Assigned user
+
+Workflow section:
+
+* Status dropdown
+* Mark Contacted button
+* Save changes button
+
+Notes section:
+
+* Notes textarea
+* Save notes button
+
+Activity timeline:
+
+* Lead Created
+* Status Changed
+* Lead Contacted
+* Note Added
+* Value Updated
+* Assigned User Updated
+
+Style should feel similar to a lightweight HubSpot / Pipedrive lead profile, but simpler.
+
+---
+
+7. PIPELINE PAGE IMPROVEMENTS
+
+---
+
+Pipeline is currently the strongest page. Improve it.
+
+Kanban columns:
+
+* New
+* Contacted
+* Booked
+* Won
+* Lost
+
+Add totals per column:
+
+* Number of leads
+* Total estimated value
+* Total MRR if applicable
+
+Example:
+Contacted
+2 leads • $2,500 pipeline
+
+Booked
+3 leads • $1,200 pipeline
+
+Won
+1 lead • $650 won
+
+Make lead card values visible:
+Example:
+
+James Hartley
+Deep Tissue Massage
+$2,500
+Website Contact Form
+
+Make cards clickable:
+
+* Clicking a pipeline card opens the lead detail drawer
+* Drag/drop should still update status
+* Status changes should write to activity log
+
+---
+
+8. CLIENTS PAGE IMPROVEMENTS
+
+---
+
+Improve Clients page to feel more SaaS-like.
+
+Each client row/card should show:
+
+* Client/business name
+* Industry
+* Website URL
+* Active/inactive status
+* Lead count
+* Pipeline value
+* Won revenue
+* MRR
+* Owner email
+
+Admin can:
+
+* Create/edit clients
+* Activate/deactivate clients
+* Copy API key
+* Copy sample embed code
+
+Hide inactive clients from regular owner/demo flows unless admin specifically views them.
+
+---
+
+9. SIDEBAR / NAV POLISH
+
+---
+
+Apply new logo to sidebar.
+
+Sidebar top:
+LeadEngine
+BY NOVENWORKS
+
+Navigation:
+
+* Dashboard
+* Leads
+* Pipeline
+* Clients
+* Settings
+
+Keep active nav highlight.
+
+Footer:
+Show logged-in user:
+
+* Name/business if available
+* Role
+* Logout button
+
+---
+
+10. MOBILE POLISH
+
+---
+
+Ensure all changes work well on mobile.
+
+Mobile requirements:
+
+* Login centered and clean
+* Dashboard cards stack nicely
+* Lead quick actions easy to tap
+* Lead drawer becomes full-screen modal
+* Pipeline remains usable
+* No horizontal overflow except intentional pipeline horizontal scroll
+* Buttons have large tap targets
+
+---
+
+11. TESTING
+
+---
+
+After implementation, test:
+
+Authentication:
+
+* [admin@novenworks.com](mailto:admin@novenworks.com) / password123
+* [owner@kaylasautorepair.com](mailto:owner@kaylasautorepair.com) / password123
+
+Permission tests:
+
+* Admin sees all clients/leads
+* Kayla's owner only sees Kayla's Auto Repair leads
+* Citrus & Sage owner only sees Citrus leads
+* YardSanity owner only sees YardSanity leads
+
+Feature tests:
+
+* Login demo card autofills credentials
+* Logo appears correctly
+* Favicon appears correctly
+* Leads page quick actions work
+* Lead drawer opens from Leads page
+* Lead drawer opens from Pipeline page
+* Status changes update dashboard/pipeline
+* Pipeline column totals update
+* Activity log records major actions
+* Client page metrics display correctly
+* Mobile layout is usable
+
+Git:
+
+* Commit the changes with message:
+  Polish LeadEngine branding and CRM workflow
+* Push to GitHub after successful testing
+
+Do not build unrelated features.
+Do not add AI.
+Do not add SMS.
+Do not add automated email sequences yet.
+Focus on polish, usability, and making LeadEngine feel ready to demo.
