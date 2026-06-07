@@ -4,6 +4,7 @@ import { db, usersTable, clientsTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 import { LoginBody } from "@workspace/api-zod";
 import { requireAuth } from "../middlewares/requireAuth";
+import { logger } from "../lib/logger";
 
 const router = Router();
 
@@ -63,6 +64,50 @@ router.post("/auth/logout", (req, res): void => {
   req.session.destroy(() => {
     res.json({ success: true, message: "Logged out" });
   });
+});
+
+router.post("/auth/change-password", requireAuth, async (req, res): Promise<void> => {
+  const { currentPassword, newPassword } = req.body as {
+    currentPassword?: unknown;
+    newPassword?: unknown;
+  };
+
+  if (!currentPassword || typeof currentPassword !== "string") {
+    res.status(400).json({ error: "Current password is required" });
+    return;
+  }
+  if (!newPassword || typeof newPassword !== "string" || newPassword.length < 8) {
+    res.status(400).json({ error: "New password must be at least 8 characters" });
+    return;
+  }
+
+  const [user] = await db
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.id, req.session.userId!))
+    .limit(1);
+
+  if (!user) {
+    res.status(401).json({ error: "Session expired" });
+    return;
+  }
+
+  const valid = await bcrypt.compare(currentPassword, user.passwordHash);
+  if (!valid) {
+    res.status(400).json({ error: "Current password is incorrect" });
+    return;
+  }
+
+  const passwordHash = await bcrypt.hash(newPassword, 10);
+
+  await db
+    .update(usersTable)
+    .set({ passwordHash })
+    .where(eq(usersTable.id, user.id));
+
+  logger.info({ userId: user.id }, "Password changed");
+
+  res.json({ success: true, message: "Password changed successfully" });
 });
 
 router.get("/auth/me", requireAuth, async (req, res): Promise<void> => {

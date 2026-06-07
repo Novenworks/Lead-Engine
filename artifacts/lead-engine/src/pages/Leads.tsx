@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useListLeads, useGetMe } from "@workspace/api-client-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
@@ -16,12 +16,19 @@ const glass = {
   border: "1px solid rgba(255,255,255,0.07)",
 };
 
+const PAGE_SIZE = 25;
+
 export default function Leads() {
   const { data: user } = useGetMe();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [sourceFilter, setSourceFilter] = useState<string>("");
   const [selectedLeadId, setSelectedLeadId] = useState<number | null>(null);
+  const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    setPage(1);
+  }, [search, statusFilter, sourceFilter]);
 
   const queryParams: Record<string, string | number> = {};
   if (search) queryParams.search = search;
@@ -29,6 +36,10 @@ export default function Leads() {
   if (sourceFilter) queryParams.source = sourceFilter;
 
   const { data: leads, isLoading } = useListLeads(queryParams);
+
+  const totalLeads = leads?.length ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalLeads / PAGE_SIZE));
+  const paginatedLeads = leads?.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE) ?? [];
 
   const hasFilters = statusFilter !== "all" || !!sourceFilter || !!search;
 
@@ -52,7 +63,9 @@ export default function Leads() {
           <p className="text-sm text-slate-500">
             Manage every opportunity before it slips away ·{" "}
             <span className="text-slate-600">
-              {isLoading ? "Loading…" : `${leads?.length ?? 0} leads${hasFilters ? " (filtered)" : ""}`}
+              {isLoading
+            ? "Loading…"
+            : `${totalLeads} lead${totalLeads !== 1 ? "s" : ""}${hasFilters ? " (filtered)" : ""}`}
             </span>
           </p>
         </div>
@@ -106,8 +119,8 @@ export default function Leads() {
       <div className="sm:hidden space-y-2">
         {isLoading ? (
           <div className="text-center py-8 text-slate-600 text-sm">Loading leads...</div>
-        ) : leads && leads.length > 0 ? (
-          leads.map((lead) => (
+        ) : paginatedLeads.length > 0 ? (
+          paginatedLeads.map((lead) => (
             <div
               key={lead.id}
               className="rounded-xl p-4 hover:bg-white/[0.05] transition-colors"
@@ -188,8 +201,8 @@ export default function Leads() {
               <TableRow>
                 <TableCell colSpan={8} className="text-center py-12 text-slate-600 bg-transparent">Loading leads...</TableCell>
               </TableRow>
-            ) : leads && leads.length > 0 ? (
-              leads.map((lead) => (
+            ) : paginatedLeads.length > 0 ? (
+              paginatedLeads.map((lead) => (
                 <TableRow
                   key={lead.id}
                   className="cursor-pointer group transition-colors"
@@ -263,6 +276,58 @@ export default function Leads() {
           </TableBody>
         </Table>
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between pt-1">
+          <p className="text-xs text-slate-600">
+            Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, totalLeads)} of {totalLeads}
+          </p>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}
+            >
+              ← Prev
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter((p) => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
+              .reduce<(number | "…")[]>((acc, p, idx, arr) => {
+                if (idx > 0 && (arr[idx - 1] as number) < p - 1) acc.push("…");
+                acc.push(p);
+                return acc;
+              }, [])
+              .map((p, idx) =>
+                p === "…" ? (
+                  <span key={`ellipsis-${idx}`} className="px-1.5 text-xs text-slate-700">…</span>
+                ) : (
+                  <button
+                    key={p}
+                    onClick={() => setPage(p as number)}
+                    className="w-7 h-7 rounded-lg text-xs font-bold transition-colors"
+                    style={
+                      page === p
+                        ? { background: "#2563EB", color: "#fff" }
+                        : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)", color: "#64748b" }
+                    }
+                  >
+                    {p}
+                  </button>
+                ),
+              )}
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}
+            >
+              Next →
+            </button>
+          </div>
+        </div>
+      )}
 
       <LeadDrawer leadId={selectedLeadId} onClose={() => setSelectedLeadId(null)} />
     </div>

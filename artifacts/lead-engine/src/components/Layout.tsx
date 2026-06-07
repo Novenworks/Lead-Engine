@@ -7,10 +7,7 @@ import {
   Settings,
   LogOut,
   Kanban,
-  ClipboardList,
-  Star,
-  Zap,
-  BarChart3,
+  UserCog,
 } from "lucide-react";
 import { useGetMe, useLogout, getGetMeQueryKey } from "@workspace/api-client-react";
 import {
@@ -39,13 +36,6 @@ interface NavItem {
   soon?: boolean;
 }
 
-const SOON_ITEMS: NavItem[] = [
-  { title: "Forms", url: "#", icon: ClipboardList, soon: true },
-  { title: "Reviews", url: "#", icon: Star, soon: true },
-  { title: "Automations", url: "#", icon: Zap, soon: true },
-  { title: "Analytics", url: "#", icon: BarChart3, soon: true },
-];
-
 function buildNavItems(role: string | undefined): NavItem[] {
   const items: NavItem[] = [
     { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
@@ -54,6 +44,7 @@ function buildNavItems(role: string | undefined): NavItem[] {
   ];
   if (role === "admin") {
     items.push({ title: "Workspaces", url: "/clients", icon: Building2 });
+    items.push({ title: "Users", url: "/admin/users", icon: UserCog });
   }
   items.push({ title: "Settings", url: "/settings", icon: Settings });
   return items;
@@ -120,32 +111,6 @@ export function MainLayout({ children }: { children: ReactNode }) {
             </SidebarGroupContent>
           </SidebarGroup>
 
-          {/* Coming soon items */}
-          <SidebarGroup className="mt-2">
-            <SidebarGroupLabel className="text-sidebar-foreground/30 text-[10px] uppercase tracking-widest px-3">
-              Coming Soon
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {SOON_ITEMS.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild disabled>
-                      <span className="flex items-center gap-2.5 opacity-35 cursor-not-allowed select-none">
-                        <item.icon className="h-4 w-4" />
-                        <span>{item.title}</span>
-                        <span
-                          className="ml-auto text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded"
-                          style={{ background: "rgba(37,99,235,0.2)", color: "#60a5fa" }}
-                        >
-                          Soon
-                        </span>
-                      </span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
         </SidebarContent>
 
         <SidebarFooter className="border-t border-white/[0.06] p-4">

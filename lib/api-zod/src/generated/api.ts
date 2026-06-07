@@ -58,6 +58,56 @@ export const GetMeResponse = zod.object({
 
 
 /**
+ * @summary Change the current user's password
+ */
+export const changePasswordBodyNewPasswordMin = 8;
+
+
+
+export const ChangePasswordBody = zod.object({
+  "currentPassword": zod.string(),
+  "newPassword": zod.string().min(changePasswordBodyNewPasswordMin)
+})
+
+export const ChangePasswordResponse = zod.object({
+  "success": zod.boolean(),
+  "message": zod.string().nullish()
+})
+
+
+/**
+ * @summary List all users (admin only)
+ */
+export const ListUsersResponseItem = zod.object({
+  "id": zod.number(),
+  "email": zod.string(),
+  "name": zod.string(),
+  "role": zod.enum(['admin', 'owner']),
+  "clientId": zod.number().nullish(),
+  "clientName": zod.string().nullish(),
+  "createdAt": zod.coerce.date()
+})
+export const ListUsersResponse = zod.array(ListUsersResponseItem)
+
+
+/**
+ * @summary Create a new user (admin only)
+ */
+
+export const createUserBodyPasswordMin = 8;
+
+
+
+export const CreateUserBody = zod.object({
+  "email": zod.string(),
+  "name": zod.string().min(1),
+  "password": zod.string().min(createUserBodyPasswordMin),
+  "role": zod.enum(['admin', 'owner']),
+  "clientId": zod.number().nullish()
+})
+
+
+/**
  * @summary List all clients (admin sees all, owner sees their own)
  */
 export const ListClientsResponseItem = zod.object({

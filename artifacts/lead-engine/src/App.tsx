@@ -16,6 +16,7 @@ import Pipeline from "@/pages/Pipeline";
 import Clients from "@/pages/Clients";
 import ClientDetail from "@/pages/ClientDetail";
 import Settings from "@/pages/Settings";
+import Users from "@/pages/Users";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -71,6 +72,7 @@ function Router() {
       <Route path="/pipeline" component={wrap(Pipeline)} />
       <Route path="/clients" component={wrap(Clients, true)} />
       <Route path="/clients/:id" component={wrap(ClientDetail, true)} />
+      <Route path="/admin/users" component={wrap(Users, true)} />
       <Route path="/settings" component={wrap(Settings)} />
       <Route component={NotFound} />
     </Switch>

@@ -218,6 +218,48 @@ export interface DashboardStats {
   followUpCount: number;
 }
 
+export type UserRecordRole = typeof UserRecordRole[keyof typeof UserRecordRole];
+
+
+export const UserRecordRole = {
+  admin: 'admin',
+  owner: 'owner',
+} as const;
+
+export interface UserRecord {
+  id: number;
+  email: string;
+  name: string;
+  role: UserRecordRole;
+  clientId?: number | null;
+  clientName?: string | null;
+  createdAt: string;
+}
+
+export type UserInputRole = typeof UserInputRole[keyof typeof UserInputRole];
+
+
+export const UserInputRole = {
+  admin: 'admin',
+  owner: 'owner',
+} as const;
+
+export interface UserInput {
+  email: string;
+  /** @minLength 1 */
+  name: string;
+  /** @minLength 8 */
+  password: string;
+  role: UserInputRole;
+  clientId?: number | null;
+}
+
+export interface ChangePasswordInput {
+  currentPassword: string;
+  /** @minLength 8 */
+  newPassword: string;
+}
+
 export type ListLeadsParams = {
 clientId?: number;
 status?: string;
