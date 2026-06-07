@@ -1,0 +1,97 @@
+Fix the LeadEngine login screen layout and demo account setup.
+
+Current issue:
+The login page is not optimized for desktop. It appears as a narrow mobile layout stuck on the left side with empty space on the right. It should be centered and responsive across desktop and mobile.
+
+Requirements:
+
+1. Desktop login layout
+   On screens 1024px and wider:
+
+* Full viewport height and width
+* Center the login experience horizontally and vertically
+* Use a max-width container around 420–480px
+* Do not lock the layout to the left side
+* Background should fill the full viewport
+* Login card should be visually centered on the page
+* No awkward cut-off or unused left-column-only layout
+
+2. Mobile login layout
+   On mobile:
+
+* Keep current clean stacked layout
+* Full-width with safe padding
+* Card should fit comfortably
+* No horizontal overflow
+* Demo account should remain readable
+
+3. Login page structure
+   Use this structure:
+
+Centered page container:
+
+* Logo icon
+* LeadEngine
+* BY NOVENWORKS
+* Tagline:
+  Capture leads. Track conversations. Close more business.
+* Login card
+* Demo account card
+
+4. Demo account
+   Remove all visible demo accounts except:
+
+[demo@novenworks.com](mailto:demo@novenworks.com)
+password123
+
+Create/ensure this login exists.
+
+The demo user should log in successfully.
+
+For now, [demo@novenworks.com](mailto:demo@novenworks.com) can be an admin/demo account or scoped demo account, whichever is easiest, but it must work.
+
+Do not show:
+
+* [owner@kaylasautorepair.com](mailto:owner@kaylasautorepair.com)
+* [admin@novenworks.com](mailto:admin@novenworks.com)
+* any other demo credentials
+
+Only show:
+
+Demo Account
+[demo@novenworks.com](mailto:demo@novenworks.com)
+password123
+
+Add a “Use Demo Account” button that autofills:
+Email: [demo@novenworks.com](mailto:demo@novenworks.com)
+Password: password123
+
+5. Preserve existing accounts
+   Do not delete working accounts from the database:
+
+* [admin@novenworks.com](mailto:admin@novenworks.com)
+* [owner@kaylasautorepair.com](mailto:owner@kaylasautorepair.com)
+* other owner accounts
+
+Just hide them from the login screen demo list.
+
+6. Visual polish
+
+* Make logo slightly larger
+* Keep dark navy / blue Novenworks style
+* Login card should feel premium and SaaS-like
+* Button should be full-width and prominent
+* Keep spacing balanced
+
+7. Testing
+   Test:
+
+* Desktop viewport 1440px wide
+* Laptop viewport
+* Mobile viewport
+* [demo@novenworks.com](mailto:demo@novenworks.com) / password123 login works
+* [admin@novenworks.com](mailto:admin@novenworks.com) / password123 still works even though hidden
+* [owner@kaylasautorepair.com](mailto:owner@kaylasautorepair.com) / password123 still works even though hidden
+
+Commit and push after testing with message:
+Fix responsive login layout and demo account
