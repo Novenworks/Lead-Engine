@@ -5,14 +5,10 @@
  * LeadEngine by Novenworks - Multi-client lead capture CRM API
  * OpenAPI spec version: 0.1.0
  */
+import type { ActivityLogInputMetadata } from './activityLogInputMetadata';
 
-export interface ClientInput {
+export interface ActivityLogInput {
   /** @minLength 1 */
-  businessName: string;
-  /** @minLength 1 */
-  slug: string;
-  ownerEmail: string;
-  notificationEmail: string;
-  websiteUrl?: string;
-  industry?: string;
+  action: string;
+  metadata?: ActivityLogInputMetadata;
 }

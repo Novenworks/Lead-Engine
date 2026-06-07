@@ -68,6 +68,13 @@ export const ListClientsResponseItem = zod.object({
   "notificationEmail": zod.string(),
   "apiKey": zod.string(),
   "websiteUrl": zod.string().nullish(),
+  "industry": zod.string().nullish(),
+  "isActive": zod.boolean(),
+  "automationEnabled": zod.boolean(),
+  "emailSequenceEnabled": zod.boolean().optional(),
+  "smsSequenceEnabled": zod.boolean().optional(),
+  "aiFollowupEnabled": zod.boolean().optional(),
+  "reviewRequestEnabled": zod.boolean().optional(),
   "createdAt": zod.coerce.date()
 })
 export const ListClientsResponse = zod.array(ListClientsResponseItem)
@@ -85,7 +92,8 @@ export const CreateClientBody = zod.object({
   "slug": zod.string().min(1),
   "ownerEmail": zod.string(),
   "notificationEmail": zod.string(),
-  "websiteUrl": zod.string().optional()
+  "websiteUrl": zod.string().optional(),
+  "industry": zod.string().optional()
 })
 
 
@@ -104,6 +112,13 @@ export const GetClientResponse = zod.object({
   "notificationEmail": zod.string(),
   "apiKey": zod.string(),
   "websiteUrl": zod.string().nullish(),
+  "industry": zod.string().nullish(),
+  "isActive": zod.boolean(),
+  "automationEnabled": zod.boolean(),
+  "emailSequenceEnabled": zod.boolean().optional(),
+  "smsSequenceEnabled": zod.boolean().optional(),
+  "aiFollowupEnabled": zod.boolean().optional(),
+  "reviewRequestEnabled": zod.boolean().optional(),
   "createdAt": zod.coerce.date()
 })
 
@@ -122,7 +137,14 @@ export const UpdateClientBody = zod.object({
   "businessName": zod.string().min(1).optional(),
   "ownerEmail": zod.string().optional(),
   "notificationEmail": zod.string().optional(),
-  "websiteUrl": zod.string().optional()
+  "websiteUrl": zod.string().optional(),
+  "industry": zod.string().optional(),
+  "isActive": zod.boolean().optional(),
+  "automationEnabled": zod.boolean().optional(),
+  "emailSequenceEnabled": zod.boolean().optional(),
+  "smsSequenceEnabled": zod.boolean().optional(),
+  "aiFollowupEnabled": zod.boolean().optional(),
+  "reviewRequestEnabled": zod.boolean().optional()
 })
 
 export const UpdateClientResponse = zod.object({
@@ -133,6 +155,13 @@ export const UpdateClientResponse = zod.object({
   "notificationEmail": zod.string(),
   "apiKey": zod.string(),
   "websiteUrl": zod.string().nullish(),
+  "industry": zod.string().nullish(),
+  "isActive": zod.boolean(),
+  "automationEnabled": zod.boolean(),
+  "emailSequenceEnabled": zod.boolean().optional(),
+  "smsSequenceEnabled": zod.boolean().optional(),
+  "aiFollowupEnabled": zod.boolean().optional(),
+  "reviewRequestEnabled": zod.boolean().optional(),
   "createdAt": zod.coerce.date()
 })
 
@@ -167,7 +196,11 @@ export const GetEmbedCodeResponse = zod.object({
 export const ListLeadsQueryParams = zod.object({
   "clientId": zod.coerce.number().optional(),
   "status": zod.coerce.string().optional(),
-  "search": zod.coerce.string().optional()
+  "search": zod.coerce.string().optional(),
+  "source": zod.coerce.string().optional(),
+  "dateFrom": zod.date().optional(),
+  "dateTo": zod.date().optional(),
+  "assignedToId": zod.coerce.number().optional()
 })
 
 export const ListLeadsResponseItem = zod.object({
@@ -182,6 +215,9 @@ export const ListLeadsResponseItem = zod.object({
   "source": zod.string().nullish(),
   "status": zod.enum(['New', 'Contacted', 'Booked', 'Won', 'Lost']),
   "notes": zod.string().nullish(),
+  "estimatedValue": zod.number().nullish(),
+  "monthlyRecurringValue": zod.number().nullish(),
+  "assignedToId": zod.number().nullish(),
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date(),
   "lastContactedAt": zod.coerce.date().nullish()
@@ -208,6 +244,9 @@ export const GetLeadResponse = zod.object({
   "source": zod.string().nullish(),
   "status": zod.enum(['New', 'Contacted', 'Booked', 'Won', 'Lost']),
   "notes": zod.string().nullish(),
+  "estimatedValue": zod.number().nullish(),
+  "monthlyRecurringValue": zod.number().nullish(),
+  "assignedToId": zod.number().nullish(),
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date(),
   "lastContactedAt": zod.coerce.date().nullish()
@@ -215,7 +254,7 @@ export const GetLeadResponse = zod.object({
 
 
 /**
- * @summary Update lead status, notes, or last contacted date
+ * @summary Update lead status, notes, value, or last contacted date
  */
 export const UpdateLeadParams = zod.object({
   "id": zod.coerce.number()
@@ -224,7 +263,10 @@ export const UpdateLeadParams = zod.object({
 export const UpdateLeadBody = zod.object({
   "status": zod.enum(['New', 'Contacted', 'Booked', 'Won', 'Lost']).optional(),
   "notes": zod.string().optional(),
-  "lastContactedAt": zod.coerce.date().optional()
+  "lastContactedAt": zod.coerce.date().optional(),
+  "estimatedValue": zod.number().nullish(),
+  "monthlyRecurringValue": zod.number().nullish(),
+  "assignedToId": zod.number().nullish()
 })
 
 export const UpdateLeadResponse = zod.object({
@@ -239,9 +281,48 @@ export const UpdateLeadResponse = zod.object({
   "source": zod.string().nullish(),
   "status": zod.enum(['New', 'Contacted', 'Booked', 'Won', 'Lost']),
   "notes": zod.string().nullish(),
+  "estimatedValue": zod.number().nullish(),
+  "monthlyRecurringValue": zod.number().nullish(),
+  "assignedToId": zod.number().nullish(),
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date(),
   "lastContactedAt": zod.coerce.date().nullish()
+})
+
+
+/**
+ * @summary Get activity log for a lead
+ */
+export const GetLeadActivityParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const GetLeadActivityResponseItem = zod.object({
+  "id": zod.number(),
+  "leadId": zod.number().nullish(),
+  "clientId": zod.number().nullish(),
+  "userId": zod.number().nullish(),
+  "userName": zod.string().nullish(),
+  "action": zod.string(),
+  "metadata": zod.record(zod.string(), zod.unknown()).nullish(),
+  "createdAt": zod.coerce.date()
+})
+export const GetLeadActivityResponse = zod.array(GetLeadActivityResponseItem)
+
+
+/**
+ * @summary Add an activity log entry for a lead
+ */
+export const CreateLeadActivityParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+
+
+export const CreateLeadActivityBody = zod.object({
+  "action": zod.string().min(1),
+  "metadata": zod.record(zod.string(), zod.unknown()).optional()
 })
 
 
@@ -273,7 +354,11 @@ export const GetDashboardStatsResponse = zod.object({
   "contacted": zod.number(),
   "booked": zod.number(),
   "won": zod.number(),
-  "lost": zod.number()
+  "lost": zod.number(),
+  "pipelineValue": zod.number().describe('Sum of estimatedValue for New+Contacted+Booked leads'),
+  "wonRevenue": zod.number().describe('Sum of estimatedValue for Won leads'),
+  "mrr": zod.number().describe('Sum of monthlyRecurringValue for Won leads'),
+  "followUpCount": zod.number().describe('Count of leads needing follow-up')
 })
 
 
@@ -297,10 +382,43 @@ export const GetRecentLeadsResponseItem = zod.object({
   "source": zod.string().nullish(),
   "status": zod.enum(['New', 'Contacted', 'Booked', 'Won', 'Lost']),
   "notes": zod.string().nullish(),
+  "estimatedValue": zod.number().nullish(),
+  "monthlyRecurringValue": zod.number().nullish(),
+  "assignedToId": zod.number().nullish(),
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date(),
   "lastContactedAt": zod.coerce.date().nullish()
 })
 export const GetRecentLeadsResponse = zod.array(GetRecentLeadsResponseItem)
+
+
+/**
+ * @summary Get leads that need follow-up (New or Contacted, not contacted recently)
+ */
+export const GetFollowUpLeadsQueryParams = zod.object({
+  "clientId": zod.coerce.number().optional(),
+  "limit": zod.coerce.number().optional()
+})
+
+export const GetFollowUpLeadsResponseItem = zod.object({
+  "id": zod.number(),
+  "clientId": zod.number(),
+  "clientName": zod.string().nullish(),
+  "name": zod.string(),
+  "email": zod.string(),
+  "phone": zod.string().nullish(),
+  "serviceInterest": zod.string().nullish(),
+  "message": zod.string().nullish(),
+  "source": zod.string().nullish(),
+  "status": zod.enum(['New', 'Contacted', 'Booked', 'Won', 'Lost']),
+  "notes": zod.string().nullish(),
+  "estimatedValue": zod.number().nullish(),
+  "monthlyRecurringValue": zod.number().nullish(),
+  "assignedToId": zod.number().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "lastContactedAt": zod.coerce.date().nullish()
+})
+export const GetFollowUpLeadsResponse = zod.array(GetFollowUpLeadsResponseItem)
 
 

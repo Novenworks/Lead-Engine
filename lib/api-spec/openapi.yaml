@@ -249,6 +249,28 @@ paths:
           required: false
           schema:
             type: string
+        - name: source
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: dateFrom
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: dateTo
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: assignedToId
+          in: query
+          required: false
+          schema:
+            type: integer
       responses:
         "200":
           description: List of leads
@@ -286,7 +308,7 @@ paths:
     patch:
       operationId: updateLead
       tags: [leads]
-      summary: Update lead status, notes, or last contacted date
+      summary: Update lead status, notes, value, or last contacted date
       parameters:
         - name: id
           in: path
@@ -306,6 +328,62 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Lead"
+        "404":
+          description: Lead not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /leads/{id}/activity:
+    get:
+      operationId: getLeadActivity
+      tags: [leads]
+      summary: Get activity log for a lead
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Activity log entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityLogEntry"
+        "404":
+          description: Lead not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      operationId: createLeadActivity
+      tags: [leads]
+      summary: Add an activity log entry for a lead
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ActivityLogInput"
+      responses:
+        "201":
+          description: Activity entry created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActivityLogEntry"
         "404":
           description: Lead not found
           content:
@@ -389,6 +467,32 @@ paths:
                 items:
                   $ref: "#/components/schemas/Lead"
 
+  /dashboard/followups:
+    get:
+      operationId: getFollowUpLeads
+      tags: [dashboard]
+      summary: Get leads that need follow-up (New or Contacted, not contacted recently)
+      parameters:
+        - name: clientId
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Leads needing follow-up
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Lead"
+
 components:
   schemas:
     HealthStatus:
@@ -444,7 +548,7 @@ components:
 
     Client:
       type: object
-      required: [id, businessName, slug, ownerEmail, notificationEmail, apiKey, createdAt]
+      required: [id, businessName, slug, ownerEmail, notificationEmail, apiKey, isActive, automationEnabled, createdAt]
       properties:
         id:
           type: integer
@@ -460,6 +564,20 @@ components:
           type: string
         websiteUrl:
           type: ["string", "null"]
+        industry:
+          type: ["string", "null"]
+        isActive:
+          type: boolean
+        automationEnabled:
+          type: boolean
+        emailSequenceEnabled:
+          type: boolean
+        smsSequenceEnabled:
+          type: boolean
+        aiFollowupEnabled:
+          type: boolean
+        reviewRequestEnabled:
+          type: boolean
         createdAt:
           type: string
           format: date-time
@@ -480,6 +598,8 @@ components:
           type: string
         websiteUrl:
           type: string
+        industry:
+          type: string
 
     ClientUpdate:
       type: object
@@ -493,6 +613,20 @@ components:
           type: string
         websiteUrl:
           type: string
+        industry:
+          type: string
+        isActive:
+          type: boolean
+        automationEnabled:
+          type: boolean
+        emailSequenceEnabled:
+          type: boolean
+        smsSequenceEnabled:
+          type: boolean
+        aiFollowupEnabled:
+          type: boolean
+        reviewRequestEnabled:
+          type: boolean
 
     EmbedCode:
       type: object
@@ -536,6 +670,12 @@ components:
           enum: [New, Contacted, Booked, Won, Lost]
         notes:
           type: ["string", "null"]
+        estimatedValue:
+          type: ["number", "null"]
+        monthlyRecurringValue:
+          type: ["number", "null"]
+        assignedToId:
+          type: ["integer", "null"]
         createdAt:
           type: string
           format: date-time
@@ -557,6 +697,12 @@ components:
         lastContactedAt:
           type: string
           format: date-time
+        estimatedValue:
+          type: ["number", "null"]
+        monthlyRecurringValue:
+          type: ["number", "null"]
+        assignedToId:
+          type: ["integer", "null"]
 
     LeadCapture:
       type: object
@@ -579,9 +725,43 @@ components:
         source:
           type: string
 
+    ActivityLogEntry:
+      type: object
+      required: [id, action, createdAt]
+      properties:
+        id:
+          type: integer
+        leadId:
+          type: ["integer", "null"]
+        clientId:
+          type: ["integer", "null"]
+        userId:
+          type: ["integer", "null"]
+        userName:
+          type: ["string", "null"]
+        action:
+          type: string
+        metadata:
+          type: ["object", "null"]
+          additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+
+    ActivityLogInput:
+      type: object
+      required: [action]
+      properties:
+        action:
+          type: string
+          minLength: 1
+        metadata:
+          type: object
+          additionalProperties: true
+
     DashboardStats:
       type: object
-      required: [total, new, contacted, booked, won, lost]
+      required: [total, new, contacted, booked, won, lost, pipelineValue, wonRevenue, mrr, followUpCount]
       properties:
         total:
           type: integer
@@ -595,3 +775,15 @@ components:
           type: integer
         lost:
           type: integer
+        pipelineValue:
+          type: number
+          description: Sum of estimatedValue for New+Contacted+Booked leads
+        wonRevenue:
+          type: number
+          description: Sum of estimatedValue for Won leads
+        mrr:
+          type: number
+          description: Sum of monthlyRecurringValue for Won leads
+        followUpCount:
+          type: integer
+          description: Count of leads needing follow-up

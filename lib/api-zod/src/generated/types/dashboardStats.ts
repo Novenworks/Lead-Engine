@@ -13,4 +13,12 @@ export interface DashboardStats {
   booked: number;
   won: number;
   lost: number;
+  /** Sum of estimatedValue for New+Contacted+Booked leads */
+  pipelineValue: number;
+  /** Sum of estimatedValue for Won leads */
+  wonRevenue: number;
+  /** Sum of monthlyRecurringValue for Won leads */
+  mrr: number;
+  /** Count of leads needing follow-up */
+  followUpCount: number;
 }

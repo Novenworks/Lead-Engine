@@ -25,6 +25,12 @@ export interface Lead {
   status: LeadStatus;
   /** @nullable */
   notes?: string | null;
+  /** @nullable */
+  estimatedValue?: number | null;
+  /** @nullable */
+  monthlyRecurringValue?: number | null;
+  /** @nullable */
+  assignedToId?: number | null;
   createdAt: Date;
   updatedAt: Date;
   /** @nullable */

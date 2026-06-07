@@ -52,6 +52,14 @@ export interface Client {
   apiKey: string;
   /** @nullable */
   websiteUrl?: string | null;
+  /** @nullable */
+  industry?: string | null;
+  isActive: boolean;
+  automationEnabled: boolean;
+  emailSequenceEnabled?: boolean;
+  smsSequenceEnabled?: boolean;
+  aiFollowupEnabled?: boolean;
+  reviewRequestEnabled?: boolean;
   createdAt: string;
 }
 
@@ -63,6 +71,7 @@ export interface ClientInput {
   ownerEmail: string;
   notificationEmail: string;
   websiteUrl?: string;
+  industry?: string;
 }
 
 export interface ClientUpdate {
@@ -71,6 +80,13 @@ export interface ClientUpdate {
   ownerEmail?: string;
   notificationEmail?: string;
   websiteUrl?: string;
+  industry?: string;
+  isActive?: boolean;
+  automationEnabled?: boolean;
+  emailSequenceEnabled?: boolean;
+  smsSequenceEnabled?: boolean;
+  aiFollowupEnabled?: boolean;
+  reviewRequestEnabled?: boolean;
 }
 
 export interface EmbedCode {
@@ -110,6 +126,12 @@ export interface Lead {
   status: LeadStatus;
   /** @nullable */
   notes?: string | null;
+  /** @nullable */
+  estimatedValue?: number | null;
+  /** @nullable */
+  monthlyRecurringValue?: number | null;
+  /** @nullable */
+  assignedToId?: number | null;
   createdAt: string;
   updatedAt: string;
   /** @nullable */
@@ -131,6 +153,12 @@ export interface LeadUpdate {
   status?: LeadUpdateStatus;
   notes?: string;
   lastContactedAt?: string;
+  /** @nullable */
+  estimatedValue?: number | null;
+  /** @nullable */
+  monthlyRecurringValue?: number | null;
+  /** @nullable */
+  assignedToId?: number | null;
 }
 
 export interface LeadCapture {
@@ -144,6 +172,35 @@ export interface LeadCapture {
   source?: string;
 }
 
+/**
+ * @nullable
+ */
+export type ActivityLogEntryMetadata = { [key: string]: unknown } | null;
+
+export interface ActivityLogEntry {
+  id: number;
+  /** @nullable */
+  leadId?: number | null;
+  /** @nullable */
+  clientId?: number | null;
+  /** @nullable */
+  userId?: number | null;
+  /** @nullable */
+  userName?: string | null;
+  action: string;
+  /** @nullable */
+  metadata?: ActivityLogEntryMetadata;
+  createdAt: string;
+}
+
+export type ActivityLogInputMetadata = { [key: string]: unknown };
+
+export interface ActivityLogInput {
+  /** @minLength 1 */
+  action: string;
+  metadata?: ActivityLogInputMetadata;
+}
+
 export interface DashboardStats {
   total: number;
   new: number;
@@ -151,12 +208,24 @@ export interface DashboardStats {
   booked: number;
   won: number;
   lost: number;
+  /** Sum of estimatedValue for New+Contacted+Booked leads */
+  pipelineValue: number;
+  /** Sum of estimatedValue for Won leads */
+  wonRevenue: number;
+  /** Sum of monthlyRecurringValue for Won leads */
+  mrr: number;
+  /** Count of leads needing follow-up */
+  followUpCount: number;
 }
 
 export type ListLeadsParams = {
 clientId?: number;
 status?: string;
 search?: string;
+source?: string;
+dateFrom?: string;
+dateTo?: string;
+assignedToId?: number;
 };
 
 export type GetDashboardStatsParams = {
@@ -164,6 +233,11 @@ clientId?: number;
 };
 
 export type GetRecentLeadsParams = {
+clientId?: number;
+limit?: number;
+};
+
+export type GetFollowUpLeadsParams = {
 clientId?: number;
 limit?: number;
 };

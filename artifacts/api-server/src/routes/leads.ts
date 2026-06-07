@@ -1,12 +1,15 @@
 import { Router } from "express";
-import { db, leadsTable, clientsTable } from "@workspace/db";
-import { eq, desc, and, ilike, or } from "drizzle-orm";
+import { db, leadsTable, clientsTable, activityLogTable, usersTable } from "@workspace/db";
+import { eq, desc, and, ilike, or, gte, lte, sql } from "drizzle-orm";
 import {
   ListLeadsQueryParams,
   GetLeadParams,
   UpdateLeadParams,
   UpdateLeadBody,
   CaptureLeadBody,
+  GetLeadActivityParams,
+  CreateLeadActivityParams,
+  CreateLeadActivityBody,
 } from "@workspace/api-zod";
 import { requireAuth } from "../middlewares/requireAuth";
 import { sendLeadNotification } from "../lib/email";
@@ -27,7 +30,6 @@ router.get("/leads", requireAuth, async (req, res): Promise<void> => {
 
   let clientId = params.data.clientId;
 
-  // Owners can only see their own leads
   if (role !== "admin") {
     clientId = userClientId ?? -1;
   }
@@ -40,6 +42,24 @@ router.get("/leads", requireAuth, async (req, res): Promise<void> => {
 
   if (params.data.status) {
     conditions.push(eq(leadsTable.status, params.data.status));
+  }
+
+  if (params.data.source) {
+    conditions.push(ilike(leadsTable.source, `%${params.data.source}%`));
+  }
+
+  if (params.data.assignedToId) {
+    conditions.push(eq(leadsTable.assignedToId, params.data.assignedToId));
+  }
+
+  if (params.data.dateFrom) {
+    conditions.push(gte(leadsTable.createdAt, new Date(params.data.dateFrom)));
+  }
+
+  if (params.data.dateTo) {
+    const dateTo = new Date(params.data.dateTo);
+    dateTo.setHours(23, 59, 59, 999);
+    conditions.push(lte(leadsTable.createdAt, dateTo));
   }
 
   if (params.data.search) {
@@ -67,6 +87,9 @@ router.get("/leads", requireAuth, async (req, res): Promise<void> => {
       source: leadsTable.source,
       status: leadsTable.status,
       notes: leadsTable.notes,
+      estimatedValue: leadsTable.estimatedValue,
+      monthlyRecurringValue: leadsTable.monthlyRecurringValue,
+      assignedToId: leadsTable.assignedToId,
       createdAt: leadsTable.createdAt,
       updatedAt: leadsTable.updatedAt,
       lastContactedAt: leadsTable.lastContactedAt,
@@ -119,6 +142,14 @@ router.post("/leads/capture", async (req, res): Promise<void> => {
     })
     .returning();
 
+  // Log capture activity
+  db.insert(activityLogTable).values({
+    leadId: lead.id,
+    clientId: client.id,
+    action: "Lead captured via embed form",
+    metadata: { source: leadData.source ?? null },
+  }).catch((err) => logger.error({ err }, "Failed to log capture activity"));
+
   // Send email notification asynchronously — don't block response
   sendLeadNotification(client, lead).catch((err) => {
     logger.error({ err }, "Failed to send lead notification email");
@@ -151,6 +182,9 @@ router.get("/leads/:id", requireAuth, async (req, res): Promise<void> => {
       source: leadsTable.source,
       status: leadsTable.status,
       notes: leadsTable.notes,
+      estimatedValue: leadsTable.estimatedValue,
+      monthlyRecurringValue: leadsTable.monthlyRecurringValue,
+      assignedToId: leadsTable.assignedToId,
       createdAt: leadsTable.createdAt,
       updatedAt: leadsTable.updatedAt,
       lastContactedAt: leadsTable.lastContactedAt,
@@ -189,9 +223,10 @@ router.patch("/leads/:id", requireAuth, async (req, res): Promise<void> => {
 
   const role = req.session.userRole;
   const userClientId = req.session.userClientId;
+  const userId = req.session.userId;
 
   const [existing] = await db
-    .select({ clientId: leadsTable.clientId })
+    .select({ clientId: leadsTable.clientId, status: leadsTable.status })
     .from(leadsTable)
     .where(eq(leadsTable.id, params.data.id))
     .limit(1);
@@ -210,12 +245,37 @@ router.patch("/leads/:id", requireAuth, async (req, res): Promise<void> => {
   if (parsed.data.status !== undefined) updates.status = parsed.data.status;
   if (parsed.data.notes !== undefined) updates.notes = parsed.data.notes;
   if (parsed.data.lastContactedAt !== undefined) updates.lastContactedAt = new Date(parsed.data.lastContactedAt);
+  if (parsed.data.estimatedValue !== undefined) updates.estimatedValue = parsed.data.estimatedValue;
+  if (parsed.data.monthlyRecurringValue !== undefined) updates.monthlyRecurringValue = parsed.data.monthlyRecurringValue;
+  if (parsed.data.assignedToId !== undefined) updates.assignedToId = parsed.data.assignedToId;
 
   const [updatedLead] = await db
     .update(leadsTable)
     .set(updates)
     .where(eq(leadsTable.id, params.data.id))
     .returning();
+
+  // Log status change activity
+  if (parsed.data.status && parsed.data.status !== existing.status) {
+    db.insert(activityLogTable).values({
+      leadId: params.data.id,
+      clientId: existing.clientId,
+      userId: userId ?? undefined,
+      action: `Status changed from ${existing.status} to ${parsed.data.status}`,
+      metadata: { previousStatus: existing.status, newStatus: parsed.data.status },
+    }).catch((err) => logger.error({ err }, "Failed to log status change"));
+  }
+
+  // Log contact action
+  if (parsed.data.lastContactedAt) {
+    db.insert(activityLogTable).values({
+      leadId: params.data.id,
+      clientId: existing.clientId,
+      userId: userId ?? undefined,
+      action: "Marked as contacted",
+      metadata: { contactedAt: parsed.data.lastContactedAt },
+    }).catch((err) => logger.error({ err }, "Failed to log contact activity"));
+  }
 
   const [lead] = await db
     .select({
@@ -230,6 +290,9 @@ router.patch("/leads/:id", requireAuth, async (req, res): Promise<void> => {
       source: leadsTable.source,
       status: leadsTable.status,
       notes: leadsTable.notes,
+      estimatedValue: leadsTable.estimatedValue,
+      monthlyRecurringValue: leadsTable.monthlyRecurringValue,
+      assignedToId: leadsTable.assignedToId,
       createdAt: leadsTable.createdAt,
       updatedAt: leadsTable.updatedAt,
       lastContactedAt: leadsTable.lastContactedAt,
@@ -240,6 +303,122 @@ router.patch("/leads/:id", requireAuth, async (req, res): Promise<void> => {
     .limit(1);
 
   res.json(mapLead(lead!));
+});
+
+// GET /leads/:id/activity
+router.get("/leads/:id/activity", requireAuth, async (req, res): Promise<void> => {
+  const params = GetLeadActivityParams.safeParse(req.params);
+  if (!params.success) {
+    res.status(400).json({ error: "Invalid ID" });
+    return;
+  }
+
+  const role = req.session.userRole;
+  const userClientId = req.session.userClientId;
+
+  const [lead] = await db
+    .select({ clientId: leadsTable.clientId })
+    .from(leadsTable)
+    .where(eq(leadsTable.id, params.data.id))
+    .limit(1);
+
+  if (!lead) {
+    res.status(404).json({ error: "Lead not found" });
+    return;
+  }
+
+  if (role !== "admin" && lead.clientId !== userClientId) {
+    res.status(403).json({ error: "Access denied" });
+    return;
+  }
+
+  const entries = await db
+    .select({
+      id: activityLogTable.id,
+      leadId: activityLogTable.leadId,
+      clientId: activityLogTable.clientId,
+      userId: activityLogTable.userId,
+      userName: usersTable.name,
+      action: activityLogTable.action,
+      metadata: activityLogTable.metadata,
+      createdAt: activityLogTable.createdAt,
+    })
+    .from(activityLogTable)
+    .leftJoin(usersTable, eq(activityLogTable.userId, usersTable.id))
+    .where(eq(activityLogTable.leadId, params.data.id))
+    .orderBy(desc(activityLogTable.createdAt));
+
+  res.json(entries.map((e) => ({
+    id: e.id,
+    leadId: e.leadId ?? null,
+    clientId: e.clientId ?? null,
+    userId: e.userId ?? null,
+    userName: e.userName ?? null,
+    action: e.action,
+    metadata: e.metadata ?? null,
+    createdAt: e.createdAt.toISOString(),
+  })));
+});
+
+// POST /leads/:id/activity
+router.post("/leads/:id/activity", requireAuth, async (req, res): Promise<void> => {
+  const params = CreateLeadActivityParams.safeParse(req.params);
+  if (!params.success) {
+    res.status(400).json({ error: "Invalid ID" });
+    return;
+  }
+
+  const parsed = CreateLeadActivityBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+
+  const role = req.session.userRole;
+  const userClientId = req.session.userClientId;
+  const userId = req.session.userId;
+
+  const [lead] = await db
+    .select({ clientId: leadsTable.clientId })
+    .from(leadsTable)
+    .where(eq(leadsTable.id, params.data.id))
+    .limit(1);
+
+  if (!lead) {
+    res.status(404).json({ error: "Lead not found" });
+    return;
+  }
+
+  if (role !== "admin" && lead.clientId !== userClientId) {
+    res.status(403).json({ error: "Access denied" });
+    return;
+  }
+
+  const [entry] = await db
+    .insert(activityLogTable)
+    .values({
+      leadId: params.data.id,
+      clientId: lead.clientId,
+      userId: userId ?? undefined,
+      action: parsed.data.action,
+      metadata: parsed.data.metadata ?? null,
+    })
+    .returning();
+
+  const [user] = userId
+    ? await db.select({ name: usersTable.name }).from(usersTable).where(eq(usersTable.id, userId)).limit(1)
+    : [null];
+
+  res.status(201).json({
+    id: entry.id,
+    leadId: entry.leadId ?? null,
+    clientId: entry.clientId ?? null,
+    userId: entry.userId ?? null,
+    userName: user?.name ?? null,
+    action: entry.action,
+    metadata: entry.metadata ?? null,
+    createdAt: entry.createdAt.toISOString(),
+  });
 });
 
 function mapLead(lead: {
@@ -254,6 +433,9 @@ function mapLead(lead: {
   source: string | null;
   status: string;
   notes: string | null;
+  estimatedValue: number | null;
+  monthlyRecurringValue: number | null;
+  assignedToId: number | null;
   createdAt: Date;
   updatedAt: Date;
   lastContactedAt: Date | null;
@@ -270,6 +452,9 @@ function mapLead(lead: {
     source: lead.source ?? null,
     status: lead.status,
     notes: lead.notes ?? null,
+    estimatedValue: lead.estimatedValue ?? null,
+    monthlyRecurringValue: lead.monthlyRecurringValue ?? null,
+    assignedToId: lead.assignedToId ?? null,
     createdAt: lead.createdAt.toISOString(),
     updatedAt: lead.updatedAt.toISOString(),
     lastContactedAt: lead.lastContactedAt?.toISOString() ?? null,

@@ -6,12 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type ListLeadsParams = {
+export type GetFollowUpLeadsParams = {
 clientId?: number;
-status?: string;
-search?: string;
-source?: string;
-dateFrom?: Date;
-dateTo?: Date;
-assignedToId?: number;
+limit?: number;
 };

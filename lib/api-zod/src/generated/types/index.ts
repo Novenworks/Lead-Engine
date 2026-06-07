@@ -6,6 +6,10 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './activityLogEntry';
+export * from './activityLogEntryMetadata';
+export * from './activityLogInput';
+export * from './activityLogInputMetadata';
 export * from './authUser';
 export * from './authUserRole';
 export * from './client';
@@ -15,6 +19,7 @@ export * from './dashboardStats';
 export * from './embedCode';
 export * from './errorResponse';
 export * from './getDashboardStatsParams';
+export * from './getFollowUpLeadsParams';
 export * from './getRecentLeadsParams';
 export * from './healthStatus';
 export * from './lead';

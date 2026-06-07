@@ -1,4 +1,4 @@
-import { pgTable, text, serial, timestamp, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, integer, doublePrecision } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -13,6 +13,9 @@ export const leadsTable = pgTable("leads", {
   source: text("source"),
   status: text("status").notNull().default("New"), // New|Contacted|Booked|Won|Lost
   notes: text("notes"),
+  estimatedValue: doublePrecision("estimated_value"),
+  monthlyRecurringValue: doublePrecision("monthly_recurring_value"),
+  assignedToId: integer("assigned_to_id"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
   lastContactedAt: timestamp("last_contacted_at", { withTimezone: true }),

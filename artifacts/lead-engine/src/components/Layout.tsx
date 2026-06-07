@@ -1,11 +1,12 @@
 import { ReactNode } from "react";
 import { Link, useLocation } from "wouter";
-import { 
-  LayoutDashboard, 
-  Users, 
-  Building2, 
-  Settings, 
-  LogOut 
+import {
+  LayoutDashboard,
+  Users,
+  Building2,
+  Settings,
+  LogOut,
+  Kanban,
 } from "lucide-react";
 import { useGetMe, useLogout, getGetMeQueryKey } from "@workspace/api-client-react";
 import {
@@ -24,6 +25,26 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { useQueryClient } from "@tanstack/react-query";
+import { cn } from "@/lib/utils";
+
+interface NavItem {
+  title: string;
+  url: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
+
+function buildNavItems(role: string | undefined): NavItem[] {
+  const items: NavItem[] = [
+    { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+    { title: "Leads", url: "/leads", icon: Users },
+    { title: "Pipeline", url: "/pipeline", icon: Kanban },
+  ];
+  if (role === "admin") {
+    items.push({ title: "Clients", url: "/clients", icon: Building2 });
+  }
+  items.push({ title: "Settings", url: "/settings", icon: Settings });
+  return items;
+}
 
 export function MainLayout({ children }: { children: ReactNode }) {
   const [location, setLocation] = useLocation();
@@ -36,24 +57,18 @@ export function MainLayout({ children }: { children: ReactNode }) {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: getGetMeQueryKey() });
         setLocation("/login");
-      }
+      },
     });
   };
 
-  const navItems = [
-    { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-    { title: "Leads", url: "/leads", icon: Users },
-  ];
-
-  if (user?.role === "admin") {
-    navItems.push({ title: "Clients", url: "/clients", icon: Building2 });
-  }
-
-  navItems.push({ title: "Settings", url: "/settings", icon: Settings });
+  const navItems = buildNavItems(user?.role);
+  // Mobile bottom nav: Dashboard, Leads, Pipeline, Settings (4 items)
+  const mobileNavItems = navItems.filter((n) => ["Dashboard", "Leads", "Pipeline", "Settings"].includes(n.title));
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background">
-      <Sidebar className="border-r bg-sidebar text-sidebar-foreground">
+      {/* Desktop sidebar */}
+      <Sidebar className="border-r bg-sidebar text-sidebar-foreground hidden md:flex">
         <SidebarHeader className="p-4 border-b border-sidebar-border">
           <div className="flex flex-col">
             <h2 className="text-xl font-bold tracking-tight">LeadEngine</h2>
@@ -93,14 +108,46 @@ export function MainLayout({ children }: { children: ReactNode }) {
           </div>
         </SidebarFooter>
       </Sidebar>
+
+      {/* Main content */}
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <div className="md:hidden flex items-center p-4 border-b">
-          <SidebarTrigger />
-          <span className="ml-4 font-bold">LeadEngine</span>
+        {/* Mobile top bar */}
+        <div className="md:hidden flex items-center justify-between px-4 py-3 border-b bg-white shrink-0">
+          <div className="flex items-center gap-3">
+            <SidebarTrigger />
+            <span className="font-bold text-sm">LeadEngine</span>
+          </div>
+          <Button variant="ghost" size="icon" onClick={handleLogout} className="h-8 w-8">
+            <LogOut className="h-4 w-4" />
+          </Button>
         </div>
-        <div className="flex-1 overflow-y-auto p-4 md:p-8">
+
+        {/* Page content */}
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 pb-20 md:pb-6">
           {children}
         </div>
+
+        {/* Mobile bottom nav */}
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t z-40 flex items-stretch">
+          {mobileNavItems.map((item) => {
+            const isActive = location.startsWith(item.url);
+            return (
+              <Link
+                key={item.title}
+                href={item.url}
+                className={cn(
+                  "flex-1 flex flex-col items-center justify-center py-2 gap-0.5 text-xs font-medium transition-colors min-h-[56px]",
+                  isActive
+                    ? "text-primary bg-primary/5"
+                    : "text-slate-500 hover:text-slate-700",
+                )}
+              >
+                <item.icon className={cn("h-5 w-5", isActive ? "text-primary" : "text-slate-400")} />
+                <span>{item.title}</span>
+              </Link>
+            );
+          })}
+        </nav>
       </main>
     </div>
   );

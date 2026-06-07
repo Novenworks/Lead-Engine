@@ -12,4 +12,11 @@ export interface ClientUpdate {
   ownerEmail?: string;
   notificationEmail?: string;
   websiteUrl?: string;
+  industry?: string;
+  isActive?: boolean;
+  automationEnabled?: boolean;
+  emailSequenceEnabled?: boolean;
+  smsSequenceEnabled?: boolean;
+  aiFollowupEnabled?: boolean;
+  reviewRequestEnabled?: boolean;
 }

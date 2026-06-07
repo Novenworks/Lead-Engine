@@ -11,4 +11,10 @@ export interface LeadUpdate {
   status?: LeadUpdateStatus;
   notes?: string;
   lastContactedAt?: Date;
+  /** @nullable */
+  estimatedValue?: number | null;
+  /** @nullable */
+  monthlyRecurringValue?: number | null;
+  /** @nullable */
+  assignedToId?: number | null;
 }

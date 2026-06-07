@@ -20,6 +20,8 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  ActivityLogEntry,
+  ActivityLogInput,
   AuthUser,
   Client,
   ClientInput,
@@ -28,6 +30,7 @@ import type {
   EmbedCode,
   ErrorResponse,
   GetDashboardStatsParams,
+  GetFollowUpLeadsParams,
   GetRecentLeadsParams,
   HealthStatus,
   Lead,
@@ -960,7 +963,7 @@ export const getUpdateLeadUrl = (id: number,) => {
 }
 
 /**
- * @summary Update lead status, notes, or last contacted date
+ * @summary Update lead status, notes, value, or last contacted date
  */
 export const updateLead = async (id: number,
     leadUpdate: LeadUpdate, options?: RequestInit): Promise<Lead> => {
@@ -1010,7 +1013,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type UpdateLeadMutationError = ErrorType<ErrorResponse>
 
     /**
- * @summary Update lead status, notes, or last contacted date
+ * @summary Update lead status, notes, value, or last contacted date
  */
 export const useUpdateLead = <TError = ErrorType<ErrorResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateLead>>, TError,{id: number;data: BodyType<LeadUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
@@ -1021,6 +1024,155 @@ export const useUpdateLead = <TError = ErrorType<ErrorResponse>,
         TContext
       > => {
       return useMutation(getUpdateLeadMutationOptions(options));
+    }
+
+export const getGetLeadActivityUrl = (id: number,) => {
+
+
+
+
+  return `/api/leads/${id}/activity`
+}
+
+/**
+ * @summary Get activity log for a lead
+ */
+export const getLeadActivity = async (id: number, options?: RequestInit): Promise<ActivityLogEntry[]> => {
+
+  return customFetch<ActivityLogEntry[]>(getGetLeadActivityUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetLeadActivityQueryKey = (id: number,) => {
+    return [
+    `/api/leads/${id}/activity`
+    ] as const;
+    }
+
+
+export const getGetLeadActivityQueryOptions = <TData = Awaited<ReturnType<typeof getLeadActivity>>, TError = ErrorType<ErrorResponse>>(id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getLeadActivity>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetLeadActivityQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getLeadActivity>>> = ({ signal }) => getLeadActivity(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getLeadActivity>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetLeadActivityQueryResult = NonNullable<Awaited<ReturnType<typeof getLeadActivity>>>
+export type GetLeadActivityQueryError = ErrorType<ErrorResponse>
+
+
+/**
+ * @summary Get activity log for a lead
+ */
+
+export function useGetLeadActivity<TData = Awaited<ReturnType<typeof getLeadActivity>>, TError = ErrorType<ErrorResponse>>(
+ id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getLeadActivity>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetLeadActivityQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getCreateLeadActivityUrl = (id: number,) => {
+
+
+
+
+  return `/api/leads/${id}/activity`
+}
+
+/**
+ * @summary Add an activity log entry for a lead
+ */
+export const createLeadActivity = async (id: number,
+    activityLogInput: ActivityLogInput, options?: RequestInit): Promise<ActivityLogEntry> => {
+
+  return customFetch<ActivityLogEntry>(getCreateLeadActivityUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      activityLogInput,)
+  }
+);}
+
+
+
+
+export const getCreateLeadActivityMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createLeadActivity>>, TError,{id: number;data: BodyType<ActivityLogInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createLeadActivity>>, TError,{id: number;data: BodyType<ActivityLogInput>}, TContext> => {
+
+const mutationKey = ['createLeadActivity'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createLeadActivity>>, {id: number;data: BodyType<ActivityLogInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  createLeadActivity(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateLeadActivityMutationResult = NonNullable<Awaited<ReturnType<typeof createLeadActivity>>>
+    export type CreateLeadActivityMutationBody = BodyType<ActivityLogInput>
+    export type CreateLeadActivityMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Add an activity log entry for a lead
+ */
+export const useCreateLeadActivity = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createLeadActivity>>, TError,{id: number;data: BodyType<ActivityLogInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createLeadActivity>>,
+        TError,
+        {id: number;data: BodyType<ActivityLogInput>},
+        TContext
+      > => {
+      return useMutation(getCreateLeadActivityMutationOptions(options));
     }
 
 export const getCaptureLeadUrl = () => {
@@ -1250,6 +1402,90 @@ export function useGetRecentLeads<TData = Awaited<ReturnType<typeof getRecentLea
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetRecentLeadsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetFollowUpLeadsUrl = (params?: GetFollowUpLeadsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/dashboard/followups?${stringifiedParams}` : `/api/dashboard/followups`
+}
+
+/**
+ * @summary Get leads that need follow-up (New or Contacted, not contacted recently)
+ */
+export const getFollowUpLeads = async (params?: GetFollowUpLeadsParams, options?: RequestInit): Promise<Lead[]> => {
+
+  return customFetch<Lead[]>(getGetFollowUpLeadsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetFollowUpLeadsQueryKey = (params?: GetFollowUpLeadsParams,) => {
+    return [
+    `/api/dashboard/followups`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetFollowUpLeadsQueryOptions = <TData = Awaited<ReturnType<typeof getFollowUpLeads>>, TError = ErrorType<unknown>>(params?: GetFollowUpLeadsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getFollowUpLeads>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetFollowUpLeadsQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getFollowUpLeads>>> = ({ signal }) => getFollowUpLeads(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getFollowUpLeads>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetFollowUpLeadsQueryResult = NonNullable<Awaited<ReturnType<typeof getFollowUpLeads>>>
+export type GetFollowUpLeadsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get leads that need follow-up (New or Contacted, not contacted recently)
+ */
+
+export function useGetFollowUpLeads<TData = Awaited<ReturnType<typeof getFollowUpLeads>>, TError = ErrorType<unknown>>(
+ params?: GetFollowUpLeadsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getFollowUpLeads>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetFollowUpLeadsQueryOptions(params,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

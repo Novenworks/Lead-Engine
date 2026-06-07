@@ -15,5 +15,13 @@ export interface Client {
   apiKey: string;
   /** @nullable */
   websiteUrl?: string | null;
+  /** @nullable */
+  industry?: string | null;
+  isActive: boolean;
+  automationEnabled: boolean;
+  emailSequenceEnabled?: boolean;
+  smsSequenceEnabled?: boolean;
+  aiFollowupEnabled?: boolean;
+  reviewRequestEnabled?: boolean;
   createdAt: Date;
 }

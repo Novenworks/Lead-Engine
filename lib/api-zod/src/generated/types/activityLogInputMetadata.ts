@@ -6,12 +6,4 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type ListLeadsParams = {
-clientId?: number;
-status?: string;
-search?: string;
-source?: string;
-dateFrom?: Date;
-dateTo?: Date;
-assignedToId?: number;
-};
+export type ActivityLogInputMetadata = { [key: string]: unknown };

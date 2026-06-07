@@ -52,6 +52,7 @@ router.post("/clients", requireAdmin, async (req, res): Promise<void> => {
       notificationEmail: parsed.data.notificationEmail,
       apiKey,
       websiteUrl: parsed.data.websiteUrl ?? null,
+      industry: parsed.data.industry ?? null,
     })
     .returning();
 
@@ -107,6 +108,13 @@ router.patch("/clients/:id", requireAdmin, async (req, res): Promise<void> => {
   if (parsed.data.ownerEmail !== undefined) updates.ownerEmail = parsed.data.ownerEmail;
   if (parsed.data.notificationEmail !== undefined) updates.notificationEmail = parsed.data.notificationEmail;
   if (parsed.data.websiteUrl !== undefined) updates.websiteUrl = parsed.data.websiteUrl;
+  if (parsed.data.industry !== undefined) updates.industry = parsed.data.industry;
+  if (parsed.data.isActive !== undefined) updates.isActive = parsed.data.isActive;
+  if (parsed.data.automationEnabled !== undefined) updates.automationEnabled = parsed.data.automationEnabled;
+  if (parsed.data.emailSequenceEnabled !== undefined) updates.emailSequenceEnabled = parsed.data.emailSequenceEnabled;
+  if (parsed.data.smsSequenceEnabled !== undefined) updates.smsSequenceEnabled = parsed.data.smsSequenceEnabled;
+  if (parsed.data.aiFollowupEnabled !== undefined) updates.aiFollowupEnabled = parsed.data.aiFollowupEnabled;
+  if (parsed.data.reviewRequestEnabled !== undefined) updates.reviewRequestEnabled = parsed.data.reviewRequestEnabled;
 
   if (Object.keys(updates).length === 0) {
     const [existing] = await db.select().from(clientsTable).where(eq(clientsTable.id, params.data.id)).limit(1);
@@ -242,6 +250,13 @@ function mapClient(c: {
   notificationEmail: string;
   apiKey: string;
   websiteUrl: string | null;
+  industry: string | null;
+  isActive: boolean;
+  automationEnabled: boolean;
+  emailSequenceEnabled: boolean;
+  smsSequenceEnabled: boolean;
+  aiFollowupEnabled: boolean;
+  reviewRequestEnabled: boolean;
   createdAt: Date;
 }) {
   return {
@@ -252,6 +267,13 @@ function mapClient(c: {
     notificationEmail: c.notificationEmail,
     apiKey: c.apiKey,
     websiteUrl: c.websiteUrl,
+    industry: c.industry,
+    isActive: c.isActive,
+    automationEnabled: c.automationEnabled,
+    emailSequenceEnabled: c.emailSequenceEnabled,
+    smsSequenceEnabled: c.smsSequenceEnabled,
+    aiFollowupEnabled: c.aiFollowupEnabled,
+    reviewRequestEnabled: c.reviewRequestEnabled,
     createdAt: c.createdAt.toISOString(),
   };
 }

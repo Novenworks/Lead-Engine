@@ -12,6 +12,7 @@ import Login from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard";
 import Leads from "@/pages/Leads";
 import LeadDetail from "@/pages/LeadDetail";
+import Pipeline from "@/pages/Pipeline";
 import Clients from "@/pages/Clients";
 import ClientDetail from "@/pages/ClientDetail";
 import Settings from "@/pages/Settings";
@@ -53,24 +54,9 @@ function ProtectedRoute({ component: Component, adminOnly = false }: { component
   return <Component />;
 }
 
-function DashboardPage() {
-  return <MainLayout><Dashboard /></MainLayout>;
-}
-function LeadsPage() {
-  return <MainLayout><Leads /></MainLayout>;
-}
-function LeadDetailPage() {
-  return <MainLayout><LeadDetail /></MainLayout>;
-}
-function ClientsPage() {
-  return <MainLayout><Clients /></MainLayout>;
-}
-function ClientDetailPage() {
-  return <MainLayout><ClientDetail /></MainLayout>;
-}
-function SettingsPage() {
-  return <MainLayout><Settings /></MainLayout>;
-}
+const wrap = (Component: React.ComponentType, adminOnly = false) => () => (
+  <ProtectedRoute component={() => <MainLayout><Component /></MainLayout>} adminOnly={adminOnly} />
+);
 
 function Router() {
   return (
@@ -79,24 +65,13 @@ function Router() {
       <Route path="/">
         <Redirect to="/dashboard" />
       </Route>
-      <Route path="/dashboard">
-        {() => <ProtectedRoute component={DashboardPage} />}
-      </Route>
-      <Route path="/leads">
-        {() => <ProtectedRoute component={LeadsPage} />}
-      </Route>
-      <Route path="/leads/:id">
-        {() => <ProtectedRoute component={LeadDetailPage} />}
-      </Route>
-      <Route path="/clients">
-        {() => <ProtectedRoute component={ClientsPage} adminOnly />}
-      </Route>
-      <Route path="/clients/:id">
-        {() => <ProtectedRoute component={ClientDetailPage} adminOnly />}
-      </Route>
-      <Route path="/settings">
-        {() => <ProtectedRoute component={SettingsPage} />}
-      </Route>
+      <Route path="/dashboard" component={wrap(Dashboard)} />
+      <Route path="/leads" component={wrap(Leads)} />
+      <Route path="/leads/:id" component={wrap(LeadDetail)} />
+      <Route path="/pipeline" component={wrap(Pipeline)} />
+      <Route path="/clients" component={wrap(Clients, true)} />
+      <Route path="/clients/:id" component={wrap(ClientDetail, true)} />
+      <Route path="/settings" component={wrap(Settings)} />
       <Route component={NotFound} />
     </Switch>
   );
