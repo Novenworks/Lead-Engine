@@ -1,16 +1,27 @@
 ---
-name: Session table setup
-description: connect-pg-simple createTableIfMissing fails silently; session table must be created manually if sessions don't work.
+name: Session persistence in production
+description: Two production session failure modes — missing trust proxy (most common) and missing session table.
 ---
 
-# Session Table for connect-pg-simple
+# Session persistence in production
 
-When sessions don't persist (login works but /me returns 401), check if the `session` table exists.
+## Mode 1 — trust proxy missing (PRIMARY FIX)
 
-**Why:** `connect-pg-simple`'s `createTableIfMissing: true` option can fail silently when the table doesn't exist. The session cookie is set but nothing is written to the DB.
+**Symptom:** Login returns 200, but the very next `/auth/me` returns 401 with ~1ms response time (no DB round-trip at all).
 
-**How to apply:** If sessions aren't working on a new environment (new DB, fresh deploy), create the table manually:
+**Why:** In production, `NODE_ENV=production` sets `cookie.secure: true`. Express-session checks `req.secure` before writing the `Set-Cookie` header. Behind Replit's reverse proxy the internal connection is plain HTTP, so `req.secure === false` — express-session silently skips writing the cookie. The browser never receives it, so every subsequent request is unauthenticated.
 
+**Fix:** Add to `app.ts` immediately after `const app = express()`, before the session middleware:
+```js
+app.set("trust proxy", 1);
+```
+This makes Express read `X-Forwarded-Proto: https` from Replit's proxy and set `req.secure = true`.
+
+## Mode 2 — session table missing
+
+**Why:** `connect-pg-simple`'s `createTableIfMissing: true` can fail silently when the DB user lacks CREATE TABLE permissions. Sessions are attempted but not stored.
+
+**How to check:** Query `information_schema.tables` for the `session` table. If missing, create it manually:
 ```sql
 CREATE TABLE IF NOT EXISTS "session" (
   "sid" varchar NOT NULL COLLATE "default",
@@ -20,7 +31,4 @@ CREATE TABLE IF NOT EXISTS "session" (
 ALTER TABLE "session" ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE;
 CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON "session" ("expire");
 ```
-
-This is also needed after wiping/recreating the database. The Drizzle schema does NOT manage this table — it's owned by `connect-pg-simple`.
-
-**Tip:** Add `sessionStore.on("error", ...)` to catch future store errors in the logs.
+The Drizzle schema does NOT manage this table — it's owned by `connect-pg-simple`.

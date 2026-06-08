@@ -11,6 +11,11 @@ const PgSession = connectPgSimple(session);
 
 const app: Express = express();
 
+// Trust the first hop from Replit's reverse proxy so req.secure is true
+// for HTTPS requests. Without this, express-session won't set Secure cookies
+// and every login will appear to succeed but then immediately fail /auth/me.
+app.set("trust proxy", 1);
+
 const sessionStore = new PgSession({ pool, createTableIfMissing: true });
 sessionStore.on("error", (err: Error) => {
   logger.error({ err }, "Session store error");
