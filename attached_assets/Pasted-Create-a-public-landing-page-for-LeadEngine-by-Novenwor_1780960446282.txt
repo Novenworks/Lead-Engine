@@ -1,0 +1,325 @@
+Create a public landing page for LeadEngine by Novenworks inside the existing LeadEngine app.
+
+IMPORTANT SAFETY RULES:
+Do NOT modify database schema.
+Do NOT modify authentication logic.
+Do NOT modify dashboard functionality.
+Do NOT modify leads functionality.
+Do NOT modify pipeline functionality.
+Do NOT modify workspaces functionality.
+Do NOT modify settings functionality.
+Do NOT refactor existing protected app routes.
+Do NOT change existing login behavior.
+Do NOT add new dependencies unless absolutely necessary.
+Only add a new public route at `/`.
+Leave `/login` and all authenticated routes intact.
+
+Important routing note:
+Do not delete the current login screen.
+Move or keep the current login screen at `/login`.
+Only replace the root `/` route with the new public landing page.
+
+Also fix the visible demo account on the login screen:
+The only visible demo account should be:
+
+[demo@novenworks.com](mailto:demo@novenworks.com)
+password123
+
+Do not show [admin@novenworks.com](mailto:admin@novenworks.com) as the demo account.
+Existing admin login should still work, but it should not be shown as the public demo credential.
+
+Before starting:
+
+* Check current git status.
+* Confirm current app works.
+* Create a checkpoint or commit if needed.
+
+Domain plan:
+app.novenworks.com should serve:
+
+* `/` = public landing page
+* `/login` = existing login page
+* `/dashboard` = existing protected dashboard
+
+Do not create a separate project.
+Do not require login to view `/`.
+
+Product positioning:
+LeadEngine by Novenworks
+Local Business Growth Platform
+
+Core positioning:
+Stop losing customers you already paid to get.
+
+Core message:
+Capture leads. Track follow-ups. Grow revenue.
+
+Audience:
+Local service businesses, especially wellness centers, med spas, auto repair shops, pet services, contractors, salons, and appointment-based or quote-based businesses.
+
+Design direction:
+Premium SaaS landing page.
+Dark mode.
+Electric blue gradients.
+Glass panels.
+Subtle motion.
+Modern typography.
+Similar polish level to Linear, Stripe, Vercel, Attio, Arc Browser, and Growthstack-style SaaS pages.
+
+Use existing LeadEngine logo and favicon.
+
+Routing requirements:
+
+* Add public landing page at `/`.
+* Keep `/login` as the existing login page.
+* Keep `/dashboard` protected.
+* Keep all existing authenticated app routes protected.
+* If user is already logged in, `/` should still show the landing page but include a “Go to Dashboard” button.
+* If user is not logged in, show “Sign In” button linking to `/login`.
+
+Landing page copy and sections:
+
+1. HERO SECTION
+
+Eyebrow:
+LOCAL BUSINESS GROWTH PLATFORM
+
+Headline:
+Stop Losing Customers You Already Paid To Get.
+
+Subheadline:
+LeadEngine helps local businesses capture every lead, follow up faster, and turn more inquiries into paying customers.
+
+Supporting copy:
+Most local businesses don't have a lead problem.
+They have a follow-up problem.
+
+LeadEngine gives you one place to track every inquiry, every conversation, and every opportunity so potential customers don't disappear through the cracks.
+
+Primary CTA:
+Book a Demo
+
+Secondary CTA:
+See How It Works
+
+Also include Sign In link/button:
+Sign In → /login
+
+Hero preview mockup:
+Show a premium SaaS-style preview of LeadEngine with:
+
+* Total Leads
+* Pipeline Value
+* Follow-Ups Due
+* Revenue Won
+* Mini pipeline columns:
+
+  * New
+  * Contacted
+  * Booked
+  * Won
+
+2. PROBLEM SECTION
+
+Headline:
+Leads Are Slipping Through The Cracks Every Day.
+
+Body copy:
+A customer calls.
+
+Nobody writes it down.
+
+A website form gets buried in an inbox.
+
+An Instagram message gets forgotten.
+
+A referral never gets followed up with.
+
+Not because you're bad at business.
+
+Because you're busy running it.
+
+Optional pain point cards:
+
+* Website forms get buried in email inboxes
+* Phone calls and walk-ins are not tracked
+* Instagram and Facebook leads get forgotten
+* Owners don’t know who followed up
+* Revenue gets lost because nobody owns the pipeline
+
+3. SOLUTION SECTION
+
+Headline:
+LeadEngine Gives Every Lead A Home.
+
+Body:
+Capture leads from:
+
+* Website forms
+* Phone calls
+* Walk-ins
+* Referrals
+* Google
+* Facebook
+* Instagram
+
+Then track them from first contact to paying customer.
+
+Short punchline:
+No spreadsheets.
+No sticky notes.
+No guessing.
+
+Feature cards:
+
+* Website forms
+* Manual lead entry
+* Pipeline tracking
+* Follow-up tasks
+* Lead source tracking
+* Revenue visibility
+* Workspace management
+* Activity timeline
+
+4. HOW IT WORKS SECTION
+
+Headline:
+How LeadEngine Works
+
+Step 1:
+Capture Every Opportunity
+
+Every lead enters LeadEngine, whether they came from your website, a phone call, Google, Instagram, a walk-in, or a referral.
+
+Step 2:
+Follow Up Consistently
+
+Know exactly who needs a call, text, quote, or follow-up.
+
+No more forgotten leads.
+
+Step 3:
+Grow Revenue
+
+See your pipeline, booked work, and revenue in one place.
+
+Know what's working and where customers are coming from.
+
+5. REVENUE SECTION
+
+Headline:
+If One Missed Lead Is Worth $500, How Many Are You Losing Every Month?
+
+Body:
+LeadEngine helps local businesses:
+
+* Respond faster
+* Follow up more consistently
+* Close more opportunities
+* Increase revenue from the leads they already have
+
+Make this section visually bold with a revenue/pipeline mockup or metric cards.
+
+6. USE CASES SECTION
+
+Headline:
+Built For Local Businesses That Live On Leads
+
+Use case cards:
+
+* Wellness Centers
+* Med Spas
+* Auto Repair Shops
+* Contractors
+* Pet Services
+* Salons
+* Service Businesses
+
+Supporting copy:
+If your business depends on calls, forms, referrals, or appointments, LeadEngine helps you manage them all in one place.
+
+Each card should mention relevant examples:
+
+* Wellness Centers: consultations, memberships, service inquiries
+* Med Spas: treatment inquiries, consultations, packages
+* Auto Repair Shops: repair calls, diagnostics, estimates
+* Contractors: quote requests, project inquiries, follow-ups
+* Pet Services: subscriptions, cleanups, appointments
+* Salons: appointments, service inquiries, rebooking
+* Service Businesses: forms, calls, referrals, walk-ins
+
+7. PRODUCT MODULES SECTION
+
+Headline:
+Everything Your Lead Follow-Up Process Needs In One Place
+
+Modules:
+
+* Leads
+* Pipeline
+* Workspaces
+* Follow-Ups
+* Revenue Dashboard
+* Forms
+* Reviews Soon
+* Automations Soon
+
+8. FINAL CTA SECTION
+
+Headline:
+Before You Spend More Money On Marketing, Make Sure You're Not Losing The Leads You Already Have.
+
+Body:
+Book a demo and see how LeadEngine can help your business capture more opportunities and convert more customers.
+
+Primary CTA:
+Book a Demo
+
+Secondary CTA:
+Sign In
+
+Book a Demo link:
+mailto:hello@novenworks.com?subject=LeadEngine%20Demo%20Request
+
+Sign In link:
+/login
+
+9. FOOTER
+
+LeadEngine by Novenworks
+Local Business Growth Platform
+
+Footer links:
+
+* Sign In → /login
+* Book a Demo → mailto:hello@novenworks.com?subject=LeadEngine%20Demo%20Request
+* Novenworks → https://www.novenworks.com
+
+Technical requirements:
+
+* Landing page must be fully responsive.
+* Desktop must feel premium and spacious.
+* Mobile must be clean and easy to scroll.
+* Use smooth hover states and subtle motion only if already available.
+* Do not add heavy animation libraries.
+* Do not touch existing dashboard, leads, pipeline, workspaces, settings, API, database, or auth code unless absolutely required for adding the public `/` route.
+* Keep login route separate.
+* Keep app authenticated routes protected.
+
+Testing:
+
+* Visit `/` logged out.
+* Confirm landing page appears.
+* Visit `/login`.
+* Confirm existing login screen appears.
+* Confirm visible demo account shows [demo@novenworks.com](mailto:demo@novenworks.com) / password123 only.
+* Login with [demo@novenworks.com](mailto:demo@novenworks.com) / password123.
+* Confirm `/dashboard` works.
+* Confirm unauthenticated users cannot access `/dashboard`.
+* Confirm landing page works on desktop and mobile.
+* Confirm existing dashboard, leads, pipeline, workspaces, settings still work exactly as before.
+
+Git:
+After successful testing:
+Commit and push with message:
+Add public LeadEngine landing page

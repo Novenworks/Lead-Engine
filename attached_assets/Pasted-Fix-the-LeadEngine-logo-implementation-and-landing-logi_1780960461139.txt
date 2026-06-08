@@ -1,0 +1,85 @@
+Fix the LeadEngine logo implementation and landing/login page branding.
+
+The current app logo is wrong. It is showing a simple boxed “E” icon. That is NOT the approved LeadEngine logo.
+
+Use the attached brand board as the exact visual reference.
+
+Approved logo direction:
+Option 3 — LE Monogram Final
+
+The logo should look like:
+
+* Large geometric blue “L” shape
+* White/gray horizontal “E” bars
+* Small blue circular accent inside the E area
+* Modern SaaS monogram
+* Premium, sharp, dark-mode friendly
+
+Do NOT use:
+
+* simple letter E icon
+* generic icon
+* shield icon
+* random node icon
+* cropped blurry version of the mockup
+
+Create clean production assets based on the attached reference:
+
+* SVG icon-only LE monogram
+* SVG horizontal lockup: LE monogram + LeadEngine + BY NOVENWORKS
+* SVG/favicon version that remains readable at 16x16 and 32x32
+
+Apply the correct LE monogram to:
+
+* Browser favicon
+* Login page
+* Landing page header
+* Sidebar
+* App metadata/title if applicable
+
+Logo text:
+LeadEngine
+BY NOVENWORKS
+
+Colors:
+
+* Electric blue: #2563EB
+* Deeper blue: #1D4ED8
+* Dark navy: #0B1220
+* Off white: #E2E8F0
+* White: #FFFFFF
+
+Also keep the routing rules:
+
+* `/` = public landing page
+* `/login` = existing login screen
+* `/dashboard` = protected app
+
+Do not modify:
+
+* database schema
+* authentication logic
+* dashboard functionality
+* leads functionality
+* pipeline functionality
+* workspaces functionality
+* settings functionality
+
+Also fix the visible demo account:
+Only show:
+[demo@novenworks.com](mailto:demo@novenworks.com)
+password123
+
+Do not show [admin@novenworks.com](mailto:admin@novenworks.com) as the public demo account.
+
+After implementation, test:
+
+* `/` logo displays correctly
+* `/login` logo displays correctly
+* sidebar logo displays correctly
+* favicon displays correctly
+* demo account displays as [demo@novenworks.com](mailto:demo@novenworks.com)
+* existing admin login still works
+
+Commit and push with message:
+Fix LeadEngine LE monogram branding

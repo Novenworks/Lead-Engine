@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Switch, Route, Router as WouterRouter, useLocation, Redirect } from "wouter";
+import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,6 +9,7 @@ import NotFound from "@/pages/not-found";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { MainLayout } from "@/components/Layout";
 import Login from "@/pages/Login";
+import Landing from "@/pages/Landing";
 import Dashboard from "@/pages/Dashboard";
 import Leads from "@/pages/Leads";
 import LeadDetail from "@/pages/LeadDetail";
@@ -63,9 +64,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/login" component={Login} />
-      <Route path="/">
-        <Redirect to="/dashboard" />
-      </Route>
+      <Route path="/" component={Landing} />
       <Route path="/dashboard" component={wrap(Dashboard)} />
       <Route path="/leads" component={wrap(Leads)} />
       <Route path="/leads/:id" component={wrap(LeadDetail)} />
