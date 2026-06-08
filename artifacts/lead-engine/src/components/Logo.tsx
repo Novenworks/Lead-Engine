@@ -1,29 +1,51 @@
+import { useId } from "react";
+
 interface LogoProps {
   size?: number;
   className?: string;
 }
 
+/**
+ * LE Monogram — Option 3 (Final)
+ *
+ * Shape breakdown (viewBox 0 0 100 100):
+ *   Top bar:    full width,  y 0–18   ← E's top tooth
+ *   L vertical: x 0–36,     y 18–80  ← wide L bar (36%) gives clear LE read
+ *   Middle bar: x 36–88,    y 44–60  ← E's middle tooth, slightly shorter
+ *   Bottom bar: full width,  y 80–100 ← L base + E bottom, angled corner
+ *
+ * Gaps (transparent, show dark background through):
+ *   Gap 1: x 36–100, y 18–44
+ *   Gap 2: x 36–100, y 60–80
+ */
 export function LEMark({ size = 32, className }: LogoProps) {
+  const uid = useId().replace(/:/g, "");
+  const gid = `le-g-${uid}`;
   return (
     <svg
       width={size}
-      height={Math.round(size * 112 / 100)}
-      viewBox="0 0 100 112"
+      height={size}
+      viewBox="0 0 100 100"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
-      {/* LE monogram: L vertical bar + 3 E bars with white-gap cutouts, angled bottom-right */}
+      <defs>
+        <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#2563EB" />
+          <stop offset="100%" stopColor="#1D4ED8" />
+        </linearGradient>
+      </defs>
       <path
-        d="M0,0 H100 V20 H18 V42 H90 V59 H18 V76 H100 L88,112 H0 Z"
-        fill="#2563EB"
+        d="M0,0 H100 V18 H36 V44 H88 V60 H36 V80 H100 L92,100 H0 Z"
+        fill={`url(#${gid})`}
       />
     </svg>
   );
 }
 
 export function LEMarkBadge({ size = 36 }: { size?: number }) {
-  const pad = size * 0.2;
+  const pad = Math.round(size * 0.18);
   const inner = size - pad * 2;
   return (
     <div

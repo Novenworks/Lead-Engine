@@ -1,6 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <rect width="32" height="32" rx="6" fill="#0B1220"/>
-  <g transform="translate(5,3) scale(0.22)">
-    <path d="M0,0 H100 V20 H18 V42 H90 V59 H18 V76 H100 L88,112 H0 Z" fill="#2563EB"/>
-  </g>
+  <defs>
+    <linearGradient id="fg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#1D4ED8"/>
+    </linearGradient>
+  </defs>
+  <path transform="translate(4,4) scale(0.24)"
+        d="M0,0 H100 V18 H36 V44 H88 V60 H36 V80 H100 L92,100 H0 Z"
+        fill="url(#fg)"/>
 </svg>
