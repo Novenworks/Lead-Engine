@@ -1,0 +1,234 @@
+Rebuild the LeadEngine public landing page from scratch.
+
+Do not patch the existing landing page.
+Do not reuse the current landing page layout.
+The current page is visually broken, too narrow, too vertical, and the logo does not blend with the design.
+
+IMPORTANT SAFETY RULES:
+Only replace the public landing page at `/`.
+Do NOT modify `/login`.
+Do NOT modify `/dashboard`.
+Do NOT modify auth.
+Do NOT modify database.
+Do NOT modify leads, pipeline, workspaces, settings, API, or protected app functionality.
+
+Create a new landing page component from scratch.
+
+DESIGN GOAL:
+LeadEngine should feel like a premium SaaS product worth $99–$299/month.
+
+Reference feel:
+
+* Linear
+* Stripe
+* Vercel
+* Attio
+* Growthstack
+* Arc Browser
+
+LAYOUT:
+
+* Full width page.
+* No narrow wrapper.
+* No mobile-looking desktop.
+* Max inner container: 1320px–1440px.
+* Hero should fill most of first screen.
+* Use spacious desktop layout.
+* Use single-column mobile layout only below tablet widths.
+
+IMPORTANT LOGO FIX:
+The current logo treatment looks bad on the dark background.
+
+Do not place the logo inside a harsh black rectangle.
+
+Use a clean transparent or blended logo treatment:
+
+* Use icon + LeadEngine wordmark directly on the page background.
+* No ugly boxed logo background.
+* If a background is needed, use subtle glass panel only.
+* Make logo visually blend with the dark navy landing page.
+* Header logo should feel integrated, not pasted on.
+
+HEADER:
+
+* Full width.
+* Transparent/glass nav.
+* Left: LeadEngine logo/wordmark.
+* Right: Sign In, Book a Demo.
+* Sticky optional, but if sticky, use subtle glass blur.
+
+HERO COPY:
+Eyebrow:
+LOCAL BUSINESS GROWTH PLATFORM
+
+Headline:
+The Operating System For Local Business Growth
+
+Subheadline:
+Capture leads. Track opportunities. Grow revenue.
+
+Supporting copy:
+From first inquiry to closed deal, LeadEngine gives local businesses complete visibility into their pipeline, follow-ups, and revenue.
+
+Buttons:
+
+* Book a Demo
+* See How It Works
+
+Hero right side:
+Create a custom product mockup, not a screenshot.
+Use:
+
+* Glass dashboard panel
+* Metric cards
+* Pipeline preview
+* Floating revenue cards
+* Blue glow behind mockup
+* Subtle gradient mesh
+
+Hero metrics:
+
+* Total Leads: 147
+* Pipeline Value: $89.4k
+* Follow-Ups Due: 12
+* Revenue Won: $32.1k
+
+SECTIONS:
+Rebuild these sections with premium spacing and large readable cards.
+
+1. Problem
+   Headline:
+   Most Local Businesses Don't Need More Leads.
+   They Need Better Follow-Up.
+
+Cards:
+
+* Website Forms Get Buried
+* Phone Calls Go Untracked
+* Referrals Get Forgotten
+* Messages Never Get Followed Up
+* Nobody Owns The Pipeline
+* Revenue Walks Away
+
+2. Solution
+   Headline:
+   Every Opportunity In One Place.
+
+Copy:
+LeadEngine gives your business a single place to capture leads, track follow-ups, manage opportunities, and understand what's driving revenue.
+
+Include source chips:
+Website Forms, Phone Calls, Walk-Ins, Google Business Profile, Facebook, Instagram, Referrals, Yelp
+
+Feature cards:
+
+* Lead Capture
+* Pipeline Tracking
+* Follow-Up Management
+* Revenue Visibility
+* Workspace Management
+* Activity Timeline
+
+3. How It Works
+   Headline:
+   Simple Enough To Use Every Day.
+   Powerful Enough To Grow With Your Business.
+
+Cards:
+
+* Capture Every Opportunity
+* Track Every Follow-Up
+* Grow Revenue
+
+4. Revenue
+   Headline:
+   The Fastest Way To Grow Revenue Isn't More Marketing.
+   It's Better Follow-Up.
+
+Cards:
+
+* Respond Faster
+* Follow Up More
+* Close More
+* Earn More
+
+5. Use Cases
+   Headline:
+   Built For Businesses That Depend On Leads.
+
+Cards:
+
+* Wellness Centers
+* Med Spas
+* Auto Repair Shops
+* Contractors
+* Pet Services
+* Salons
+* Local Service Businesses
+
+6. Product Modules
+   Headline:
+   Everything You Need To Manage Growth.
+
+Modules:
+
+* Leads
+* Pipeline
+* Workspaces
+* Follow-Ups
+* Revenue Dashboard
+* Forms
+* Reviews Coming Soon
+* Automations Coming Soon
+
+7. Final CTA
+   Headline:
+   Know Exactly Where Every Lead Stands.
+
+Copy:
+Track opportunities, manage follow-ups, and grow revenue from one platform built for local businesses.
+
+Buttons:
+
+* Book a Demo
+* Sign In
+
+VISUAL STYLE:
+
+* Dark navy background, not pure black.
+* Electric blue gradients.
+* Glassmorphism cards.
+* Soft borders.
+* Subtle glow.
+* Dotted/grid background.
+* Large typography.
+* Premium spacing.
+* No cramped card grids.
+* No tiny text.
+* No harsh logo blocks.
+* No generic admin template styling.
+
+RESPONSIVE:
+Desktop:
+
+* Use full viewport.
+* Hero and major sections should visually fill the width.
+* No huge empty right column.
+* No narrow page.
+
+Mobile:
+
+* Stack cleanly.
+* No horizontal overflow.
+* Keep cards readable.
+
+TEST:
+
+* `/` at 1440px.
+* `/` at 1920px.
+* `/` mobile.
+* `/login` still works.
+* `/dashboard` still works.
+
+Commit and push:
+Rebuild LeadEngine landing page
