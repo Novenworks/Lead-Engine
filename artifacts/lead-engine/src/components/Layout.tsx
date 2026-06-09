@@ -21,6 +21,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarProvider,
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
@@ -71,6 +72,7 @@ export function MainLayout({ children }: { children: ReactNode }) {
   const initials = user?.name?.charAt(0)?.toUpperCase() ?? "?";
 
   return (
+    <SidebarProvider>
     <div className="flex h-screen w-full overflow-hidden bg-background">
 
       {/* ── Desktop sidebar ── */}
@@ -192,5 +194,6 @@ export function MainLayout({ children }: { children: ReactNode }) {
         </nav>
       </main>
     </div>
+    </SidebarProvider>
   );
 }

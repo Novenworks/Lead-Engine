@@ -6,7 +6,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useGetMe, ApiError } from "@workspace/api-client-react";
 
 import NotFound from "@/pages/not-found";
-import { SidebarProvider } from "@/components/ui/sidebar";
 import { MainLayout } from "@/components/Layout";
 import Login from "@/pages/Login";
 import Landing from "@/pages/Landing";
@@ -82,11 +81,9 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <SidebarProvider>
-          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-            <Router />
-          </WouterRouter>
-        </SidebarProvider>
+        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+          <Router />
+        </WouterRouter>
         <Toaster />
       </TooltipProvider>
     </QueryClientProvider>
