@@ -1,8 +1,7 @@
-import markBadgeImg from "@assets/Opera_Snapshot_2026-06-08_190824_chatgpt.com_1780970995851.png";
-import markLargeImg from "@assets/Opera_Snapshot_2026-06-08_190833_chatgpt.com_1780970995851.png";
-import logoHorizontalImg from "@assets/Opera_Snapshot_2026-06-08_190917_chatgpt.com_1780970995850.png";
-import logoVerticalImg from "@assets/Opera_Snapshot_2026-06-08_190923_chatgpt.com_1780970995849.png";
-import markSmallImg from "@assets/Opera_Snapshot_2026-06-08_190929_chatgpt.com_1780970995847.png";
+const MARK_URL       = "/logos/le-mark-crop.png";
+const BADGE_URL      = "/logos/le-badge-crop.png";
+const HORIZONTAL_URL = "/logos/le-horizontal-crop.png";
+const VERTICAL_URL   = "/logos/le-vertical-crop.png";
 
 interface LogoProps {
   size?: number;
@@ -10,10 +9,9 @@ interface LogoProps {
 }
 
 export function LEMark({ size = 32, className }: LogoProps) {
-  const src = size <= 20 ? markSmallImg : markLargeImg;
   return (
     <img
-      src={src}
+      src={MARK_URL}
       width={size}
       height={size}
       style={{ display: "block", objectFit: "contain", flexShrink: 0 }}
@@ -27,7 +25,7 @@ export function LEMark({ size = 32, className }: LogoProps) {
 export function LEMarkBadge({ size = 36 }: { size?: number }) {
   return (
     <img
-      src={markBadgeImg}
+      src={BADGE_URL}
       width={size}
       height={size}
       style={{ display: "block", objectFit: "contain", flexShrink: 0 }}
@@ -49,7 +47,7 @@ export function LEWordmark({
   const height = compact ? 30 : 42;
   return (
     <img
-      src={logoHorizontalImg}
+      src={HORIZONTAL_URL}
       height={height}
       style={{ display: "block", objectFit: "contain", maxWidth: "100%" }}
       className={className}
@@ -68,7 +66,7 @@ export function LEVertical({
 }) {
   return (
     <img
-      src={logoVerticalImg}
+      src={VERTICAL_URL}
       height={height}
       style={{ display: "block", objectFit: "contain", maxWidth: "100%" }}
       className={className}
@@ -78,7 +76,7 @@ export function LEVertical({
   );
 }
 
-export const LogoIconBadge = LEMarkBadge;
-export const LogoWordmark = LEWordmark;
-export const LogoIcon = LEMark;
+export const LogoIconBadge  = LEMarkBadge;
+export const LogoWordmark   = LEWordmark;
+export const LogoIcon       = LEMark;
 export const LogoIconBadge2 = LEMarkBadge;
