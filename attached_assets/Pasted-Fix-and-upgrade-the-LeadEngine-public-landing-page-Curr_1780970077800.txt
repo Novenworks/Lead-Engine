@@ -1,0 +1,258 @@
+Fix and upgrade the LeadEngine public landing page. Current issue: the page is visually smushed and too narrow on desktop. It looks like a mobile layout inside a desktop viewport.
+
+IMPORTANT SAFETY RULES:
+Do NOT modify database schema.
+Do NOT modify authentication logic.
+Do NOT modify dashboard functionality.
+Do NOT modify leads functionality.
+Do NOT modify pipeline functionality.
+Do NOT modify workspaces functionality.
+Do NOT modify settings functionality.
+Do NOT refactor protected app routes.
+Only improve the public landing page at `/`.
+Keep `/login` and `/dashboard` working exactly as they are.
+
+Main goal:
+Make the landing page feel like a premium SaaS product worth paying for.
+
+Design references:
+Linear
+Stripe
+Vercel
+Attio
+Arc Browser
+Growthstack
+
+Style:
+
+* Full-width immersive desktop layout
+* Dark mode default
+* Premium electric blue gradients
+* Glassmorphism panels
+* Soft glow effects
+* Subtle grid/dot background
+* Large spacious sections
+* Better typography hierarchy
+* Subtle animations
+* Bigger product mockups
+* More breathing room
+* More visual depth
+
+Fix desktop layout:
+
+* Use full viewport width.
+* Content should not be trapped in a narrow column.
+* Max content width should be around 1200px–1400px.
+* Hero should use a true two-column desktop layout.
+* Left side: headline, copy, CTAs.
+* Right side: large immersive product preview.
+* Sections should feel spacious, not compressed.
+* Cards should be larger and more readable.
+* Increase vertical padding between sections.
+* Use responsive CSS properly for desktop, tablet, and mobile.
+
+Hero section:
+Headline:
+Stop Losing Customers You Already Paid To Get.
+
+Subheadline:
+LeadEngine helps local businesses capture every lead, follow up faster, and turn more inquiries into paying customers.
+
+Supporting copy:
+Most local businesses don't have a lead problem. They have a follow-up problem.
+
+Primary CTA:
+Book a Demo
+
+Secondary CTA:
+See How It Works
+
+Add immersive product preview on right:
+
+* Large glass dashboard mockup
+* Metric cards: Total Leads, Pipeline Value, Follow-Ups Due, Revenue Won
+* Mini pipeline columns: New, Contacted, Booked, Won
+* Add subtle floating/blurred gradient behind the mockup
+* Add soft glow/border
+
+Animation:
+
+* Hero text fades/slides in gently
+* Product mockup floats subtly or fades in
+* Metric cards can have soft hover lift
+* No heavy animation libraries unless already available
+
+Problem section:
+Make this more visually interesting.
+Use large headline and staggered pain cards.
+
+Headline:
+Leads Are Slipping Through The Cracks Every Day.
+
+Pain cards:
+
+* Website forms get buried in inboxes
+* Phone calls and walk-ins are not tracked
+* Instagram and Facebook leads get forgotten
+* Referrals never get followed up with
+* Owners don’t know who followed up
+* Revenue gets lost because nobody owns the pipeline
+
+Solution section:
+Headline:
+LeadEngine Gives Every Lead A Home.
+
+Use a large split layout:
+Left: copy and source chips
+Right: feature grid
+
+Source chips:
+Website Forms
+Phone Calls
+Walk-Ins
+Referrals
+Google
+Facebook
+Instagram
+Yelp
+
+Punchline:
+No spreadsheets.
+No sticky notes.
+No guessing.
+
+Feature cards:
+
+* Manual Lead Entry
+* Pipeline Tracking
+* Follow-Up Tasks
+* Lead Source Tracking
+* Revenue Visibility
+* Workspace Management
+
+How It Works section:
+Make the three steps premium and roomy.
+
+Cards:
+
+1. Capture Every Opportunity
+2. Follow Up Consistently
+3. Grow Revenue
+
+Each card should feel like a premium glass card with icon, number, and short copy.
+
+Revenue section:
+Make this a standout section with a strong visual.
+
+Headline:
+If One Missed Lead Is Worth $500, How Many Are You Losing Every Month?
+
+Add revenue impact cards:
+
+* Respond Faster
+* Follow Up More
+* Close More
+* Earn More
+
+Make this section feel bold, not tiny.
+
+Use cases section:
+Cards should be larger and more polished.
+
+Headline:
+Built For Local Businesses That Live On Leads
+
+Use cards:
+
+* Wellness Centers
+* Med Spas
+* Auto Repair Shops
+* Contractors
+* Pet Services
+* Salons
+* Local Service Businesses
+
+Product modules section:
+Use polished pill/grid layout.
+
+Headline:
+Everything Your Lead Follow-Up Process Needs In One Place
+
+Modules:
+
+* Leads
+* Pipeline
+* Workspaces
+* Follow-Ups
+* Revenue Dashboard
+* Forms
+* Reviews Soon
+* Automations Soon
+
+Final CTA:
+Make it full-width and premium.
+
+Headline:
+Before You Spend More Money On Marketing, Make Sure You're Not Losing The Leads You Already Have.
+
+Body:
+Book a demo and see how LeadEngine can help your business capture more opportunities and convert more customers.
+
+CTA:
+Book a Demo
+
+Secondary:
+Sign In
+
+Footer:
+Keep clean and spacious.
+
+Important responsiveness:
+Desktop:
+
+* Full-width premium layout
+* No smushed content
+* No tiny sections
+* Hero mockup large and visible
+
+Tablet:
+
+* Two-column becomes balanced stacked layout if needed
+
+Mobile:
+
+* Single column
+* All cards readable
+* No horizontal overflow
+* Hero mockup scales cleanly
+* CTAs stack if needed
+
+Visual QA checklist:
+
+* At 1440px, page should feel spacious and premium.
+* At 1920px, page should not be stuck in a narrow column.
+* At mobile width, page should remain clean and readable.
+* Top nav should not feel cramped.
+* Hero should look impressive above the fold.
+* Product mockup should be large enough to understand.
+
+Preserve:
+
+* `/login`
+* `/dashboard`
+* existing authenticated app
+* existing login behavior
+* existing logo assets
+* existing favicon
+
+Testing:
+
+* Visit `/` on desktop.
+* Visit `/` on mobile viewport.
+* Visit `/login`.
+* Confirm login still works.
+* Confirm dashboard still works.
+* Confirm unauthenticated dashboard protection still works.
+
+Commit and push with message:
+Improve LeadEngine landing page premium layout
