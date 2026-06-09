@@ -331,7 +331,7 @@ function Nav({ isLoggedIn }: { isLoggedIn: boolean }) {
 ───────────────────────────────────────────────────────── */
 function Hero({ isLoggedIn }: { isLoggedIn: boolean }) {
   return (
-    <section className="ld-hero-p" style={{ position:"relative", overflow:"visible", padding:"144px 48px 164px", background:"linear-gradient(165deg, #07101e 0%, #091626 55%, #05101d 100%)", minHeight:"calc(100vh - 70px)", display:"flex", flexDirection:"column", justifyContent:"center" }}>
+    <section className="ld-hero-p" style={{ position:"relative", overflow:"visible", padding:"144px 48px 164px", background:"linear-gradient(165deg, #07101e 0%, #091626 55%, #05101d 100%)" }}>
       {/* Background atmosphere */}
       <Blob s={{ width:1100, height:1100, top:-350, right:-320, background:"radial-gradient(circle, rgba(37,99,235,.13) 0%, transparent 58%)" }} />
       <Blob s={{ width:600, height:600, bottom:-200, left:-150, background:"radial-gradient(circle, rgba(99,102,241,.08) 0%, transparent 65%)" }} />
