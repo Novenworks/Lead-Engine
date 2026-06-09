@@ -1,0 +1,395 @@
+Fix the LeadEngine public landing page layout, premium SaaS presentation, and marketing copy.
+
+IMPORTANT SAFETY RULES:
+Only modify the public landing page at `/` and landing page styling/components.
+Do NOT modify database schema.
+Do NOT modify authentication logic.
+Do NOT modify dashboard functionality.
+Do NOT modify leads functionality.
+Do NOT modify pipeline functionality.
+Do NOT modify workspaces functionality.
+Do NOT modify settings functionality.
+Do NOT refactor protected app routes.
+Keep `/login` and `/dashboard` working exactly as they are.
+
+CURRENT PROBLEM:
+The landing page is rendering like a mobile/tablet layout on desktop.
+It is compressed, narrow, overly vertical, and only uses a small portion of the desktop viewport.
+It does not feel like a premium SaaS product yet.
+The copy also needs to position LeadEngine as a Local Business Growth Platform, not a generic CRM.
+
+CRITICAL LAYOUT FIX:
+
+* Use full viewport width.
+* Remove any global max-width that is constraining the whole page.
+* Use full-width sections.
+* Use inner containers with max-width 1280px–1400px.
+* Center containers correctly.
+* Use true desktop grid layouts.
+* Use 2-column layouts on desktop.
+* Only stack layouts on tablet/mobile.
+* Increase horizontal spacing.
+* Increase vertical breathing room.
+* Avoid tiny cards and cramped text.
+* Page should not look like a mobile website stretched onto desktop.
+
+DESKTOP REQUIREMENTS:
+At 1440px and wider:
+
+* Hero max width: 1400px.
+* Section max width: 1280px–1400px.
+* Hero should feel large, immersive, and premium.
+* Hero should use a 2-column layout:
+
+  * Left: headline, subheadline, CTAs.
+  * Right: large product mockup/dashboard preview.
+* Product mockup should be large enough to understand.
+* Cards should be spacious and readable.
+* Section spacing should feel similar to Stripe, Linear, Vercel, Attio, Arc Browser, and Growthstack.
+
+HERO IMPROVEMENTS:
+Current hero is too basic: text left, small screenshot right.
+
+Upgrade it to feel like a $99–$299/mo SaaS product.
+
+Add:
+
+* Animated gradient mesh background.
+* Subtle dotted/grid background.
+* Glassmorphism dashboard preview.
+* Floating stat cards.
+* Floating pipeline cards.
+* Soft blue glow behind the product mockup.
+* Larger typography.
+* Subtle motion/parallax if already available or easy with CSS.
+* Premium hover states.
+
+HERO COPY:
+Eyebrow:
+LOCAL BUSINESS GROWTH PLATFORM
+
+Headline:
+The Operating System For Local Business Growth
+
+Subheadline:
+Capture leads. Track opportunities. Grow revenue.
+
+Supporting Copy:
+From first inquiry to closed deal, LeadEngine gives local businesses complete visibility into their pipeline, follow-ups, and revenue.
+
+Primary CTA:
+Book a Demo
+
+Secondary CTA:
+See How It Works
+
+If logged in:
+Go To Dashboard
+
+Hero visual should communicate:
+
+* Revenue
+* Opportunities
+* Visibility
+* Growth
+
+Not just CRM software.
+
+Hero metric cards:
+
+* Total Leads: 147
+* Pipeline Value: $89.4k
+* Follow-Ups Due: 12
+* Revenue Won: $32.1k
+
+Hero pipeline preview:
+Columns:
+
+* New
+* Contacted
+* Booked
+* Won
+
+Make the hero preview look like a polished fake app preview, not a tiny screenshot.
+
+SECTION-WIDE VISUAL UPGRADES:
+For every landing page section:
+
+* Increase width and spacing.
+* Use larger headings.
+* Use stronger visual hierarchy.
+* Use larger cards.
+* Use premium dark panels.
+* Add subtle borders and glows.
+* Add hover lift on cards.
+* Use gradients tastefully.
+* Avoid text being too small.
+* Avoid sections feeling like narrow mobile blocks.
+
+PROBLEM SECTION:
+Headline:
+Most Local Businesses Don't Need More Leads.
+They Need Better Follow-Up.
+
+Body Copy:
+Every day, potential customers slip through the cracks.
+
+A phone call never gets returned.
+
+A website inquiry gets buried in an inbox.
+
+An Instagram message gets forgotten.
+
+A referral never gets followed up with.
+
+Not because business owners don't care.
+
+Because they're busy running the business.
+
+Problem Cards:
+
+* Website Forms Get Buried
+* Phone Calls Go Untracked
+* Referrals Get Forgotten
+* Messages Never Get Followed Up
+* Nobody Owns The Pipeline
+* Revenue Walks Away
+
+Make this section immersive and readable with a wide card grid.
+
+SOLUTION SECTION:
+Use a wide 2-column desktop layout.
+
+Headline:
+Every Opportunity In One Place.
+
+Body Copy:
+LeadEngine gives your business a single place to capture leads, track follow-ups, manage opportunities, and understand what's driving revenue.
+
+Whether a lead comes from your website, Google, a phone call, Instagram, or a referral, it enters the same system.
+
+No spreadsheets.
+
+No sticky notes.
+
+No guessing.
+
+Lead Sources:
+
+* Website Forms
+* Phone Calls
+* Walk-Ins
+* Google Business Profile
+* Facebook
+* Instagram
+* Referrals
+* Yelp
+
+Feature Cards:
+
+* Lead Capture
+* Pipeline Tracking
+* Follow-Up Management
+* Revenue Visibility
+* Workspace Management
+* Activity Timeline
+
+HOW IT WORKS:
+Headline:
+Simple Enough To Use Every Day.
+Powerful Enough To Grow With Your Business.
+
+Use three large premium cards in a row on desktop.
+
+Step 1:
+Capture Every Opportunity
+
+Automatically capture leads from forms or add them manually from calls, referrals, walk-ins, and messages.
+
+Step 2:
+Track Every Follow-Up
+
+Know exactly who needs a call, quote, appointment, or follow-up.
+
+Never wonder where a lead stands.
+
+Step 3:
+Grow Revenue
+
+See your pipeline, follow-up activity, and revenue opportunities in one place.
+
+Use large card numbers, icons, and concise copy.
+
+REVENUE SECTION:
+Make it a standout full-width premium section.
+
+Headline:
+The Fastest Way To Grow Revenue Isn't More Marketing.
+It's Better Follow-Up.
+
+Body Copy:
+Most businesses focus on getting more leads.
+
+The businesses that grow focus on converting more of the leads they already have.
+
+LeadEngine helps you:
+
+* Respond Faster
+* Follow Up Consistently
+* Book More Appointments
+* Close More Opportunities
+* Increase Revenue
+
+Use large revenue impact cards:
+
+* Respond Faster
+* Follow Up More
+* Close More
+* Earn More
+
+This section should feel bold and high-conviction, not small.
+
+USE CASES:
+Use a spacious card grid.
+
+Headline:
+Built For Businesses That Depend On Leads.
+
+Supporting Copy:
+If customers call, submit forms, request quotes, schedule appointments, or send messages, LeadEngine helps you track every opportunity from first contact to closed deal.
+
+Industry Cards:
+
+* Wellness Centers
+* Med Spas
+* Auto Repair Shops
+* Contractors
+* Pet Services
+* Salons
+* Local Service Businesses
+
+PRODUCT MODULES:
+Use polished module cards or pills, not tiny cramped pills.
+
+Headline:
+Everything You Need To Manage Growth.
+
+Modules:
+
+* Leads
+* Pipeline
+* Workspaces
+* Follow-Ups
+* Revenue Dashboard
+* Forms
+* Reviews (Coming Soon)
+* Automations (Coming Soon)
+
+FINAL CTA:
+Make this section feel like a true SaaS closing section with a gradient/glass container.
+
+Headline:
+Know Exactly Where Every Lead Stands.
+
+Body Copy:
+Stop guessing.
+
+Track opportunities, manage follow-ups, and grow revenue from one platform built for local businesses.
+
+Primary CTA:
+Book a Demo
+
+Secondary CTA:
+Sign In
+
+OVERALL TONE:
+Write and present the page like:
+
+* Stripe
+* Linear
+* Vercel
+* Attio
+* Arc Browser
+* Growthstack
+
+Avoid:
+
+* Generic CRM language
+* Corporate buzzwords
+* "Customer relationship management"
+* "Lead management solution"
+
+Focus on:
+
+* Growth
+* Revenue
+* Visibility
+* Opportunities
+* Follow-Up
+* Simplicity
+* Local Business Owners
+
+The page should feel like a premium growth platform, not a CRM.
+
+RESPONSIVE REQUIREMENTS:
+Desktop:
+
+* Full-width immersive layout.
+* No smushed/narrow layout.
+* No excessive empty black space on the right because content is trapped in a small container.
+* Hero and major sections should use 1200px–1400px width.
+
+Tablet:
+
+* Balanced stacked layout.
+
+Mobile:
+
+* Clean single column.
+* No horizontal overflow.
+* Product mockup scales down.
+* Cards remain readable.
+* CTAs stack if needed.
+
+ANIMATION REQUIREMENTS:
+Use lightweight CSS only if possible.
+
+Add:
+
+* Fade/slide-in on hero elements.
+* Subtle floating effect on hero product mockup.
+* Hover lift on cards.
+* Soft glow hover on CTA buttons.
+
+Do not add heavy animation libraries.
+
+QUALITY BAR:
+The landing page should feel like:
+
+* premium SaaS
+* local business growth platform
+* polished enough to show a paying client
+* visually closer to Growthstack, Linear, Stripe, Vercel, Attio
+
+It should NOT feel like:
+
+* a mobile layout on desktop
+* a generic admin template
+* a narrow landing page
+* a basic dashboard screenshot
+
+TESTING:
+After changes:
+
+* Visit `/` at 1440px desktop.
+* Visit `/` at 1920px desktop.
+* Visit `/` mobile viewport.
+* Confirm content uses the viewport properly.
+* Confirm no horizontal overflow.
+* Confirm `/login` still works.
+* Confirm `/dashboard` still works.
+* Confirm protected routes still work.
+
+Git:
+Commit and push with message:
+Fix LeadEngine landing page layout and growth platform copy
