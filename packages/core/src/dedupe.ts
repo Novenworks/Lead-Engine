@@ -65,8 +65,11 @@ export function buildIdentities(input: IdentityInput): IdentityValue[] {
 
   if (input.address) {
     const normalized = normalizeAddress(input.address);
-    // A city-only "address" is not identifying; require a street line.
-    if (normalized && (input.address.line1 ?? "").trim().length > 0) {
+    // Require a street line containing a number. "Redlands, CA" is a place,
+    // not an address: without the digit check, every business in a town that
+    // was entered without a street would share one identity and merge.
+    const line1 = (input.address.line1 ?? "").trim();
+    if (normalized && line1.length > 0 && /\d/.test(line1)) {
       identities.push({ kind: "ADDRESS_HASH", namespace: "", value: addressHash(normalized) });
     }
   }

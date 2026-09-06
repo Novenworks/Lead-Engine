@@ -114,6 +114,17 @@ export const scoringConfigSchema = z.object({
    * Below this, rating scores a flat neutral value.
    */
   minReviewsForRating: z.number().int().default(10),
+
+  /**
+   * Minimum Business Strength (of 20) before the engine will suggest QUALIFIED.
+   *
+   * Without this, a tiny business with a bad website clears the threshold on
+   * website opportunity alone — and a business with no proven customer base
+   * usually cannot buy. It caps the verdict, never the score: the website
+   * opportunity is still reported honestly, the prospect just lands in REVIEW
+   * instead of QUALIFIED. Set to 0 to disable the gate.
+   */
+  minBusinessStrengthToQualify: z.number().int().min(0).max(20).default(8),
 });
 
 export type ScoringConfig = z.infer<typeof scoringConfigSchema>;

@@ -1,0 +1,11 @@
+<!--
+  TEMPORARY app icon: the same placeholder radar mark as components/wordmark.tsx.
+  The permanent LeadEngine logo has not been approved. Replace both together.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32">
+  <rect width="24" height="24" rx="5" fill="#0b0f14" />
+  <circle cx="12" cy="12" r="8" fill="none" stroke="#3a4756" stroke-width="1.5" />
+  <circle cx="12" cy="12" r="4" fill="none" stroke="#3a4756" stroke-width="1.5" />
+  <path d="M12 12 L18.5 9" stroke="#b6e02f" stroke-width="2" stroke-linecap="round" />
+  <circle cx="16" cy="8.5" r="2" fill="#b6e02f" />
+</svg>

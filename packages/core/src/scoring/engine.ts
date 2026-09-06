@@ -611,15 +611,35 @@ export function scoreProspect(
     100,
   );
 
+  // A weak business with a terrible website can otherwise clear the threshold
+  // on website opportunity alone. Opportunity is only worth what the business
+  // is worth, so hold those in REVIEW rather than qualifying them.
+  const understrength =
+    config.minBusinessStrengthToQualify > 0 &&
+    strength.score < config.minBusinessStrengthToQualify;
+
+  if (understrength) {
+    push({
+      dimension: "DISQUALIFIER",
+      key: "business_strength_gate",
+      label: "Not enough business evidence",
+      points: 0,
+      maxPoints: 0,
+      reason: `Business strength is ${strength.score} of ${DIMENSION_MAX.BUSINESS_STRENGTH}, below the ${config.minBusinessStrengthToQualify} needed to qualify. The website opportunity may be real, but there is not yet evidence this business is established enough to be worth the effort. Held for review rather than qualified.`,
+      signalTypes: ["GOOGLE_REVIEW_COUNT", "GOOGLE_RATING"],
+      sortOrder: 91,
+    });
+  }
+
   const unique = [...new Set(disqualifiers)];
   let suggestedQualification: Qualification;
   if (unique.length > 0) {
     suggestedQualification = "DISQUALIFIED";
-  } else if (total >= config.qualifyThreshold) {
-    suggestedQualification = "QUALIFIED";
   } else if (total < config.reviewFloor) {
     suggestedQualification = "DISQUALIFIED";
     unique.push("NO_RELEVANT_OPPORTUNITY");
+  } else if (total >= config.qualifyThreshold && !understrength) {
+    suggestedQualification = "QUALIFIED";
   } else {
     suggestedQualification = "REVIEW";
   }

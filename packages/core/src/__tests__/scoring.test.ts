@@ -234,3 +234,65 @@ describe("factsFromSignals", () => {
     expect(built.websiteReachable).toBe(false);
   });
 });
+
+describe("opportunity is only worth what the business is worth", () => {
+  it("holds a weak business with a terrible site in review, not qualified", () => {
+    // 3.9 stars from 7 reviews: almost no evidence of an established business.
+    const result = scoreProspect(
+      facts({
+        rating: 3.9,
+        reviewCount: 7,
+        usesHttps: false,
+        hasViewportMeta: false,
+        hasContactLink: false,
+        hasBookingLink: false,
+        hasPhoneLink: false,
+        hasTitle: false,
+        hasMetaDescription: false,
+        hasPublicEmail: false,
+      }),
+    );
+
+    // The website opportunity is real and still reported honestly.
+    expect(result.websiteOpportunityScore).toBeGreaterThan(30);
+    // But the verdict is held back, with a visible reason.
+    expect(result.suggestedQualification).toBe("REVIEW");
+    expect(result.disqualifiers).toEqual([]);
+    const gate = result.components.find((c) => c.key === "business_strength_gate");
+    expect(gate?.reason).toContain("below the");
+  });
+
+  it("still qualifies a strong business with the same weak site", () => {
+    const result = scoreProspect(
+      facts({
+        rating: 4.9,
+        reviewCount: 384,
+        usesHttps: false,
+        hasViewportMeta: false,
+        hasContactLink: false,
+        hasBookingLink: false,
+        hasPhoneLink: false,
+      }),
+    );
+    expect(result.suggestedQualification).toBe("QUALIFIED");
+    expect(result.components.find((c) => c.key === "business_strength_gate")).toBeUndefined();
+  });
+
+  it("the gate can be turned off", () => {
+    const result = scoreProspect(
+      facts({
+        rating: 3.9,
+        reviewCount: 7,
+        usesHttps: false,
+        hasViewportMeta: false,
+        hasContactLink: false,
+        hasBookingLink: false,
+        hasPhoneLink: false,
+        hasTitle: false,
+        hasMetaDescription: false,
+      }),
+      { ...DEFAULT_SCORING_CONFIG, minBusinessStrengthToQualify: 0 },
+    );
+    expect(result.suggestedQualification).toBe("QUALIFIED");
+  });
+});

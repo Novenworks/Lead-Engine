@@ -41,6 +41,30 @@ describe("buildIdentities", () => {
     expect(identities.find((i) => i.kind === "ADDRESS_HASH")).toBeUndefined();
   });
 
+  it("does not treat a street line without a number as identifying", () => {
+    // Regression: a manual entry with no street address once produced a line1
+    // of "Redlands", so every address-less business in that city collapsed
+    // into a single record.
+    const identities = buildIdentities({
+      address: { line1: "Redlands", city: "Redlands", region: "CA" },
+    });
+    expect(identities.find((i) => i.kind === "ADDRESS_HASH")).toBeUndefined();
+  });
+
+  it("two address-less businesses in the same city share no identity", () => {
+    const a = buildIdentities({ address: { city: "Redlands", region: "CA" } });
+    const b = buildIdentities({ address: { city: "Redlands", region: "CA" } });
+    expect(a).toEqual([]);
+    expect(b).toEqual([]);
+  });
+
+  it("still identifies a real street address", () => {
+    const identities = buildIdentities({
+      address: { line1: "418 W State St", city: "Redlands", region: "CA" },
+    });
+    expect(identities.find((i) => i.kind === "ADDRESS_HASH")).toBeDefined();
+  });
+
   it("agrees on the same address written two ways", () => {
     const a = buildIdentities({ address: { line1: "1290 East Cooley Drive", city: "Colton", region: "CA" } });
     const b = buildIdentities({ address: { line1: "1290 E Cooley Dr", city: "Colton", region: "CA" } });

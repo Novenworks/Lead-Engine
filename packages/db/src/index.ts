@@ -15,14 +15,34 @@ function create(): PrismaClient {
   if (!connectionString) {
     throw new Error("DATABASE_URL is not set. Copy .env.example to .env and fill it in.");
   }
-  return new PrismaClient({
+  const client = new PrismaClient({
     adapter: new PrismaPg({ connectionString }),
     log: process.env.PRISMA_LOG === "query" ? ["query", "warn", "error"] : ["warn", "error"],
   });
+  if (process.env.NODE_ENV !== "production") globalThis.__leadenginePrisma = client;
+  return client;
 }
 
-export const prisma: PrismaClient = globalThis.__leadenginePrisma ?? create();
+let instance: PrismaClient | undefined;
 
-if (process.env.NODE_ENV !== "production") {
-  globalThis.__leadenginePrisma = prisma;
+function client(): PrismaClient {
+  instance ??= globalThis.__leadenginePrisma ?? create();
+  return instance;
 }
+
+/**
+ * The shared Prisma client.
+ *
+ * Construction is deferred to first use rather than to module load. ESM
+ * hoists imports above statements, so an eagerly-created client would read
+ * DATABASE_URL before a script's `dotenv` call had run — which is exactly the
+ * kind of ordering bug that only shows up in one entry point.
+ */
+export const prisma: PrismaClient = new Proxy({} as PrismaClient, {
+  get(_target, property, receiver) {
+    return Reflect.get(client(), property, receiver);
+  },
+  has(_target, property) {
+    return Reflect.has(client(), property);
+  },
+});
