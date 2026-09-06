@@ -159,10 +159,15 @@ they skip rather than silently pass.
 
 ```bash
 createdb leadengine_test
-export TEST_DATABASE_URL="postgresql://postgres:postgres@127.0.0.1:5432/leadengine_test"
-DATABASE_URL="$TEST_DATABASE_URL" pnpm --filter @leadengine/db exec prisma migrate deploy
+
+# Set TEST_DATABASE_URL in .env — see .env.example for the shape.
+# It must point at a throwaway database; the suites truncate what they create.
+pnpm --filter @leadengine/db exec prisma migrate deploy
 pnpm test
 ```
+
+`vitest.setup.ts` reads `.env` and points `DATABASE_URL` at `TEST_DATABASE_URL`,
+so the suites can never touch a development database.
 
 Covered: normalization, deduplication, SSRF blocking (including redirect
 re-validation against a real server), HTML extraction, agency-credit detection,

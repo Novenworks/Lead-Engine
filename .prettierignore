@@ -2,5 +2,12 @@ pnpm-lock.yaml
 **/.next/**
 **/dist/**
 **/node_modules/**
+
+# Generated code is not ours to format. The Prisma client is regenerated on
+# every install and in CI, so formatting it would fail the check on any clean
+# checkout — and rewriting it locally would just mask that.
+packages/db/src/generated/**
 packages/db/prisma/migrations/**
+
+# Archived documentation from the superseded inbound-CRM product.
 docs/legacy/**
