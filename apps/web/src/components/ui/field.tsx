@@ -1,5 +1,10 @@
 import { cn } from "@/lib/cn";
-import type { InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from "react";
+import type {
+  InputHTMLAttributes,
+  ReactNode,
+  SelectHTMLAttributes,
+  TextareaHTMLAttributes,
+} from "react";
 
 const CONTROL =
   "w-full rounded-md border border-paper-300 bg-white px-2.5 py-1.5 text-sm text-ink-900 " +

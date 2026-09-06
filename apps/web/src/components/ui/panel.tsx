@@ -45,7 +45,11 @@ export function EmptyState({
   tone?: "neutral" | "warn" | "bad";
 }) {
   const border =
-    tone === "warn" ? "border-warn-500/40 bg-warn-100" : tone === "bad" ? "border-bad-500/40 bg-bad-100" : "border-paper-300 bg-paper-50";
+    tone === "warn"
+      ? "border-warn-500/40 bg-warn-100"
+      : tone === "bad"
+        ? "border-bad-500/40 bg-bad-100"
+        : "border-paper-300 bg-paper-50";
   return (
     <div className={cn("rounded-panel border border-dashed px-4 py-8 text-center", border)}>
       <p className="text-sm font-semibold text-ink-900">{title}</p>

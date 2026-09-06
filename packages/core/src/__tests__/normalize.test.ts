@@ -17,7 +17,9 @@ describe("normalizeBusinessName", () => {
   });
 
   it("treats & and 'and' as the same token", () => {
-    expect(normalizeBusinessName("Summit HVAC & Air")).toBe(normalizeBusinessName("Summit HVAC and Air"));
+    expect(normalizeBusinessName("Summit HVAC & Air")).toBe(
+      normalizeBusinessName("Summit HVAC and Air"),
+    );
   });
 
   it("strips accents", () => {
@@ -81,8 +83,18 @@ describe("normalizePhone", () => {
 
 describe("normalizeAddress", () => {
   it("folds street abbreviations so the same address agrees", () => {
-    const a = normalizeAddress({ line1: "1290 East Cooley Drive", city: "Colton", region: "CA", postalCode: "92324" });
-    const b = normalizeAddress({ line1: "1290 E Cooley Dr", city: "Colton", region: "CA", postalCode: "92324" });
+    const a = normalizeAddress({
+      line1: "1290 East Cooley Drive",
+      city: "Colton",
+      region: "CA",
+      postalCode: "92324",
+    });
+    const b = normalizeAddress({
+      line1: "1290 E Cooley Dr",
+      city: "Colton",
+      region: "CA",
+      postalCode: "92324",
+    });
     expect(a).toBe(b);
     expect(addressHash(a!)).toBe(addressHash(b!));
   });

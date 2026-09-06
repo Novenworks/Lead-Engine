@@ -1,7 +1,12 @@
 import Link from "next/link";
 import { prisma } from "@leadengine/db";
 import { requireWorkspace } from "@/lib/workspace";
-import { listProspects, matrixPoints, parseProspectFilters, workspaceCounts } from "@/server/queries";
+import {
+  listProspects,
+  matrixPoints,
+  parseProspectFilters,
+  workspaceCounts,
+} from "@/server/queries";
 import { PageHeader } from "@/components/app-shell";
 import { Panel, EmptyState } from "@/components/ui/panel";
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +18,9 @@ import { ProspectTable } from "./table";
 
 export const dynamic = "force-dynamic";
 
-function flatten(params: Record<string, string | string[] | undefined>): Record<string, string | undefined> {
+function flatten(
+  params: Record<string, string | string[] | undefined>,
+): Record<string, string | undefined> {
   const out: Record<string, string | undefined> = {};
   for (const [key, value] of Object.entries(params)) {
     if (typeof value === "string" && value.length > 0) out[key] = value;

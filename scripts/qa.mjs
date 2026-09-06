@@ -80,10 +80,9 @@ async function checkPage(page, target, viewport) {
 
 // This environment ships a pinned Chromium build that may not match the
 // installed Playwright's expected revision, so dial it directly.
-const executablePath = process.env.QA_CHROMIUM_PATH ?? "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
-const browser = await chromium.launch(
-  existsSync(executablePath) ? { executablePath } : {},
-);
+const executablePath =
+  process.env.QA_CHROMIUM_PATH ?? "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
+const browser = await chromium.launch(existsSync(executablePath) ? { executablePath } : {});
 await mkdir(OUT, { recursive: true });
 
 for (const viewport of VIEWPORTS) {
@@ -106,4 +105,6 @@ if (failures.length > 0) {
   for (const failure of failures) console.error(`  ✕ ${failure}`);
   process.exit(1);
 }
-console.log(`\nQA passed: ${PAGES.length} pages × ${VIEWPORTS.length} viewports, no overflow or errors.`);
+console.log(
+  `\nQA passed: ${PAGES.length} pages × ${VIEWPORTS.length} viewports, no overflow or errors.`,
+);

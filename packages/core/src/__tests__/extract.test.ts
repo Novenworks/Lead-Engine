@@ -64,14 +64,20 @@ describe("extractObservations", () => {
   });
 
   it("fingerprints common platforms", () => {
-    const wp = extractObservations(page(`<html><body><link href="/wp-content/themes/x/a.css"></body></html>`));
+    const wp = extractObservations(
+      page(`<html><body><link href="/wp-content/themes/x/a.css"></body></html>`),
+    );
     expect(wp.cmsHint).toBe("WordPress");
-    const shopify = extractObservations(page(`<html><body><script src="https://cdn.shopify.com/s/x.js"></script></body></html>`));
+    const shopify = extractObservations(
+      page(`<html><body><script src="https://cdn.shopify.com/s/x.js"></script></body></html>`),
+    );
     expect(shopify.cmsHint).toBe("Shopify");
   });
 
   it("flags pages that need a browser to render", () => {
-    const spa = extractObservations(page(`<html><body><div id="root"></div><script>var __NEXT_DATA__={}</script></body></html>`));
+    const spa = extractObservations(
+      page(`<html><body><div id="root"></div><script>var __NEXT_DATA__={}</script></body></html>`),
+    );
     expect(spa.renderRequired).toBe(true);
   });
 });
@@ -130,7 +136,11 @@ describe("agency credit detection", () => {
 describe("observationsToSignals", () => {
   it("always emits boolean signals so 'checked and absent' differs from 'never checked'", () => {
     const fetched = page(WEAK_SITE);
-    const signals = observationsToSignals(fetched, extractObservations(fetched), "https://cedarpeak.example/");
+    const signals = observationsToSignals(
+      fetched,
+      extractObservations(fetched),
+      "https://cedarpeak.example/",
+    );
     const byType = new Map(signals.map((s) => [s.type, s]));
 
     expect(byType.get("WEBSITE_REACHABLE")?.booleanValue).toBe(true);
@@ -143,7 +153,11 @@ describe("observationsToSignals", () => {
 
   it("emits DOMAIN_REDIRECT when the final domain differs from the original", () => {
     const fetched = page(GOOD_SITE, "https://newcedarpeak.example/");
-    const signals = observationsToSignals(fetched, extractObservations(fetched), "https://cedarpeak.example/");
+    const signals = observationsToSignals(
+      fetched,
+      extractObservations(fetched),
+      "https://cedarpeak.example/",
+    );
     const redirect = signals.find((s) => s.type === "DOMAIN_REDIRECT");
     expect(redirect?.value).toBe("newcedarpeak.example");
   });

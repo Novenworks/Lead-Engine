@@ -75,17 +75,9 @@ export const DISQUALIFICATION_REASONS = [
 export type DisqualificationReason = (typeof DISQUALIFICATION_REASONS)[number];
 
 export type ScoreDimension =
-  | "BUSINESS_FIT"
-  | "BUSINESS_STRENGTH"
-  | "WEBSITE_OPPORTUNITY"
-  | "REACHABILITY"
-  | "DISQUALIFIER";
+  "BUSINESS_FIT" | "BUSINESS_STRENGTH" | "WEBSITE_OPPORTUNITY" | "REACHABILITY" | "DISQUALIFIER";
 
-export type IdentityKind =
-  | "PROVIDER_PLACE_ID"
-  | "ROOT_DOMAIN"
-  | "PHONE_E164"
-  | "ADDRESS_HASH";
+export type IdentityKind = "PROVIDER_PLACE_ID" | "ROOT_DOMAIN" | "PHONE_E164" | "ADDRESS_HASH";
 
 /** A single observed fact, as produced by a provider or the website fetcher. */
 export interface SignalInput {

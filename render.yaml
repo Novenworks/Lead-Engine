@@ -1,0 +1,41 @@
+# Render Background Worker for LeadEngine.
+#
+# The worker owns everything that touches the open internet: fetching prospect
+# homepages behind the SSRF guard, capturing screenshots, bulk scoring and
+# retrying integration handoffs. The web app only enqueues.
+services:
+  - type: worker
+    name: leadengine-worker
+    runtime: node
+    plan: starter
+    region: oregon
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @leadengine/db run generate
+    startCommand: pnpm --filter @leadengine/worker run start
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      # Set in the Render dashboard; never commit a value.
+      - key: DATABASE_URL
+        sync: false
+      - key: WORKER_POLL_INTERVAL_MS
+        value: "2000"
+      - key: WORKER_CONCURRENCY
+        value: "2"
+      - key: SCREENSHOT_PROVIDER
+        value: none
+      - key: URLBOX_API_KEY
+        sync: false
+      - key: URLBOX_API_SECRET
+        sync: false
+      - key: SNAPSAVE_API_URL
+        sync: false
+      - key: SNAPSAVE_API_TOKEN
+        sync: false
+      - key: AUDIT_WORKSPACE_API_URL
+        sync: false
+      - key: AUDIT_WORKSPACE_API_TOKEN
+        sync: false
+      - key: DEMO_FACTORY_API_URL
+        sync: false
+      - key: DEMO_FACTORY_API_TOKEN
+        sync: false

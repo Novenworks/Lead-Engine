@@ -60,7 +60,13 @@ export async function claimJobs(workerId: string, limit: number): Promise<Claime
 export async function completeJob(jobId: string): Promise<void> {
   await prisma.job.update({
     where: { id: jobId },
-    data: { state: "SUCCEEDED", finishedAt: new Date(), lockedAt: null, lockedBy: null, lastError: null },
+    data: {
+      state: "SUCCEEDED",
+      finishedAt: new Date(),
+      lockedAt: null,
+      lockedBy: null,
+      lastError: null,
+    },
   });
 }
 

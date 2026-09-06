@@ -1,0 +1,125 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # A throwaway database inside the runner. CI never needs production secrets:
+  # provider and integration tests run against fixtures and injected fetches.
+  TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/leadengine_test
+  DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/leadengine_test
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: leadengine_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm --filter @leadengine/db run generate
+
+      - name: Apply migrations to the test database
+        run: pnpm --filter @leadengine/db exec prisma migrate deploy
+
+      - name: Typecheck
+        run: pnpm run typecheck
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Format check
+        run: pnpm run format:check
+
+      - name: Test
+        run: pnpm run test
+
+      - name: Build
+        run: pnpm run build
+
+  # Fails the build if a secret-shaped value is committed. The repository is
+  # public, so this is worth a job of its own.
+  secret-scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Scan for committed credentials
+        run: |
+          set -uo pipefail
+
+          exclude=( ':!*.lock' ':!pnpm-lock.yaml' ':!docs/legacy/**' ':!.github/workflows/ci.yml' )
+          failed=0
+
+          # Real credential shapes. `-e` is required so a pattern starting with
+          # "-" is read as a pattern rather than a git option.
+          patterns=(
+            'sk_live_[A-Za-z0-9]{10,}'
+            'sk_test_[A-Za-z0-9]{20,}'
+            'pk_live_[A-Za-z0-9]{10,}'
+            'AIza[0-9A-Za-z_-]{35}'
+            're_[A-Za-z0-9]{24,}'
+            'AKIA[0-9A-Z]{16}'
+            'ghp_[A-Za-z0-9]{36}'
+            'sk-ant-[A-Za-z0-9_-]{20,}'
+            '-----BEGIN [A-Z ]*PRIVATE KEY-----'
+          )
+          for pattern in "${patterns[@]}"; do
+            if git grep -n -I -E -e "$pattern" -- "${exclude[@]}"; then
+              echo "::error::Possible committed secret matching /$pattern/"
+              failed=1
+            fi
+          done
+
+          # A populated database URL. .env.example is excluded here only:
+          # it documents the shape with obvious placeholders, and every other
+          # pattern above still applies to it.
+          if git grep -n -I -E -e 'postgres(ql)?://[^:/ ]+:[^@ "]{8,}@' \
+               -- "${exclude[@]}" ':!.env.example'; then
+            echo "::error::Possible committed database URL with a password"
+            failed=1
+          fi
+
+          # An .env file must never be committed; .env.example is fine.
+          if git ls-files | grep -E '(^|/)\.env($|\.local$|\.production$)'; then
+            echo "::error::A .env file is committed"
+            failed=1
+          fi
+
+          if [ "$failed" -eq 0 ]; then echo "No committed credentials found."; fi
+          exit "$failed"

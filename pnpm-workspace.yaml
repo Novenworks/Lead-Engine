@@ -7,8 +7,8 @@ packages:
 minimumReleaseAge: 1440
 
 onlyBuiltDependencies:
-  - '@prisma/client'
-  - '@prisma/engines'
+  - "@prisma/client"
+  - "@prisma/engines"
   - esbuild
   - prisma
   - sharp

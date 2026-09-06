@@ -73,7 +73,9 @@ export function DiscoveryResults({
           <input
             type="checkbox"
             checked={allSelected}
-            onChange={() => setSelected(allSelected ? new Set() : new Set(pending.map((r) => r.id)))}
+            onChange={() =>
+              setSelected(allSelected ? new Set() : new Set(pending.map((r) => r.id)))
+            }
             disabled={pending.length === 0}
             className="size-3.5 accent-volt-500"
           />
@@ -170,8 +172,12 @@ export function DiscoveryResults({
                   <td className="tabular py-2.5 pr-3 text-right text-ink-700">
                     {result.rating !== null ? (
                       <>
-                        <span className="font-medium text-ink-900">{result.rating.toFixed(1)}★</span>
-                        <span className="block text-ink-500">{result.reviewCount ?? 0} reviews</span>
+                        <span className="font-medium text-ink-900">
+                          {result.rating.toFixed(1)}★
+                        </span>
+                        <span className="block text-ink-500">
+                          {result.reviewCount ?? 0} reviews
+                        </span>
                       </>
                     ) : (
                       "—"

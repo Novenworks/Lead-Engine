@@ -66,8 +66,12 @@ describe("buildIdentities", () => {
   });
 
   it("agrees on the same address written two ways", () => {
-    const a = buildIdentities({ address: { line1: "1290 East Cooley Drive", city: "Colton", region: "CA" } });
-    const b = buildIdentities({ address: { line1: "1290 E Cooley Dr", city: "Colton", region: "CA" } });
+    const a = buildIdentities({
+      address: { line1: "1290 East Cooley Drive", city: "Colton", region: "CA" },
+    });
+    const b = buildIdentities({
+      address: { line1: "1290 E Cooley Dr", city: "Colton", region: "CA" },
+    });
     expect(a[0]!.value).toBe(b[0]!.value);
   });
 });

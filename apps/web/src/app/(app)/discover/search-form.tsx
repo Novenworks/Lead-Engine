@@ -61,7 +61,14 @@ export function DiscoverySearchForm({ realData }: { realData: boolean }) {
         </Field>
 
         <Field label="Minimum reviews" htmlFor="minReviews">
-          <Input id="minReviews" name="minReviews" type="number" min={0} max={10000} placeholder="0" />
+          <Input
+            id="minReviews"
+            name="minReviews"
+            type="number"
+            min={0}
+            max={10000}
+            placeholder="0"
+          />
         </Field>
 
         <Field label="Website" htmlFor="websiteFilter">

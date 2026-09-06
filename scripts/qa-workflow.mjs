@@ -121,7 +121,8 @@ try {
   );
   check(
     "an unreachable site is reported honestly, not as a success",
-    enriched.includes("did not load") || enriched.includes("Website inspection failed") ||
+    enriched.includes("did not load") ||
+      enriched.includes("Website inspection failed") ||
       enriched.includes("does not load"),
   );
   await page.screenshot({ path: `${OUT}/flow-2b-enriched.png` });
@@ -131,7 +132,10 @@ try {
   await page.click('button[role="tab"]:has-text("Signals")');
   await page.waitForTimeout(300);
   const signals = await page.textContent('[role="tabpanel"]:not([hidden])');
-  check("Signal Stack shows why the score landed where it did", signals.includes("Why this scored"));
+  check(
+    "Signal Stack shows why the score landed where it did",
+    signals.includes("Why this scored"),
+  );
   check("score components name their evidence", signals.includes("BUSINESS_CATEGORY"));
   check("components carry a plain-language reason", signals.includes("Matches target category"));
   await page.screenshot({ path: `${OUT}/flow-3-signal-stack.png` });
@@ -158,7 +162,10 @@ try {
   await page.click('button[role="tab"]:has-text("Integrations")');
   await page.waitForTimeout(300);
   const integrations = await page.textContent('[role="tabpanel"]:not([hidden])');
-  check("AuditWorkspace reports that it is not configured", integrations.includes("not configured"));
+  check(
+    "AuditWorkspace reports that it is not configured",
+    integrations.includes("not configured"),
+  );
   check(
     "the unavailable state explains what happens instead",
     integrations.includes("sent once the integration is configured"),
@@ -178,7 +185,10 @@ try {
   await page.goto(`${BASE}/duplicates`, { waitUntil: "networkidle" });
   const duplicates = await page.textContent("body");
   check("weak duplicates are surfaced for a human", duplicates.includes("Summit HVAC"));
-  check("merge is offered but not performed automatically", duplicates.includes("Merge into one record"));
+  check(
+    "merge is offered but not performed automatically",
+    duplicates.includes("Merge into one record"),
+  );
   await page.screenshot({ path: `${OUT}/flow-6-duplicates.png` });
 
   // 10 — Filters actually filter, server-side.

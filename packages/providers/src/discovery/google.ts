@@ -270,7 +270,8 @@ export class GoogleDiscoveryProvider implements BusinessDiscoveryProvider {
       if (input.minReviews !== undefined) {
         businesses = businesses.filter((b) => (b.reviewCount ?? 0) >= input.minReviews!);
       }
-      if (input.websiteFilter === "with") businesses = businesses.filter((b) => Boolean(b.websiteUrl));
+      if (input.websiteFilter === "with")
+        businesses = businesses.filter((b) => Boolean(b.websiteUrl));
       if (input.websiteFilter === "without") businesses = businesses.filter((b) => !b.websiteUrl);
 
       return {
@@ -310,16 +311,13 @@ export class GoogleDiscoveryProvider implements BusinessDiscoveryProvider {
 
   async getDetails(externalId: string): Promise<DiscoveryBusiness | null> {
     const key = this.requireKey();
-    const response = await this.request(
-      `${PLACES_DETAILS_URL}/${encodeURIComponent(externalId)}`,
-      {
-        method: "GET",
-        headers: {
-          "X-Goog-Api-Key": key,
-          "X-Goog-FieldMask": DETAILS_FIELD_MASK,
-        },
+    const response = await this.request(`${PLACES_DETAILS_URL}/${encodeURIComponent(externalId)}`, {
+      method: "GET",
+      headers: {
+        "X-Goog-Api-Key": key,
+        "X-Goog-FieldMask": DETAILS_FIELD_MASK,
       },
-    );
+    });
 
     const text = await response.text();
     if (response.status === 404) return null;

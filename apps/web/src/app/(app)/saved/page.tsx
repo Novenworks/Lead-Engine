@@ -43,10 +43,7 @@ export default async function SavedPage() {
             {saved.map((entry) => {
               const query = new URLSearchParams(entry.params as Record<string, string>).toString();
               return (
-                <li
-                  key={entry.id}
-                  className="flex flex-wrap items-center gap-3 px-4 py-3 text-xs"
-                >
+                <li key={entry.id} className="flex flex-wrap items-center gap-3 px-4 py-3 text-xs">
                   <div className="min-w-0 flex-1">
                     <Link
                       href={`/prospects?${query}`}

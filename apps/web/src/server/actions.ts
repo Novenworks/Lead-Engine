@@ -3,8 +3,16 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { PIPELINE_STAGES, DISQUALIFICATION_REASONS, normalizeWebsiteUrl } from "@leadengine/core";
-import { createDiscoveryProvider, discoverySearchInputSchema, DiscoveryProviderError } from "@leadengine/providers";
-import { createAuditWorkspaceClient, createDemoFactoryClient, IntegrationError } from "@leadengine/integrations";
+import {
+  createDiscoveryProvider,
+  discoverySearchInputSchema,
+  DiscoveryProviderError,
+} from "@leadengine/providers";
+import {
+  createAuditWorkspaceClient,
+  createDemoFactoryClient,
+  IntegrationError,
+} from "@leadengine/integrations";
 import { prisma, type Prisma } from "@leadengine/db";
 import { requireWorkspace, assertProspectInWorkspace } from "@/lib/workspace";
 import { providerEnv, integrationEnv } from "@/lib/env";
@@ -253,53 +261,59 @@ export async function decideDiscoveryResults(
 
   let added = 0;
   let matched = 0;
+  let failed = 0;
   for (const result of results) {
-    const outcome = await addProspect({
-      workspaceId,
-      userId,
-      provider: result.run.provider === "google" ? "google" : "demo",
-      isFixture: result.run.provider !== "google",
-      business: {
-        externalId: result.externalId,
-        name: result.name,
-        category: result.category,
-        formattedAddress: result.formattedAddress,
-        city: result.city,
-        region: result.region,
-        postalCode: result.postalCode,
-        latitude: result.latitude,
-        longitude: result.longitude,
-        phone: result.phone,
-        websiteUrl: result.websiteUrl,
-        rating: result.rating,
-        reviewCount: result.reviewCount,
-        businessStatus: result.businessStatus,
-        raw: { discoveryResultId: result.id },
-      },
-    });
-    if (outcome.created) added++;
-    else matched++;
+    try {
+      const outcome = await addProspect({
+        workspaceId,
+        userId,
+        provider: result.run.provider === "google" ? "google" : "demo",
+        isFixture: result.run.provider !== "google",
+        business: {
+          externalId: result.externalId,
+          name: result.name,
+          category: result.category,
+          formattedAddress: result.formattedAddress,
+          city: result.city,
+          region: result.region,
+          postalCode: result.postalCode,
+          latitude: result.latitude,
+          longitude: result.longitude,
+          phone: result.phone,
+          websiteUrl: result.websiteUrl,
+          rating: result.rating,
+          reviewCount: result.reviewCount,
+          businessStatus: result.businessStatus,
+          raw: { discoveryResultId: result.id },
+        },
+      });
+      if (outcome.created) added++;
+      else matched++;
 
-    await prisma.discoveryResult.update({
-      where: { id: result.id },
-      data: {
-        decision: outcome.created ? "ADDED" : "ALREADY_TRACKED",
-        prospectId: outcome.prospectId,
-        decidedAt: new Date(),
-        decidedByUserId: userId,
-      },
-    });
+      await prisma.discoveryResult.update({
+        where: { id: result.id },
+        data: {
+          decision: outcome.created ? "ADDED" : "ALREADY_TRACKED",
+          prospectId: outcome.prospectId,
+          decidedAt: new Date(),
+          decidedByUserId: userId,
+        },
+      });
+    } catch (error) {
+      // One bad row must not abandon the rest of a bulk add. The result stays
+      // PENDING so it can be retried once the cause is fixed.
+      console.error("adding discovery result failed", result.id, error);
+      failed++;
+    }
   }
 
   revalidatePath("/discover");
   revalidatePath("/prospects");
-  return {
-    ok: true,
-    message:
-      matched > 0
-        ? `Added ${added}. ${matched} already matched an existing prospect.`
-        : `Added ${added} prospect(s).`,
-  };
+
+  const parts = [`Added ${added} prospect(s).`];
+  if (matched > 0) parts.push(`${matched} already matched an existing prospect.`);
+  if (failed > 0) parts.push(`${failed} could not be added and are still pending.`);
+  return { ok: failed === 0, message: parts.join(" ") };
 }
 
 // --- Prospect creation ------------------------------------------------------
@@ -332,7 +346,15 @@ export async function createProspect(
     return fail("That website address is not a usable http(s) URL.");
   }
 
-  const result = await addManualProspect(workspaceId, userId, parsed.data);
+  let result;
+  try {
+    result = await addManualProspect(workspaceId, userId, parsed.data);
+  } catch (error) {
+    // A write that trips a constraint is a bug, but the operator should see a
+    // sentence rather than an unhandled 500 with their form data lost.
+    console.error("createProspect failed", error);
+    return fail("Could not save this prospect. Nothing was created — please try again.");
+  }
   revalidatePath("/prospects");
 
   return {
@@ -562,10 +584,7 @@ export async function setStage(
 
 // --- Notes and next action --------------------------------------------------
 
-export async function addNote(
-  _prev: ActionState | null,
-  formData: FormData,
-): Promise<ActionState> {
+export async function addNote(_prev: ActionState | null, formData: FormData): Promise<ActionState> {
   const { workspaceId, userId } = await requireWorkspace();
   const body = String(formData.get("body") ?? "").trim();
   const prospectId = await assertProspectInWorkspace(
@@ -906,11 +925,26 @@ async function mergeProspects(
         });
     }
 
-    await tx.prospectSource.updateMany({ where: { prospectId: mergeId }, data: { prospectId: keepId } });
-    await tx.prospectNote.updateMany({ where: { prospectId: mergeId }, data: { prospectId: keepId } });
-    await tx.businessLocation.updateMany({ where: { prospectId: mergeId }, data: { prospectId: keepId } });
-    await tx.activityEvent.updateMany({ where: { prospectId: mergeId }, data: { prospectId: keepId } });
-    await tx.externalReference.updateMany({ where: { prospectId: mergeId }, data: { prospectId: keepId } });
+    await tx.prospectSource.updateMany({
+      where: { prospectId: mergeId },
+      data: { prospectId: keepId },
+    });
+    await tx.prospectNote.updateMany({
+      where: { prospectId: mergeId },
+      data: { prospectId: keepId },
+    });
+    await tx.businessLocation.updateMany({
+      where: { prospectId: mergeId },
+      data: { prospectId: keepId },
+    });
+    await tx.activityEvent.updateMany({
+      where: { prospectId: mergeId },
+      data: { prospectId: keepId },
+    });
+    await tx.externalReference.updateMany({
+      where: { prospectId: mergeId },
+      data: { prospectId: keepId },
+    });
 
     // Websites and contacts carry uniqueness constraints scoped to the
     // prospect, so move only the ones that would not collide.
@@ -919,7 +953,8 @@ async function mergeProspects(
       const clash = await tx.website.findFirst({
         where: { prospectId: keepId, rootDomain: website.rootDomain },
       });
-      if (!clash) await tx.website.update({ where: { id: website.id }, data: { prospectId: keepId } });
+      if (!clash)
+        await tx.website.update({ where: { id: website.id }, data: { prospectId: keepId } });
     }
     const contacts = await tx.businessContact.findMany({ where: { prospectId: mergeId } });
     for (const contact of contacts) {
@@ -927,7 +962,10 @@ async function mergeProspects(
         where: { prospectId: keepId, kind: contact.kind, value: contact.value },
       });
       if (!clash)
-        await tx.businessContact.update({ where: { id: contact.id }, data: { prospectId: keepId } });
+        await tx.businessContact.update({
+          where: { id: contact.id },
+          data: { prospectId: keepId },
+        });
     }
 
     await tx.prospect.update({
@@ -1037,8 +1075,11 @@ export async function updateScoringSettings(
       qualifyThreshold,
       reviewFloor,
       agencyCreditDisqualifies: formData.get("agencyCreditDisqualifies") === "on",
-      minReviewsForRating: Number(formData.get("minReviewsForRating")) || current.minReviewsForRating,
-      minBusinessStrengthToQualify: Number(formData.get("minBusinessStrengthToQualify") ?? current.minBusinessStrengthToQualify),
+      minReviewsForRating:
+        Number(formData.get("minReviewsForRating")) || current.minReviewsForRating,
+      minBusinessStrengthToQualify: Number(
+        formData.get("minBusinessStrengthToQualify") ?? current.minBusinessStrengthToQualify,
+      ),
     });
   } catch {
     return fail("Those settings are not valid.");

@@ -215,7 +215,9 @@ export async function workspaceCounts(workspaceId: string) {
   const [total, qualified, review, disqualified, needsEnrichment, openDuplicates, pendingResults] =
     await Promise.all([
       prisma.prospect.count({ where: { workspaceId, archivedAt: null } }),
-      prisma.prospect.count({ where: { workspaceId, archivedAt: null, qualification: "QUALIFIED" } }),
+      prisma.prospect.count({
+        where: { workspaceId, archivedAt: null, qualification: "QUALIFIED" },
+      }),
       prisma.prospect.count({ where: { workspaceId, archivedAt: null, qualification: "REVIEW" } }),
       prisma.prospect.count({
         where: { workspaceId, archivedAt: null, qualification: "DISQUALIFIED" },
@@ -224,5 +226,13 @@ export async function workspaceCounts(workspaceId: string) {
       prisma.duplicateCandidate.count({ where: { workspaceId, status: "OPEN" } }),
       prisma.discoveryResult.count({ where: { workspaceId, decision: "PENDING" } }),
     ]);
-  return { total, qualified, review, disqualified, needsEnrichment, openDuplicates, pendingResults };
+  return {
+    total,
+    qualified,
+    review,
+    disqualified,
+    needsEnrichment,
+    openDuplicates,
+    pendingResults,
+  };
 }

@@ -16,6 +16,19 @@ export default tseslint.config(
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
+    // QA scripts are plain Node ESM driving a browser, so they legitimately
+    // use Node globals and (inside page.evaluate) DOM globals.
+    files: ["scripts/**/*.mjs"],
+    languageOptions: {
+      globals: {
+        process: "readonly",
+        console: "readonly",
+        document: "readonly",
+        window: "readonly",
+      },
+    },
+  },
+  {
     rules: {
       "@typescript-eslint/no-unused-vars": [
         "error",
@@ -27,6 +40,13 @@ export default tseslint.config(
       ],
       "no-console": "off",
     },
+  },
+  {
+    // Database-backed tests import their modules lazily, after the test env
+    // has pointed DATABASE_URL at the test database, so they need import()
+    // types to describe the resulting bindings.
+    files: ["**/__tests__/**/*.ts"],
+    rules: { "@typescript-eslint/consistent-type-imports": "off" },
   },
   prettier,
 );

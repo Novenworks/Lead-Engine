@@ -118,7 +118,8 @@ export function OpportunityMatrix({ points }: { points: MatrixPoint[] }) {
     );
   }
 
-  const targetX = PLOT.padLeft + (STRONG_BUSINESS / MAX_STRENGTH) * (PLOT.width - PLOT.padLeft - PLOT.padRight);
+  const targetX =
+    PLOT.padLeft + (STRONG_BUSINESS / MAX_STRENGTH) * (PLOT.width - PLOT.padLeft - PLOT.padRight);
   const targetY = PLOT.padTop;
   const targetH =
     (PLOT.height - PLOT.padTop - PLOT.padBottom) * (1 - HIGH_OPPORTUNITY / MAX_OPPORTUNITY);
@@ -389,7 +390,9 @@ export function OpportunityMatrix({ points }: { points: MatrixPoint[] }) {
               >
                 {selected.qualification.toLowerCase()}
               </Badge>
-              <Badge tone="neutral">{selected.pipelineStage.toLowerCase().replace(/_/g, " ")}</Badge>
+              <Badge tone="neutral">
+                {selected.pipelineStage.toLowerCase().replace(/_/g, " ")}
+              </Badge>
               {selected.reviewCount !== null ? (
                 <Badge tone="signal">
                   {selected.rating?.toFixed(1) ?? "—"}★ · {selected.reviewCount}

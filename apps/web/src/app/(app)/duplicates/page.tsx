@@ -23,10 +23,28 @@ export default async function DuplicatesPage() {
     take: 50,
     include: {
       prospectA: {
-        select: { id: true, name: true, city: true, region: true, primaryCategory: true, reviewCount: true, opportunityScore: true, createdAt: true },
+        select: {
+          id: true,
+          name: true,
+          city: true,
+          region: true,
+          primaryCategory: true,
+          reviewCount: true,
+          opportunityScore: true,
+          createdAt: true,
+        },
       },
       prospectB: {
-        select: { id: true, name: true, city: true, region: true, primaryCategory: true, reviewCount: true, opportunityScore: true, createdAt: true },
+        select: {
+          id: true,
+          name: true,
+          city: true,
+          region: true,
+          primaryCategory: true,
+          reviewCount: true,
+          opportunityScore: true,
+          createdAt: true,
+        },
       },
     },
   });
@@ -78,7 +96,9 @@ export default async function DuplicatesPage() {
                       </div>
                       <div className="flex justify-between gap-2">
                         <dt className="text-ink-500">Location</dt>
-                        <dd>{[prospect.city, prospect.region].filter(Boolean).join(", ") || "—"}</dd>
+                        <dd>
+                          {[prospect.city, prospect.region].filter(Boolean).join(", ") || "—"}
+                        </dd>
                       </div>
                       <div className="flex justify-between gap-2">
                         <dt className="text-ink-500">Reviews</dt>

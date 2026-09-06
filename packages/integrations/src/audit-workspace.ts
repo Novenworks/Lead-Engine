@@ -100,11 +100,7 @@ export interface AuditStatus {
 }
 
 export type IntegrationErrorCode =
-  | "NOT_CONFIGURED"
-  | "UNAUTHORIZED"
-  | "UNAVAILABLE"
-  | "REJECTED"
-  | "PROTOCOL_ERROR";
+  "NOT_CONFIGURED" | "UNAUTHORIZED" | "UNAVAILABLE" | "REJECTED" | "PROTOCOL_ERROR";
 
 export class IntegrationError extends Error {
   constructor(

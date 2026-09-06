@@ -126,7 +126,10 @@ export default async function PipelinePage() {
                   {items.length > 25 ? (
                     <li className="px-1 text-[11px] text-ink-500">
                       + {items.length - 25} more —{" "}
-                      <Link href={`/prospects?stage=${stage}`} className="text-signal-600 underline">
+                      <Link
+                        href={`/prospects?stage=${stage}`}
+                        className="text-signal-600 underline"
+                      >
                         see all
                       </Link>
                     </li>

@@ -65,7 +65,9 @@ async function ensureWorkspace(params: {
   slug: string;
 }): Promise<{ id: string; name: string; slug: string; isFixture: boolean }> {
   if (params.clerkOrgId) {
-    const existing = await prisma.workspace.findUnique({ where: { clerkOrgId: params.clerkOrgId } });
+    const existing = await prisma.workspace.findUnique({
+      where: { clerkOrgId: params.clerkOrgId },
+    });
     if (existing) {
       await prisma.membership.upsert({
         where: { workspaceId_userId: { workspaceId: existing.id, userId: params.userId } },
@@ -142,7 +144,11 @@ export const requireWorkspace = cache(async (): Promise<Operator> => {
     userId: identity.userId,
     clerkOrgId: identity.orgId,
     name: label,
-    slug: label.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 40) || "workspace",
+    slug:
+      label
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .slice(0, 40) || "workspace",
   });
 
   return {

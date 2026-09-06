@@ -6,7 +6,6 @@ export { PrismaClient };
 
 declare global {
   // Reused across Next.js dev hot reloads so we don't exhaust Neon connections.
-  // eslint-disable-next-line no-var
   var __leadenginePrisma: PrismaClient | undefined;
 }
 

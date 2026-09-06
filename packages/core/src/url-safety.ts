@@ -134,12 +134,13 @@ function ipv6Groups(ip: string): number[] | null {
 
   const groups: number[] =
     halves.length === 2
-      ? [...head, ...Array(Math.max(0, 8 - head.length - tail.length)).fill("0"), ...tail].map((g) =>
-          parseInt(g, 16),
+      ? [...head, ...Array(Math.max(0, 8 - head.length - tail.length)).fill("0"), ...tail].map(
+          (g) => parseInt(g, 16),
         )
       : head.map((g) => parseInt(g, 16));
 
-  if (groups.length !== 8 || groups.some((g) => Number.isNaN(g) || g < 0 || g > 0xffff)) return null;
+  if (groups.length !== 8 || groups.some((g) => Number.isNaN(g) || g < 0 || g > 0xffff))
+    return null;
   return groups;
 }
 
@@ -214,7 +215,11 @@ export function checkUrl(input: string): UrlCheckResult {
     return { ok: false, reason: "BLOCKED_HOST", detail: `Hostname ${host} is not allowed.` };
   }
   if (BLOCKED_HOST_SUFFIXES.some((suffix) => host.endsWith(suffix))) {
-    return { ok: false, reason: "BLOCKED_HOST", detail: `Internal hostname ${host} is not allowed.` };
+    return {
+      ok: false,
+      reason: "BLOCKED_HOST",
+      detail: `Internal hostname ${host} is not allowed.`,
+    };
   }
 
   // Bracketed IPv6 literals arrive as "[::1]" in href but "::1" in hostname.
@@ -248,9 +253,9 @@ export interface ResolvedHost {
  * Rejecting on any bad answer (rather than filtering to the good ones) stops a
  * host from mixing a public and a private record to slip past the check.
  */
-export async function resolvePublicAddress(hostname: string): Promise<
-  { ok: true; addresses: ResolvedHost[] } | UrlCheckFailure
-> {
+export async function resolvePublicAddress(
+  hostname: string,
+): Promise<{ ok: true; addresses: ResolvedHost[] } | UrlCheckFailure> {
   const literal = hostname.startsWith("[") ? hostname.slice(1, -1) : hostname;
   if (isIP(literal) !== 0) {
     if (isBlockedAddress(literal)) {

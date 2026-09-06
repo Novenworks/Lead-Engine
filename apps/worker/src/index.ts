@@ -30,10 +30,7 @@ async function processOne(job: Awaited<ReturnType<typeof claimJobs>>[number]): P
   try {
     await runJob(job);
     await completeJob(job.id);
-    log.info(
-      { jobId: job.id, type: job.type, ms: Date.now() - startedAt },
-      "job completed",
-    );
+    log.info({ jobId: job.id, type: job.type, ms: Date.now() - startedAt }, "job completed");
   } catch (error) {
     const { willRetry } = await failJob(job.id, job.attempts, job.maxAttempts, error);
     log.error(
@@ -71,7 +68,10 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  log.info({ workerId: WORKER_ID, concurrency: CONCURRENCY, pollMs: POLL_INTERVAL_MS }, "worker started");
+  log.info(
+    { workerId: WORKER_ID, concurrency: CONCURRENCY, pollMs: POLL_INTERVAL_MS },
+    "worker started",
+  );
 
   const reclaimed = await reclaimStaleJobs(STALE_AFTER_MS);
   if (reclaimed > 0) log.warn({ reclaimed }, "requeued jobs orphaned by a previous worker");

@@ -211,7 +211,15 @@ async function attachIdentities(
     // A value already claimed by a different prospect is left alone: stealing
     // it would silently rewrite the other record's identity.
     await tx.prospectIdentity.createMany({
-      data: [{ workspaceId, prospectId, kind: identity.kind, namespace: identity.namespace, value: identity.value }],
+      data: [
+        {
+          workspaceId,
+          prospectId,
+          kind: identity.kind,
+          namespace: identity.namespace,
+          value: identity.value,
+        },
+      ],
       skipDuplicates: true,
     });
   }
@@ -224,7 +232,13 @@ async function attachIdentities(
 async function suggestDuplicates(
   tx: Tx,
   workspaceId: string,
-  prospect: { id: string; name: string; normalizedName: string; city: string | null; region: string | null },
+  prospect: {
+    id: string;
+    name: string;
+    normalizedName: string;
+    city: string | null;
+    region: string | null;
+  },
 ): Promise<string[]> {
   // Candidates share at least one name token, which keeps this cheap.
   const tokens = prospect.normalizedName.split(" ").filter((t) => t.length > 2);
@@ -303,23 +317,49 @@ export async function addProspect(input: AddProspectInput): Promise<AddProspectR
     if (existing) {
       // Same business seen again: refresh provenance and signals, keep the
       // operator's stage, qualification and notes untouched.
-      await tx.prospectSource.upsert({
-        where: {
-          workspaceId_provider_externalId: {
-            workspaceId,
-            provider,
-            externalId: business.externalId ?? "",
+      // Provider hits are keyed by their external id. Manual and CSV entries
+      // have none, and Postgres treats NULLs as distinct, so they must not be
+      // funnelled through the compound unique — writing "" instead would mean
+      // a workspace could only ever hold one manually created prospect.
+      if (business.externalId) {
+        await tx.prospectSource.upsert({
+          where: {
+            workspaceId_provider_externalId: {
+              workspaceId,
+              provider,
+              externalId: business.externalId,
+            },
           },
-        },
-        create: {
-          workspaceId,
-          prospectId: existing.prospectId,
-          provider,
-          externalId: business.externalId ?? "",
-          raw: business.raw as Prisma.InputJsonValue,
-        },
-        update: { lastSeenAt: new Date(), raw: business.raw as Prisma.InputJsonValue },
-      });
+          create: {
+            workspaceId,
+            prospectId: existing.prospectId,
+            provider,
+            externalId: business.externalId,
+            raw: business.raw as Prisma.InputJsonValue,
+          },
+          update: { lastSeenAt: new Date(), raw: business.raw as Prisma.InputJsonValue },
+        });
+      } else {
+        const source = await tx.prospectSource.findFirst({
+          where: { workspaceId, prospectId: existing.prospectId, provider, externalId: null },
+        });
+        if (source) {
+          await tx.prospectSource.update({
+            where: { id: source.id },
+            data: { lastSeenAt: new Date(), raw: business.raw as Prisma.InputJsonValue },
+          });
+        } else {
+          await tx.prospectSource.create({
+            data: {
+              workspaceId,
+              prospectId: existing.prospectId,
+              provider,
+              externalId: null,
+              raw: business.raw as Prisma.InputJsonValue,
+            },
+          });
+        }
+      }
       await attachIdentities(tx, workspaceId, existing.prospectId, identities);
       await writeSignals(tx, workspaceId, existing.prospectId, providerSignals(business, provider));
 
@@ -349,7 +389,8 @@ export async function addProspect(input: AddProspectInput): Promise<AddProspectR
           create: {
             workspaceId,
             provider,
-            externalId: business.externalId ?? "",
+            // Null, not "", so several manual entries can coexist — see above.
+            externalId: business.externalId,
             raw: business.raw as Prisma.InputJsonValue,
           },
         },

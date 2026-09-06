@@ -77,13 +77,19 @@ const SOCIAL_DOMAINS = [
 const CMS_FINGERPRINTS: ReadonlyArray<{ name: string; test: (html: string) => boolean }> = [
   { name: "Shopify", test: (h) => h.includes("cdn.shopify.com") || h.includes("Shopify.theme") },
   { name: "Wix", test: (h) => h.includes("static.parastorage.com") || h.includes("wix.com") },
-  { name: "Squarespace", test: (h) => h.includes("squarespace.com") || h.includes("static1.squarespace") },
+  {
+    name: "Squarespace",
+    test: (h) => h.includes("squarespace.com") || h.includes("static1.squarespace"),
+  },
   { name: "Webflow", test: (h) => h.includes("webflow.com") || h.includes("data-wf-page") },
   { name: "Duda", test: (h) => h.includes("dudamobile.com") || h.includes("dudaone") },
   { name: "GoDaddy Website Builder", test: (h) => h.includes("img1.wsimg.com") },
   { name: "Weebly", test: (h) => h.includes("weebly.com") || h.includes("editmysite.com") },
   { name: "WordPress", test: (h) => h.includes("/wp-content/") || h.includes("/wp-json") },
-  { name: "Drupal", test: (h) => h.includes("/sites/default/files") || h.includes("Drupal.settings") },
+  {
+    name: "Drupal",
+    test: (h) => h.includes("/sites/default/files") || h.includes("Drupal.settings"),
+  },
   { name: "Joomla", test: (h) => h.includes("/media/jui/") || h.includes("joomla") },
   { name: "HubSpot CMS", test: (h) => h.includes("hs-scripts.com") || h.includes("hubspot.net") },
 ];
@@ -172,7 +178,8 @@ export function extractObservations(result: FetchSuccess): WebsiteObservations {
   for (const match of html.matchAll(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g)) {
     const value = normalizeEmail(match[0]);
     // Skip asset filenames and tracking pixels that happen to match.
-    if (!value || value.includes("sentry") || /\.(png|jpg|jpeg|gif|svg|webp)$/.test(value)) continue;
+    if (!value || value.includes("sentry") || /\.(png|jpg|jpeg|gif|svg|webp)$/.test(value))
+      continue;
     if (!emails.includes(value)) emails.push(value);
     if (emails.length >= 5) break;
   }
@@ -190,7 +197,8 @@ export function extractObservations(result: FetchSuccess): WebsiteObservations {
 
   // Agency credits live in the footer. Fall back to the whole page when the
   // markup has no recognizable footer.
-  const footer = doc.querySelector("footer") ?? doc.querySelector("#footer") ?? doc.querySelector(".footer");
+  const footer =
+    doc.querySelector("footer") ?? doc.querySelector("#footer") ?? doc.querySelector(".footer");
   const footerLinks = (footer ?? doc).querySelectorAll("a").map((a) => ({
     href: absolute(a.getAttribute("href") ?? "", result.finalUrl) ?? "",
     text: a.textContent.replace(/\s+/g, " ").trim(),
@@ -216,8 +224,8 @@ export function extractObservations(result: FetchSuccess): WebsiteObservations {
   const renderRequired =
     bodyText.length < 200 &&
     (html.includes("__NEXT_DATA__") ||
-      html.includes("id=\"root\"") ||
-      html.includes("id=\"app\"") ||
+      html.includes('id="root"') ||
+      html.includes('id="app"') ||
       html.includes("ng-app"));
 
   return {

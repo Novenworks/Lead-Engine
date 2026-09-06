@@ -36,7 +36,10 @@ export default async function ActivityPage() {
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_20rem]">
         <div className="min-w-0">
           {events.length === 0 ? (
-            <EmptyState title="No activity yet" body="Activity appears as you discover, qualify and hand off prospects." />
+            <EmptyState
+              title="No activity yet"
+              body="Activity appears as you discover, qualify and hand off prospects."
+            />
           ) : (
             <Panel bodyClassName="p-0">
               <ol className="divide-y divide-paper-200">
@@ -51,9 +54,7 @@ export default async function ActivityPage() {
                     <span className="min-w-0 flex-1">
                       <span className="block text-ink-900">{event.summary}</span>
                       <span className="mt-0.5 flex flex-wrap items-center gap-2">
-                        <Badge tone="neutral">
-                          {event.type.toLowerCase().replace(/_/g, " ")}
-                        </Badge>
+                        <Badge tone="neutral">{event.type.toLowerCase().replace(/_/g, " ")}</Badge>
                         {event.prospect ? (
                           <Link
                             href={`/prospects/${event.prospect.id}`}
@@ -79,14 +80,23 @@ export default async function ActivityPage() {
               <caption className="sr-only">API calls by provider and operation</caption>
               <thead>
                 <tr className="border-b border-paper-200 text-[11px] uppercase tracking-wide text-ink-500">
-                  <th scope="col" className="py-1.5 pr-2 font-medium">Provider</th>
-                  <th scope="col" className="py-1.5 pr-2 text-right font-medium">Calls</th>
-                  <th scope="col" className="py-1.5 text-right font-medium">Results</th>
+                  <th scope="col" className="py-1.5 pr-2 font-medium">
+                    Provider
+                  </th>
+                  <th scope="col" className="py-1.5 pr-2 text-right font-medium">
+                    Calls
+                  </th>
+                  <th scope="col" className="py-1.5 text-right font-medium">
+                    Results
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {usage.map((row) => (
-                  <tr key={`${row.provider}-${row.operation}-${row.success}`} className="border-b border-paper-200">
+                  <tr
+                    key={`${row.provider}-${row.operation}-${row.success}`}
+                    className="border-b border-paper-200"
+                  >
                     <th scope="row" className="py-1.5 pr-2 font-normal">
                       {row.provider}
                       <span className="block text-[11px] text-ink-500">

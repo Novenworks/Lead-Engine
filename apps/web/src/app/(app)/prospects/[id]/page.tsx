@@ -34,11 +34,7 @@ const ENRICHMENT_MESSAGE: Record<string, { tone: "warn" | "bad" | "neutral"; tex
   FAILED: { tone: "bad", text: "The website inspection failed." },
 };
 
-export default async function ProspectDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function ProspectDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { workspaceId } = await requireWorkspace();
   const { id } = await params;
 
@@ -89,7 +85,10 @@ export default async function ProspectDetailPage({
                 <span aria-hidden="true" className="text-ink-500">
                   ·
                 </span>
-                <a href={`tel:${phone.normalized ?? phone.value}`} className="text-signal-600 underline">
+                <a
+                  href={`tel:${phone.normalized ?? phone.value}`}
+                  className="text-signal-600 underline"
+                >
                   {phone.value}
                 </a>
               </>
@@ -132,9 +131,7 @@ export default async function ProspectDetailPage({
                 ? ` · ${prospect.disqualificationReason.toLowerCase().replace(/_/g, " ")}`
                 : ""}
             </Badge>
-            <Badge tone="neutral">
-              {prospect.pipelineStage.toLowerCase().replace(/_/g, " ")}
-            </Badge>
+            <Badge tone="neutral">{prospect.pipelineStage.toLowerCase().replace(/_/g, " ")}</Badge>
             {prospect.qualificationOverridden ? (
               <Badge tone="signal" glyph="✎">
                 operator override
@@ -426,9 +423,9 @@ function WebsitePreview({
   }
   if (screenshotUrl) {
     return (
-      // A remote screenshot from an arbitrary provider: a plain img keeps it
-      // out of Next's optimizer, which would need every host allow-listed.
-      // eslint-disable-next-line @next/next/no-img-element
+      // A remote screenshot from an arbitrary provider: a plain <img> keeps it
+      // out of Next's image optimizer, which would need every possible
+      // screenshot host allow-listed up front.
       <img
         src={screenshotUrl}
         alt={`Homepage screenshot of ${websiteUrl}`}

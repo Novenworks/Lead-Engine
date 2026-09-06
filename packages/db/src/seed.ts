@@ -693,7 +693,9 @@ async function main(): Promise<void> {
         qualification: result.suggestedQualification,
         agencyManaged: result.disqualifiers.includes("AGENCY_MANAGED"),
         disqualificationReason:
-          result.suggestedQualification === "DISQUALIFIED" ? (result.disqualifiers[0] ?? "OTHER") : null,
+          result.suggestedQualification === "DISQUALIFIED"
+            ? (result.disqualifiers[0] ?? "OTHER")
+            : null,
       },
     });
 
@@ -733,7 +735,9 @@ async function main(): Promise<void> {
     });
   }
 
-  console.log(`\nSeeded ${FIXTURES.length} fictional prospects into workspace "${workspace.slug}".`);
+  console.log(
+    `\nSeeded ${FIXTURES.length} fictional prospects into workspace "${workspace.slug}".`,
+  );
   console.log("All businesses, domains and phone numbers above are invented.");
 }
 

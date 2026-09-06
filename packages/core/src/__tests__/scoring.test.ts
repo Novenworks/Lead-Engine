@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_SCORING_CONFIG, scoreProspect, factsFromSignals, type ScoringFacts } from "../index";
+import {
+  DEFAULT_SCORING_CONFIG,
+  scoreProspect,
+  factsFromSignals,
+  type ScoringFacts,
+} from "../index";
 
 function facts(overrides: Partial<ScoringFacts> = {}): ScoringFacts {
   return {
@@ -45,7 +50,9 @@ describe("determinism and explainability", () => {
   });
 
   it("every dimension's components sum to that dimension's score", () => {
-    const result = scoreProspect(facts({ usesHttps: false, hasContactLink: false, hasBookingLink: false }));
+    const result = scoreProspect(
+      facts({ usesHttps: false, hasContactLink: false, hasBookingLink: false }),
+    );
     const sum = (dim: string) =>
       result.components.filter((c) => c.dimension === dim).reduce((n, c) => n + c.points, 0);
     expect(sum("BUSINESS_FIT")).toBe(result.businessFitScore);
@@ -129,7 +136,12 @@ describe("avoiding weak-signal inflation", () => {
   it("requires deficiencies to compound before the opportunity gets large", () => {
     const one = scoreProspect(facts({ usesHttps: false }));
     const many = scoreProspect(
-      facts({ usesHttps: false, hasViewportMeta: false, hasContactLink: false, hasBookingLink: false }),
+      facts({
+        usesHttps: false,
+        hasViewportMeta: false,
+        hasContactLink: false,
+        hasBookingLink: false,
+      }),
     );
     expect(one.websiteOpportunityScore).toBe(8);
     expect(many.websiteOpportunityScore).toBeGreaterThan(one.websiteOpportunityScore * 2);
@@ -164,15 +176,21 @@ describe("unknown is not the same as bad", () => {
 
 describe("hard disqualifiers", () => {
   it("disqualifies a site with a credible agency credit", () => {
-    const result = scoreProspect(facts({ agencyCredit: { confidence: "HIGH", evidence: "Website by Bright Pixel" } }));
+    const result = scoreProspect(
+      facts({ agencyCredit: { confidence: "HIGH", evidence: "Website by Bright Pixel" } }),
+    );
     expect(result.disqualifiers).toContain("AGENCY_MANAGED");
     expect(result.suggestedQualification).toBe("DISQUALIFIED");
   });
 
   it("does not disqualify on a low-confidence agency credit", () => {
-    const result = scoreProspect(facts({ agencyCredit: { confidence: "LOW", evidence: "Powered by Someone" } }));
+    const result = scoreProspect(
+      facts({ agencyCredit: { confidence: "LOW", evidence: "Powered by Someone" } }),
+    );
     expect(result.disqualifiers).not.toContain("AGENCY_MANAGED");
-    expect(result.components.find((c) => c.key === "agency_credit")?.reason).toContain("Not treated as disqualifying");
+    expect(result.components.find((c) => c.key === "agency_credit")?.reason).toContain(
+      "Not treated as disqualifying",
+    );
   });
 
   it("can be configured to warn instead of disqualify", () => {
@@ -185,11 +203,15 @@ describe("hard disqualifiers", () => {
 
   it("disqualifies out-of-area and excluded-category businesses", () => {
     expect(scoreProspect(facts({ region: "TX" })).disqualifiers).toContain("OUT_OF_AREA");
-    expect(scoreProspect(facts({ primaryCategory: "Gas station" })).disqualifiers).toContain("WRONG_CATEGORY");
+    expect(scoreProspect(facts({ primaryCategory: "Gas station" })).disqualifiers).toContain(
+      "WRONG_CATEGORY",
+    );
   });
 
   it("disqualifies a permanently closed business", () => {
-    expect(scoreProspect(facts({ businessClosed: true })).disqualifiers).toContain("BUSINESS_CLOSED");
+    expect(scoreProspect(facts({ businessClosed: true })).disqualifiers).toContain(
+      "BUSINESS_CLOSED",
+    );
   });
 
   it("disqualifies a business with no way to reach it", () => {
@@ -216,7 +238,12 @@ describe("factsFromSignals", () => {
         { type: "GOOGLE_REVIEW_COUNT", numericValue: 212 },
         { type: "VIEWPORT_META_PRESENT", booleanValue: false },
         { type: "WEBSITE_REACHABLE", booleanValue: true },
-        { type: "AGENCY_CREDIT_DETECTED", booleanValue: true, confidence: "HIGH", evidence: "Website by X" },
+        {
+          type: "AGENCY_CREDIT_DETECTED",
+          booleanValue: true,
+          confidence: "HIGH",
+          evidence: "Website by X",
+        },
       ],
       { primaryCategory: "HVAC contractor", region: "CA", hasWebsite: true, hasPublicPhone: true },
     );

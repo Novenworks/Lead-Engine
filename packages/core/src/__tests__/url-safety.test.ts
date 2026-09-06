@@ -59,7 +59,12 @@ describe("checkUrl", () => {
   });
 
   it("rejects non-http schemes", () => {
-    for (const url of ["file:///etc/passwd", "ftp://x.example", "data:text/html,<h1>x", "gopher://x.example"]) {
+    for (const url of [
+      "file:///etc/passwd",
+      "ftp://x.example",
+      "data:text/html,<h1>x",
+      "gopher://x.example",
+    ]) {
       const result = checkUrl(url);
       expect(result.ok, url).toBe(false);
       if (!result.ok) expect(result.reason).toBe("BLOCKED_SCHEME");

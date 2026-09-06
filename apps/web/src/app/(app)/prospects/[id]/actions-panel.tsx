@@ -59,7 +59,8 @@ export function ProspectActions(props: {
   };
 
   const notEnriched =
-    props.hasWebsite && (props.enrichmentStatus === "NOT_ATTEMPTED" || props.enrichmentStatus === null);
+    props.hasWebsite &&
+    (props.enrichmentStatus === "NOT_ATTEMPTED" || props.enrichmentStatus === null);
 
   /** The single next thing worth doing, given where this prospect stands. */
   const primary: { label: string; onClick: () => void; hint: string } = notEnriched

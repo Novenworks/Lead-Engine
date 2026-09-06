@@ -68,15 +68,36 @@ const PLATFORM_CREDITS = [
  * Ordered by how strongly the phrase implies a build relationship. The capture
  * group is the credited party.
  */
-const CREDIT_PATTERNS: ReadonlyArray<{ label: string; regex: RegExp; weight: "strong" | "weak" }> = [
-  { label: "website by", regex: /\bwebsite\s+(?:by|built by|created by)\s+([^.|·•\n]{2,60})/i, weight: "strong" },
-  { label: "web design by", regex: /\bweb(?:site)?\s+design(?:ed)?\s+by\s+([^.|·•\n]{2,60})/i, weight: "strong" },
-  { label: "designed by", regex: /\bdesigned\s+(?:and\s+\w+\s+)?by\s+([^.|·•\n]{2,60})/i, weight: "strong" },
-  { label: "developed by", regex: /\b(?:developed|built|created)\s+by\s+([^.|·•\n]{2,60})/i, weight: "strong" },
-  { label: "site by", regex: /\bsite\s+by\s+([^.|·•\n]{2,60})/i, weight: "strong" },
-  { label: "marketing by", regex: /\b(?:marketing|seo)\s+by\s+([^.|·•\n]{2,60})/i, weight: "weak" },
-  { label: "powered by", regex: /\bpowered\s+by\s+([^.|·•\n]{2,60})/i, weight: "weak" },
-];
+const CREDIT_PATTERNS: ReadonlyArray<{ label: string; regex: RegExp; weight: "strong" | "weak" }> =
+  [
+    {
+      label: "website by",
+      regex: /\bwebsite\s+(?:by|built by|created by)\s+([^.|·•\n]{2,60})/i,
+      weight: "strong",
+    },
+    {
+      label: "web design by",
+      regex: /\bweb(?:site)?\s+design(?:ed)?\s+by\s+([^.|·•\n]{2,60})/i,
+      weight: "strong",
+    },
+    {
+      label: "designed by",
+      regex: /\bdesigned\s+(?:and\s+\w+\s+)?by\s+([^.|·•\n]{2,60})/i,
+      weight: "strong",
+    },
+    {
+      label: "developed by",
+      regex: /\b(?:developed|built|created)\s+by\s+([^.|·•\n]{2,60})/i,
+      weight: "strong",
+    },
+    { label: "site by", regex: /\bsite\s+by\s+([^.|·•\n]{2,60})/i, weight: "strong" },
+    {
+      label: "marketing by",
+      regex: /\b(?:marketing|seo)\s+by\s+([^.|·•\n]{2,60})/i,
+      weight: "weak",
+    },
+    { label: "powered by", regex: /\bpowered\s+by\s+([^.|·•\n]{2,60})/i, weight: "weak" },
+  ];
 
 function looksLikePlatform(credited: string): boolean {
   const value = credited.toLowerCase();
@@ -122,7 +143,8 @@ export function detectAgencyCredit(input: AgencyDetectionInput): AgencyCreditMat
     const linked = input.links.find((link) => {
       const anchor = link.text.trim().toLowerCase();
       if (anchor.length < 2) return false;
-      if (!creditedNormalized.includes(anchor) && !anchor.includes(creditedNormalized)) return false;
+      if (!creditedNormalized.includes(anchor) && !anchor.includes(creditedNormalized))
+        return false;
       try {
         const host = new URL(link.href).hostname;
         const domain = rootDomain(host);

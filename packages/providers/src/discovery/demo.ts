@@ -226,7 +226,9 @@ function matches(fixture: Fixture, input: DiscoverySearchInput): boolean {
 
   const locationHit =
     location.length === 0 ||
-    fixture.cities.some((c) => location.includes(c) || c.includes(location.split(",")[0]!.trim())) ||
+    fixture.cities.some(
+      (c) => location.includes(c) || c.includes(location.split(",")[0]!.trim()),
+    ) ||
     (fixture.region ?? "").toLowerCase() === location ||
     location.includes("ca");
 

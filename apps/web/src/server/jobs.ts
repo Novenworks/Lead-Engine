@@ -79,10 +79,7 @@ export function enqueueBulkScore(workspaceId: string) {
   return enqueueJob(workspaceId, "BULK_SCORE", { workspaceId }, `score:${workspaceId}:${bucket()}`);
 }
 
-export function enqueueIntegrationHandoff(
-  workspaceId: string,
-  externalReferenceId: string,
-) {
+export function enqueueIntegrationHandoff(workspaceId: string, externalReferenceId: string) {
   return enqueueJob(
     workspaceId,
     "INTEGRATION_HANDOFF",

@@ -102,7 +102,12 @@ function matchesAny(haystacks: Array<string | null>, needles: string[]): string 
  * facts without a database.
  */
 export function factsFromSignals(
-  signals: ReadonlyArray<Pick<SignalInput, "type" | "booleanValue" | "numericValue" | "value" | "confidence" | "evidence">>,
+  signals: ReadonlyArray<
+    Pick<
+      SignalInput,
+      "type" | "booleanValue" | "numericValue" | "value" | "confidence" | "evidence"
+    >
+  >,
   base: {
     primaryCategory?: string | null;
     secondaryCategories?: string[];
@@ -131,8 +136,7 @@ export function factsFromSignals(
     rating: byType.get("GOOGLE_RATING")?.numericValue ?? null,
     reviewCount: byType.get("GOOGLE_REVIEW_COUNT")?.numericValue ?? null,
     hasWebsite: base.hasWebsite ?? bool("WEBSITE_PRESENT") === true,
-    websiteReachable:
-      bool("WEBSITE_FETCH_FAILED") === true ? false : bool("WEBSITE_REACHABLE"),
+    websiteReachable: bool("WEBSITE_FETCH_FAILED") === true ? false : bool("WEBSITE_REACHABLE"),
     usesHttps: bool("HTTPS_PRESENT"),
     hasTitle: bool("TITLE_PRESENT"),
     hasMetaDescription: bool("META_DESCRIPTION_PRESENT"),
@@ -435,7 +439,8 @@ function scoreWebsiteOpportunity(
 
   // Metadata is worth a little. It is never the story on its own — a missing
   // meta description is a nudge, not a 40-point opportunity.
-  const metaPoints = (facts.hasTitle === false ? 4 : 0) + (facts.hasMetaDescription === false ? 2 : 0);
+  const metaPoints =
+    (facts.hasTitle === false ? 4 : 0) + (facts.hasMetaDescription === false ? 2 : 0);
   add(
     "page_metadata",
     "Page metadata",
@@ -539,9 +544,10 @@ function scoreReachability(
     label: "Website contact path",
     points: webFormPoints,
     maxPoints: 3,
-    reason: webFormPoints > 0
-      ? "The website offers a contact or booking path."
-      : "No contact or booking path on the website.",
+    reason:
+      webFormPoints > 0
+        ? "The website offers a contact or booking path."
+        : "No contact or booking path on the website.",
     signalTypes: ["CONTACT_LINK_PRESENT", "BOOKING_LINK_PRESENT"],
     sortOrder: 62,
   });
@@ -605,18 +611,13 @@ export function scoreProspect(
     });
   }
 
-  const total = clamp(
-    fit.score + strength.score + websiteOpportunityScore + reach.score,
-    0,
-    100,
-  );
+  const total = clamp(fit.score + strength.score + websiteOpportunityScore + reach.score, 0, 100);
 
   // A weak business with a terrible website can otherwise clear the threshold
   // on website opportunity alone. Opportunity is only worth what the business
   // is worth, so hold those in REVIEW rather than qualifying them.
   const understrength =
-    config.minBusinessStrengthToQualify > 0 &&
-    strength.score < config.minBusinessStrengthToQualify;
+    config.minBusinessStrengthToQualify > 0 && strength.score < config.minBusinessStrengthToQualify;
 
   if (understrength) {
     push({

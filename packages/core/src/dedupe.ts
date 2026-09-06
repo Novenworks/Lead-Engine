@@ -152,11 +152,11 @@ export function weakDuplicateMatch(a: WeakMatchCandidate, b: WeakMatchCandidate)
   else return { confidence: 0, reasons: [] };
 
   const bothCitiesKnown = Boolean(a.city?.trim() && b.city?.trim());
-  const sameCity =
-    bothCitiesKnown && a.city!.trim().toLowerCase() === b.city!.trim().toLowerCase();
+  const sameCity = bothCitiesKnown && a.city!.trim().toLowerCase() === b.city!.trim().toLowerCase();
   const differentCity = bothCitiesKnown && !sameCity;
   const sameRegion =
-    Boolean(a.region && b.region) && a.region!.trim().toLowerCase() === b.region!.trim().toLowerCase();
+    Boolean(a.region && b.region) &&
+    a.region!.trim().toLowerCase() === b.region!.trim().toLowerCase();
 
   if (sameCity) reasons.push("same_city");
   else if (differentCity) reasons.push("different_city");

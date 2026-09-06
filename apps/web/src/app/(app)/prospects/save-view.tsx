@@ -19,7 +19,11 @@ export function SaveViewForm({ currentQuery }: { currentQuery: string }) {
   }
 
   return (
-    <ActionForm action={saveSearch} onSuccess={() => setOpen(false)} className="flex items-end gap-2">
+    <ActionForm
+      action={saveSearch}
+      onSuccess={() => setOpen(false)}
+      className="flex items-end gap-2"
+    >
       <input type="hidden" name="kind" value="PROSPECT_VIEW" />
       <input type="hidden" name="params" value={currentQuery} />
       <label htmlFor="saved-view-name" className="sr-only">

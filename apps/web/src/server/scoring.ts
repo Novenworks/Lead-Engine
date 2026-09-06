@@ -37,10 +37,7 @@ export async function getScoringConfig(workspaceId: string): Promise<ScoringConf
   return parsed.success ? parsed.data : DEFAULT_SCORING_CONFIG;
 }
 
-export async function saveScoringConfig(
-  workspaceId: string,
-  config: ScoringConfig,
-): Promise<void> {
+export async function saveScoringConfig(workspaceId: string, config: ScoringConfig): Promise<void> {
   const params = scoringConfigSchema.parse(config);
   await prisma.savedSearch.upsert({
     where: {

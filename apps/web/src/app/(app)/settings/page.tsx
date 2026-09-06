@@ -1,4 +1,8 @@
-import { createDiscoveryProvider, createScreenshotProvider, discoveryProviderDegraded } from "@leadengine/providers";
+import {
+  createDiscoveryProvider,
+  createScreenshotProvider,
+  discoveryProviderDegraded,
+} from "@leadengine/providers";
 import { createAuditWorkspaceClient, createDemoFactoryClient } from "@leadengine/integrations";
 import { SCORING_MODEL_VERSION } from "@leadengine/core";
 import { requireWorkspace } from "@/lib/workspace";

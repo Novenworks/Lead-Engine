@@ -69,7 +69,10 @@ const MULTI_LABEL_SUFFIXES = [
 
 /** eTLD+1, lowercased, `www.` and trailing dot removed. */
 export function rootDomain(hostname: string): string {
-  const host = hostname.toLowerCase().replace(/\.$/, "").replace(/^www\./, "");
+  const host = hostname
+    .toLowerCase()
+    .replace(/\.$/, "")
+    .replace(/^www\./, "");
   const labels = host.split(".").filter(Boolean);
   if (labels.length <= 2) return labels.join(".");
 
