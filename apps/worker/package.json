@@ -1,0 +1,25 @@
+{
+  "name": "@leadengine/worker",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@leadengine/core": "workspace:*",
+    "@leadengine/db": "workspace:*",
+    "@leadengine/integrations": "workspace:*",
+    "@leadengine/providers": "workspace:*",
+    "dotenv": "^17.4.2",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.2",
+    "tsx": "^4.23.13",
+    "typescript": "~5.9.3"
+  }
+}

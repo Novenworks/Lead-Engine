@@ -1,0 +1,869 @@
+// LeadEngine data model.
+// See docs/DATA_MODEL.md for the narrative version.
+//
+// Tenancy rule: every row that can hold operator data carries `workspaceId`.
+// There is no global data except the Workspace table itself.
+
+// Prisma 7 generates a local ESM client; the app imports it through
+// @leadengine/db rather than reaching into the generated directory.
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+  moduleFormat = "esm"
+  runtime = "nodejs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------------------
+// Tenancy
+// ---------------------------------------------------------------------------
+
+model Workspace {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  name      String
+  /// Clerk organization id when the workspace is backed by a Clerk org.
+  clerkOrgId String? @unique
+  /// True for workspaces created by the seed script so the UI can label them.
+  isFixture Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberships       Membership[]
+  prospects         Prospect[]
+  identities        ProspectIdentity[]
+  locations         BusinessLocation[]
+  contacts          BusinessContact[]
+  websites          Website[]
+  discoveryRuns     DiscoveryRun[]
+  discoveryResults  DiscoveryResult[]
+  savedSearches     SavedSearch[]
+  sources           ProspectSource[]
+  signals           ProspectSignal[]
+  scoreSnapshots    ScoreSnapshot[]
+  stageHistory      PipelineStageHistory[]
+  notes             ProspectNote[]
+  tags              Tag[]
+  duplicates        DuplicateCandidate[]
+  externalRefs      ExternalReference[]
+  screenshots       ScreenshotReference[]
+  jobs              Job[]
+  activity          ActivityEvent[]
+  providerUsage     ProviderUsage[]
+  importBatches     ImportBatch[]
+}
+
+enum MembershipRole {
+  OWNER
+  MEMBER
+}
+
+model Membership {
+  id          String         @id @default(cuid())
+  workspaceId String
+  /// Clerk user id, or the fixed dev-mode operator id when Clerk is not configured.
+  userId      String
+  role        MembershipRole @default(MEMBER)
+  createdAt   DateTime       @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+  @@index([userId])
+}
+
+// ---------------------------------------------------------------------------
+// Business identity
+// ---------------------------------------------------------------------------
+
+enum PipelineStage {
+  DISCOVERED
+  RESEARCHING
+  QUALIFIED
+  AUDIT_REQUESTED
+  AUDITED
+  DEMO_READY
+  OUTREACH
+  ENGAGED
+  WON
+  LOST
+  ARCHIVED
+}
+
+enum Qualification {
+  REVIEW
+  QUALIFIED
+  DISQUALIFIED
+}
+
+enum DisqualificationReason {
+  AGENCY_MANAGED
+  OUT_OF_AREA
+  WRONG_CATEGORY
+  BUSINESS_CLOSED
+  DUPLICATE
+  NO_RELEVANT_OPPORTUNITY
+  NOT_REACHABLE
+  TOO_SMALL
+  OTHER
+}
+
+model Prospect {
+  id             String  @id @default(cuid())
+  workspaceId    String
+  name           String
+  /// Lowercased, punctuation- and suffix-stripped name used for fuzzy matching.
+  normalizedName String
+
+  primaryCategory     String?
+  secondaryCategories String[] @default([])
+
+  pipelineStage PipelineStage @default(DISCOVERED)
+  qualification Qualification @default(REVIEW)
+
+  disqualificationReason DisqualificationReason?
+  qualificationNote      String?
+  /// Set when an operator overrides the rules engine's qualification verdict.
+  qualificationOverridden Boolean  @default(false)
+  qualifiedByUserId       String?
+  qualifiedAt             DateTime?
+
+  primaryWebsiteId  String?           @unique
+  primaryWebsite    Website?          @relation("PrimaryWebsite", fields: [primaryWebsiteId], references: [id], onDelete: SetNull)
+  primaryLocationId String?           @unique
+  primaryLocation   BusinessLocation? @relation("PrimaryLocation", fields: [primaryLocationId], references: [id], onDelete: SetNull)
+
+  // --- Denormalized read model -------------------------------------------
+  // Mirrors the latest ScoreSnapshot and provider facts so list, filter,
+  // sort and matrix queries stay in the database instead of in React.
+  // ScoreSnapshot / ProspectSignal remain the source of truth.
+  opportunityScore        Int?
+  businessStrengthScore   Int?
+  websiteOpportunityScore Int?
+  businessFitScore        Int?
+  reachabilityScore       Int?
+  scoredAt                DateTime?
+  rating                  Float?
+  reviewCount             Int?
+  agencyManaged           Boolean @default(false)
+  hasWebsite              Boolean @default(false)
+  city                    String?
+  region                  String?
+  // -----------------------------------------------------------------------
+
+  nextAction     String?
+  nextActionDate DateTime?
+
+  lastActivityAt DateTime  @default(now())
+  archivedAt     DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  workspace        Workspace              @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  identities       ProspectIdentity[]
+  locations        BusinessLocation[]     @relation("ProspectLocations")
+  contacts         BusinessContact[]
+  websites         Website[]              @relation("ProspectWebsites")
+  sources          ProspectSource[]
+  signals          ProspectSignal[]
+  scoreSnapshots   ScoreSnapshot[]
+  stageHistory     PipelineStageHistory[]
+  notes            ProspectNote[]
+  tags             ProspectTag[]
+  externalRefs     ExternalReference[]
+  screenshots      ScreenshotReference[]
+  activity         ActivityEvent[]
+  discoveryResults DiscoveryResult[]
+  duplicatesAsA    DuplicateCandidate[]   @relation("DuplicateA")
+  duplicatesAsB    DuplicateCandidate[]   @relation("DuplicateB")
+
+  @@index([workspaceId, pipelineStage])
+  @@index([workspaceId, qualification])
+  @@index([workspaceId, opportunityScore])
+  @@index([workspaceId, lastActivityAt])
+  @@index([workspaceId, normalizedName])
+  @@index([workspaceId, primaryCategory])
+}
+
+enum IdentityKind {
+  /// Provider-issued stable id, e.g. a Google Places place id.
+  PROVIDER_PLACE_ID
+  /// eTLD+1 of the prospect's website.
+  ROOT_DOMAIN
+  /// E.164 phone number.
+  PHONE_E164
+  /// Hash of the normalized postal address.
+  ADDRESS_HASH
+}
+
+/// Strong identifiers used for deterministic deduplication. A value is unique
+/// per (workspace, kind), so an insert conflict *is* the duplicate check.
+model ProspectIdentity {
+  id          String       @id @default(cuid())
+  workspaceId String
+  prospectId  String
+  kind        IdentityKind
+  value       String
+  /// e.g. "google" for PROVIDER_PLACE_ID, so two providers can't collide.
+  namespace   String       @default("")
+  createdAt   DateTime     @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  prospect  Prospect  @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, kind, namespace, value])
+  @@index([prospectId])
+}
+
+model BusinessLocation {
+  id          String  @id @default(cuid())
+  workspaceId String
+  prospectId  String
+  line1       String?
+  line2       String?
+  city        String?
+  region      String?
+  postalCode  String?
+  country     String  @default("US")
+  /// Single-line address exactly as the provider returned it.
+  formatted   String?
+  /// Lowercased, whitespace-collapsed address used for the ADDRESS_HASH identity.
+  normalized  String?
+  latitude    Float?
+  longitude   Float?
+  createdAt   DateTime @default(now())
+
+  workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  prospect        Prospect  @relation("ProspectLocations", fields: [prospectId], references: [id], onDelete: Cascade)
+  primaryFor      Prospect? @relation("PrimaryLocation")
+
+  @@index([workspaceId, city])
+  @@index([prospectId])
+}
+
+enum ContactKind {
+  PHONE
+  EMAIL
+  BOOKING_URL
+  SOCIAL_URL
+  OTHER_URL
+}
+
+model BusinessContact {
+  id          String      @id @default(cuid())
+  workspaceId String
+  prospectId  String
+  kind        ContactKind
+  value       String
+  /// E.164 for phones, lowercased for emails/URLs.
+  normalized  String?
+  label       String?
+  /// Where this contact detail came from, e.g. "google" or "website".
+  source      String
+  createdAt   DateTime    @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  prospect  Prospect  @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+
+  @@unique([prospectId, kind, value])
+  @@index([workspaceId, kind, normalized])
+}
+
+enum EnrichmentStatus {
+  NOT_ATTEMPTED
+  QUEUED
+  OK
+  /// Reached, but the useful content needs a real browser to render.
+  LIMITED
+  UNREACHABLE
+  TIMEOUT
+  BLOCKED_BY_POLICY
+  INVALID_URL
+  TOO_LARGE
+  FAILED
+}
+
+model Website {
+  id          String @id @default(cuid())
+  workspaceId String
+  prospectId  String
+  url         String
+  /// eTLD+1, lowercased, no www.
+  rootDomain  String
+  /// Final URL after following redirects during the last enrichment.
+  finalUrl    String?
+
+  enrichmentStatus EnrichmentStatus @default(NOT_ATTEMPTED)
+  enrichmentError  String?
+  lastEnrichedAt   DateTime?
+
+  httpStatus      Int?
+  usesHttps       Boolean?
+  title           String?
+  metaDescription String?
+  responseMs      Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  workspace   Workspace             @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  prospect    Prospect              @relation("ProspectWebsites", fields: [prospectId], references: [id], onDelete: Cascade)
+  primaryFor  Prospect?             @relation("PrimaryWebsite")
+  screenshots ScreenshotReference[]
+
+  @@index([workspaceId, rootDomain])
+  @@index([prospectId])
+}
+
+// ---------------------------------------------------------------------------
+// Discovery
+// ---------------------------------------------------------------------------
+
+enum DiscoveryRunStatus {
+  RUNNING
+  SUCCEEDED
+  PARTIAL
+  FAILED
+}
+
+model DiscoveryRun {
+  id          String             @id @default(cuid())
+  workspaceId String
+  provider    String
+  status      DiscoveryRunStatus @default(RUNNING)
+
+  /// Snapshot of the search parameters this run actually used.
+  category    String
+  locationText String
+  radiusMeters Int?
+  minRating    Float?
+  minReviews   Int?
+  /// "any" | "with" | "without"
+  websiteFilter String @default("any")
+
+  resultCount Int     @default(0)
+  newCount    Int     @default(0)
+  errorCode   String?
+  errorMessage String?
+
+  startedAt  DateTime  @default(now())
+  finishedAt DateTime?
+  createdByUserId String?
+
+  workspace     Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  results       DiscoveryResult[]
+  providerUsage ProviderUsage[]
+
+  @@index([workspaceId, startedAt])
+}
+
+enum DiscoveryDecision {
+  PENDING
+  ADDED
+  REJECTED
+  ALREADY_TRACKED
+}
+
+/// A raw provider hit, held out of the canonical Prospect table until an
+/// operator decides what to do with it.
+model DiscoveryResult {
+  id          String            @id @default(cuid())
+  workspaceId String
+  runId       String
+  decision    DiscoveryDecision @default(PENDING)
+
+  externalId  String?
+  name        String
+  category    String?
+  formattedAddress String?
+  city        String?
+  region      String?
+  postalCode  String?
+  latitude    Float?
+  longitude   Float?
+  phone       String?
+  websiteUrl  String?
+  rating      Float?
+  reviewCount Int?
+  /// Provider-reported permanent closure, when supplied.
+  businessStatus String?
+
+  /// Prospect this result was added to, or the existing one it matched.
+  prospectId String?
+  decidedAt  DateTime?
+  decidedByUserId String?
+
+  createdAt DateTime @default(now())
+
+  workspace Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  run       DiscoveryRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  prospect  Prospect?    @relation(fields: [prospectId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId, runId, decision])
+  @@index([runId])
+}
+
+enum SavedSearchKind {
+  DISCOVERY
+  PROSPECT_VIEW
+}
+
+model SavedSearch {
+  id          String          @id @default(cuid())
+  workspaceId String
+  kind        SavedSearchKind
+  name        String
+  /// Discovery params or prospect filter params, validated by zod on read.
+  params      Json
+  createdByUserId String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, kind, name])
+  @@index([workspaceId, kind])
+}
+
+/// Provenance: which providers/imports contributed to a prospect. Survives merges.
+model ProspectSource {
+  id          String  @id @default(cuid())
+  workspaceId String
+  prospectId  String
+  /// "google" | "demo" | "manual" | "csv"
+  provider    String
+  externalId  String?
+  /// The provider payload as received, for debugging and re-derivation.
+  raw         Json?
+  firstSeenAt DateTime @default(now())
+  lastSeenAt  DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  prospect  Prospect  @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, provider, externalId])
+  @@index([prospectId])
+}
+
+// ---------------------------------------------------------------------------
+// Signals and scoring
+// ---------------------------------------------------------------------------
+
+enum SignalType {
+  BUSINESS_CATEGORY
+  GOOGLE_RATING
+  GOOGLE_REVIEW_COUNT
+  BUSINESS_CLOSED
+  PHONE_PRESENT
+  PUBLIC_EMAIL_PRESENT
+  WEBSITE_PRESENT
+  WEBSITE_REACHABLE
+  WEBSITE_FETCH_FAILED
+  HTTPS_PRESENT
+  TITLE_PRESENT
+  META_DESCRIPTION_PRESENT
+  VIEWPORT_META_PRESENT
+  CONTACT_LINK_PRESENT
+  BOOKING_LINK_PRESENT
+  PHONE_LINK_PRESENT
+  SOCIAL_LINK_PRESENT
+  CMS_HINT
+  AGENCY_CREDIT_DETECTED
+  DOMAIN_REDIRECT
+  IN_TARGET_GEOGRAPHY
+  RENDER_REQUIRED
+}
+
+enum SignalSource {
+  GOOGLE_PLACES
+  DEMO_PROVIDER
+  WEBSITE_FETCH
+  MANUAL
+  CSV_IMPORT
+}
+
+enum Confidence {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+/// One observed fact about a prospect. Signals are evidence; they never carry
+/// points. Scoring reads signals and produces ScoreComponents.
+model ProspectSignal {
+  id          String       @id @default(cuid())
+  workspaceId String
+  prospectId  String
+  type        SignalType
+  source      SignalSource
+  sourceReference String?
+  confidence  Confidence   @default(MEDIUM)
+
+  /// Human-readable value, e.g. "4.9" or "WordPress".
+  value       String?
+  /// Machine-comparable value for numeric/boolean signals.
+  numericValue Float?
+  booleanValue Boolean?
+  /// Short quote or URL backing the observation, shown in the Signal Stack.
+  evidence    String?
+
+  observedAt DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  prospect  Prospect  @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+
+  /// One current value per (prospect, type, source) — re-enrichment upserts.
+  @@unique([prospectId, type, source])
+  @@index([workspaceId, type])
+}
+
+model ScoreSnapshot {
+  id          String @id @default(cuid())
+  workspaceId String
+  prospectId  String
+
+  total                   Int
+  businessFitScore        Int
+  businessStrengthScore   Int
+  websiteOpportunityScore Int
+  reachabilityScore       Int
+
+  /// Rules-engine verdict before any operator override.
+  suggestedQualification Qualification
+  /// Hard disqualifiers that fired, e.g. ["AGENCY_MANAGED"].
+  disqualifiers          String[]      @default([])
+  /// Version of the scoring model that produced this snapshot.
+  modelVersion           String
+
+  createdAt DateTime @default(now())
+
+  workspace  Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  prospect   Prospect         @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+  components ScoreComponent[]
+
+  @@index([prospectId, createdAt])
+  @@index([workspaceId, createdAt])
+}
+
+enum ScoreDimension {
+  BUSINESS_FIT
+  BUSINESS_STRENGTH
+  WEBSITE_OPPORTUNITY
+  REACHABILITY
+  DISQUALIFIER
+}
+
+model ScoreComponent {
+  id         String         @id @default(cuid())
+  snapshotId String
+  dimension  ScoreDimension
+  /// Stable rule key, e.g. "target_category".
+  key        String
+  label      String
+  points     Int
+  maxPoints  Int
+  /// Why this rule awarded these points, in plain language.
+  reason     String
+  /// SignalType names whose evidence justified this component.
+  signalTypes String[]      @default([])
+  sortOrder  Int            @default(0)
+
+  snapshot ScoreSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
+
+  @@index([snapshotId])
+}
+
+// ---------------------------------------------------------------------------
+// Pipeline, notes, tags
+// ---------------------------------------------------------------------------
+
+model PipelineStageHistory {
+  id          String         @id @default(cuid())
+  workspaceId String
+  prospectId  String
+  fromStage   PipelineStage?
+  toStage     PipelineStage
+  reason      String?
+  userId      String?
+  createdAt   DateTime       @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  prospect  Prospect  @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+
+  @@index([prospectId, createdAt])
+}
+
+model ProspectNote {
+  id          String   @id @default(cuid())
+  workspaceId String
+  prospectId  String
+  body        String
+  userId      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  prospect  Prospect  @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+
+  @@index([prospectId, createdAt])
+}
+
+model Tag {
+  id          String   @id @default(cuid())
+  workspaceId String
+  name        String
+  createdAt   DateTime @default(now())
+
+  workspace Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  prospects ProspectTag[]
+
+  @@unique([workspaceId, name])
+}
+
+model ProspectTag {
+  prospectId String
+  tagId      String
+  createdAt  DateTime @default(now())
+
+  prospect Prospect @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+  tag      Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([prospectId, tagId])
+  @@index([tagId])
+}
+
+enum DuplicateStatus {
+  OPEN
+  MERGED
+  KEPT_SEPARATE
+  DISMISSED
+}
+
+/// A weak-evidence duplicate suggestion. Strong-identifier matches never reach
+/// this table — they are deduplicated at write time instead.
+model DuplicateCandidate {
+  id          String          @id @default(cuid())
+  workspaceId String
+  prospectAId String
+  prospectBId String
+  /// 0..1, higher means more evidence.
+  confidence  Float
+  /// Which heuristics matched, e.g. ["normalized_name", "same_city"].
+  reasons     String[]        @default([])
+  status      DuplicateStatus @default(OPEN)
+  resolvedByUserId String?
+  resolvedAt  DateTime?
+  createdAt   DateTime        @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  prospectA Prospect  @relation("DuplicateA", fields: [prospectAId], references: [id], onDelete: Cascade)
+  prospectB Prospect  @relation("DuplicateB", fields: [prospectBId], references: [id], onDelete: Cascade)
+
+  @@unique([prospectAId, prospectBId])
+  @@index([workspaceId, status])
+}
+
+// ---------------------------------------------------------------------------
+// Integrations
+// ---------------------------------------------------------------------------
+
+enum ExternalSystem {
+  AUDIT_WORKSPACE
+  DEMO_FACTORY
+}
+
+enum ExternalRefStatus {
+  /// Recorded locally; nothing has been sent to the external system yet.
+  PENDING_HANDOFF
+  SENT
+  ACKNOWLEDGED
+  FAILED
+}
+
+model ExternalReference {
+  id          String            @id @default(cuid())
+  workspaceId String
+  prospectId  String
+  system      ExternalSystem
+  status      ExternalRefStatus @default(PENDING_HANDOFF)
+
+  /// Identifier issued by the external system. Null until it responds.
+  externalId  String?
+  externalUrl String?
+  /// Status string reported by the external system, verbatim.
+  externalStatus String?
+  /// Optional summary the external system supplied (score, findings count).
+  summary     Json?
+  lastError   String?
+  lastSyncedAt DateTime?
+
+  requestedByUserId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  prospect  Prospect  @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, system, status])
+  @@index([prospectId, system])
+}
+
+model ScreenshotReference {
+  id          String   @id @default(cuid())
+  workspaceId String
+  prospectId  String
+  websiteId   String?
+  provider    String
+  /// Object key when stored in R2, otherwise null.
+  storageKey  String?
+  url         String?
+  width       Int?
+  height      Int?
+  capturedAt  DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  prospect  Prospect  @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+  website   Website?  @relation(fields: [websiteId], references: [id], onDelete: SetNull)
+
+  @@index([prospectId, capturedAt])
+}
+
+// ---------------------------------------------------------------------------
+// Jobs, activity, usage
+// ---------------------------------------------------------------------------
+
+enum JobType {
+  WEBSITE_ENRICHMENT
+  SCREENSHOT_CAPTURE
+  BULK_SCORE
+  DISCOVERY_DETAILS
+  INTEGRATION_HANDOFF
+  CSV_IMPORT
+}
+
+enum JobState {
+  QUEUED
+  RUNNING
+  SUCCEEDED
+  FAILED
+}
+
+model Job {
+  id          String   @id @default(cuid())
+  workspaceId String
+  type        JobType
+  state       JobState @default(QUEUED)
+  payload     Json
+
+  /// Collapses duplicate work: a QUEUED/RUNNING job with the same key is reused.
+  idempotencyKey String?
+
+  attempts    Int      @default(0)
+  maxAttempts Int      @default(3)
+  runAfter    DateTime @default(now())
+  /// Set while a worker holds the job; used to reclaim jobs from dead workers.
+  lockedAt    DateTime?
+  lockedBy    String?
+
+  lastError  String?
+  createdAt  DateTime  @default(now())
+  startedAt  DateTime?
+  finishedAt DateTime?
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([idempotencyKey])
+  @@index([state, runAfter])
+  @@index([workspaceId, type, state])
+}
+
+enum ActivityType {
+  PROSPECT_DISCOVERED
+  PROSPECT_ADDED
+  PROSPECT_UPDATED
+  PROSPECT_ENRICHED
+  PROSPECT_SCORED
+  PROSPECT_QUALIFIED
+  PROSPECT_DISQUALIFIED
+  QUALIFICATION_OVERRIDDEN
+  STAGE_CHANGED
+  NOTE_ADDED
+  AUDIT_REQUESTED
+  AUDIT_LINKED
+  DEMO_REQUESTED
+  OUTREACH_MARKED
+  DUPLICATE_MERGED
+  DUPLICATE_DISMISSED
+  IMPORT_COMPLETED
+  DISCOVERY_RUN_COMPLETED
+}
+
+model ActivityEvent {
+  id          String       @id @default(cuid())
+  workspaceId String
+  prospectId  String?
+  type        ActivityType
+  /// One-line description rendered in the activity feed.
+  summary     String
+  detail      Json?
+  userId      String?
+  createdAt   DateTime     @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  prospect  Prospect? @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, createdAt])
+  @@index([prospectId, createdAt])
+}
+
+/// Enough provider accounting to explain a spike in API spend. Not a FinOps product.
+model ProviderUsage {
+  id          String  @id @default(cuid())
+  workspaceId String
+  provider    String
+  operation   String
+  runId       String?
+
+  requestCount Int     @default(1)
+  resultCount  Int     @default(0)
+  durationMs   Int?
+  success      Boolean @default(true)
+  errorCode    String?
+  /// Provider-reported cost in USD when available; otherwise null (never guessed).
+  reportedCostUsd Float?
+
+  createdAt DateTime @default(now())
+
+  workspace Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  run       DiscoveryRun? @relation(fields: [runId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId, provider, createdAt])
+}
+
+enum ImportStatus {
+  DRAFT
+  COMPLETED
+  FAILED
+}
+
+model ImportBatch {
+  id          String       @id @default(cuid())
+  workspaceId String
+  filename    String?
+  status      ImportStatus @default(DRAFT)
+  rowCount    Int          @default(0)
+  createdCount Int         @default(0)
+  duplicateCount Int       @default(0)
+  errorCount  Int          @default(0)
+  /// Per-row validation errors, capped when written.
+  errors      Json?
+  createdByUserId String?
+  createdAt   DateTime     @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, createdAt])
+}

@@ -1,0 +1,149 @@
+@import "tailwindcss";
+
+/*
+ * LeadEngine visual identity — "Opportunity Radar".
+ *
+ * A dark graphite/navy navigation shell frames a warm off-white workspace, so
+ * the data reads like a paper worksheet inside an instrument. Lime is the
+ * single accent and is spent only on opportunity and primary action; cyan
+ * marks sources and links. Status is never carried by colour alone — every
+ * status pairs a hue with a glyph or a word.
+ */
+
+@theme {
+  /* Shell */
+  --color-shell-950: #0b0f14;
+  --color-shell-900: #11161d;
+  --color-shell-800: #1a212b;
+  --color-shell-700: #263140;
+  --color-shell-600: #3a4756;
+  --color-shell-400: #7c8a9b;
+  --color-shell-300: #a3aec0;
+
+  /* Workspace */
+  --color-paper-50: #fbfaf7;
+  --color-paper-100: #f5f3ee;
+  --color-paper-200: #e9e6de;
+  --color-paper-300: #d8d3c8;
+  --color-ink-900: #171a1d;
+  --color-ink-700: #3c434c;
+  --color-ink-500: #6b7480;
+
+  /* Accent: opportunity */
+  --color-volt-100: #eef9d0;
+  --color-volt-300: #cdee6b;
+  --color-volt-400: #b6e02f;
+  --color-volt-500: #93b81f;
+  --color-volt-700: #566d10;
+
+  /* Secondary: sources and links */
+  --color-signal-100: #d9f2f6;
+  --color-signal-400: #2bb3c7;
+  --color-signal-600: #14788a;
+  --color-signal-800: #0c4956;
+
+  /* Status */
+  --color-good-100: #dcf5e4;
+  --color-good-500: #23955a;
+  --color-good-700: #14663c;
+  --color-warn-100: #fbeed2;
+  --color-warn-500: #b9821a;
+  --color-warn-700: #7d5610;
+  --color-bad-100: #f7e2e0;
+  --color-bad-500: #b45248;
+  --color-bad-700: #7d332c;
+
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+
+  --radius-panel: 0.5rem;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-paper-100);
+    color: var(--color-ink-900);
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    /* Tight professional typography: no page-level horizontal scroll ever. */
+    overflow-x: hidden;
+  }
+
+  /* A visible, high-contrast focus ring on every interactive element. */
+  :focus-visible {
+    outline: 2px solid var(--color-signal-600);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background-color: var(--color-volt-300);
+    color: var(--color-ink-900);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--color-ink-900);
+  }
+
+  table {
+    border-collapse: collapse;
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+}
+
+@layer utilities {
+  /* Visible only to assistive tech — used for chart alternatives and hints. */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Respect the operating system's reduced-motion preference. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* The native <dialog> backdrop, used by the modal primitive. */
+dialog::backdrop {
+  background: rgb(11 15 20 / 0.55);
+}
+
+dialog {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  max-width: min(42rem, calc(100vw - 2rem));
+  width: 100%;
+}
