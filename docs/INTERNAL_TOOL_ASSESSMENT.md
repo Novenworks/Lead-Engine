@@ -3,6 +3,24 @@
 Assessed 2026-09-26 against `main` @ `9969306` (PR #1 merge). Read-only phase:
 no product code was changed to produce this document.
 
+> **Status, 2026-10-03: Phase 0 is done** (§14). These are fixed:
+>
+> - B2: an unchecked website now holds the prospect in REVIEW instead of
+>   disqualifying it.
+> - B3: finished jobs release their idempotency key, and `enrichProspect`
+>   marks a site QUEUED only when a new job is created.
+> - The QA favicon 404: `/favicon.ico` now redirects to `/icon.svg`.
+>
+> Clearing the key also lets a handoff job be re-enqueued, but B4 stays open:
+> nothing enqueues the replay yet. Verification after the fix:
+>
+> - 174/174 tests; the new tests fail on the old code.
+> - Both live probes from §6 pass.
+> - `qa-workflow.mjs` passes with no failures; `qa.mjs` passes.
+> - Seed verdicts are unchanged.
+>
+> **Next: Phase 1** (production sign-in).
+
 Legend used throughout:
 
 - **[Fact]** — observed in code, a command's output, or a live run.

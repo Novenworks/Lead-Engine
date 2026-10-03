@@ -378,11 +378,16 @@ export async function enrichProspect(prospectId: string): Promise<ActionState> {
   });
   if (!website) return fail("This prospect has no website to inspect.");
 
-  await enqueueWebsiteEnrichment(workspaceId, prospectId, website.id);
-  await prisma.website.update({
-    where: { id: website.id },
-    data: { enrichmentStatus: "QUEUED", enrichmentError: null },
-  });
+  const { deduplicated } = await enqueueWebsiteEnrichment(workspaceId, prospectId, website.id);
+  // Only a new job moves the site to QUEUED. A deduplicated one is already
+  // queued or running, and a running job writes its own final status — marking
+  // it QUEUED here could overwrite that result and strand the site.
+  if (!deduplicated) {
+    await prisma.website.update({
+      where: { id: website.id },
+      data: { enrichmentStatus: "QUEUED", enrichmentError: null },
+    });
+  }
 
   revalidatePath(`/prospects/${prospectId}`);
   return { ok: true, message: "Website inspection queued." };

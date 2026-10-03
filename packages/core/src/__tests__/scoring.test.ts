@@ -168,6 +168,57 @@ describe("unknown is not the same as bad", () => {
     );
   });
 
+  const unchecked = {
+    websiteReachable: null,
+    usesHttps: null,
+    hasTitle: null,
+    hasMetaDescription: null,
+    hasViewportMeta: null,
+    hasContactLink: null,
+    hasBookingLink: null,
+    hasPhoneLink: null,
+  } as const;
+
+  it("holds a low scorer for review while its website is unchecked", () => {
+    // Unknown category, no reviews, phone only: well under the review floor.
+    const result = scoreProspect(
+      facts({
+        ...unchecked,
+        primaryCategory: null,
+        region: null,
+        rating: null,
+        reviewCount: null,
+        hasPublicEmail: false,
+      }),
+    );
+    expect(result.total).toBeLessThan(DEFAULT_SCORING_CONFIG.reviewFloor);
+    expect(result.suggestedQualification).toBe("REVIEW");
+    expect(result.disqualifiers).not.toContain("NO_RELEVANT_OPPORTUNITY");
+    expect(result.components.find((c) => c.key === "website_unchecked_hold")?.reason).toContain(
+      "until the site is inspected",
+    );
+  });
+
+  it("still disqualifies the same prospect once the site is checked and fine", () => {
+    const result = scoreProspect(
+      facts({
+        primaryCategory: null,
+        region: null,
+        rating: null,
+        reviewCount: null,
+        hasPublicEmail: false,
+      }),
+    );
+    expect(result.suggestedQualification).toBe("DISQUALIFIED");
+    expect(result.disqualifiers).toContain("NO_RELEVANT_OPPORTUNITY");
+  });
+
+  it("still applies hard disqualifiers while the website is unchecked", () => {
+    const result = scoreProspect(facts({ ...unchecked, businessClosed: true }));
+    expect(result.suggestedQualification).toBe("DISQUALIFIED");
+    expect(result.components.some((c) => c.key === "website_unchecked_hold")).toBe(false);
+  });
+
   it("treats a missing category as unknown rather than a wrong category", () => {
     const result = scoreProspect(facts({ primaryCategory: null }));
     expect(result.disqualifiers).not.toContain("WRONG_CATEGORY");

@@ -177,6 +177,39 @@ describeDb("job queue", () => {
     expect(await reclaimStaleJobs(600_000)).toBe(0);
   });
 
+  it("releases the idempotency key when a job succeeds, so a re-run can queue", async () => {
+    const key = `rerun-ok-${Math.random()}`;
+    const first = await prisma.job.create({
+      data: { workspaceId, type: "WEBSITE_ENRICHMENT", payload: {}, idempotencyKey: key },
+    });
+    await claimJobs("worker-a", 1);
+    await completeJob(first.id);
+
+    const done = await prisma.job.findUniqueOrThrow({ where: { id: first.id } });
+    expect(done.idempotencyKey).toBeNull();
+    const rerun = await prisma.job.create({
+      data: { workspaceId, type: "WEBSITE_ENRICHMENT", payload: {}, idempotencyKey: key },
+    });
+    expect(rerun.id).not.toBe(first.id);
+  });
+
+  it("releases the key on terminal failure but keeps it while retrying", async () => {
+    const key = `rerun-fail-${Math.random()}`;
+    const job = await prisma.job.create({
+      data: { workspaceId, type: "WEBSITE_ENRICHMENT", payload: {}, idempotencyKey: key },
+    });
+    await claimJobs("worker-a", 1);
+
+    await failJob(job.id, 1, 3, new Error("temporary"));
+    const retrying = await prisma.job.findUniqueOrThrow({ where: { id: job.id } });
+    expect(retrying.idempotencyKey).toBe(key);
+
+    await failJob(job.id, 3, 3, new Error("dead domain"));
+    const failed = await prisma.job.findUniqueOrThrow({ where: { id: job.id } });
+    expect(failed.state).toBe("FAILED");
+    expect(failed.idempotencyKey).toBeNull();
+  });
+
   it("enforces idempotency keys so the same work is not queued twice", async () => {
     const key = `dedupe-${Math.random()}`;
     await prisma.job.create({
