@@ -632,10 +632,29 @@ export function scoreProspect(
     });
   }
 
+  // A site we have not looked at leaves up to 40 points unmeasured. Its total
+  // is a floor, not a verdict, so it can neither fall below the review floor
+  // nor qualify until the site is inspected. Hard disqualifiers still apply.
+  const websiteUnchecked = facts.hasWebsite && facts.websiteReachable === null;
+
   const unique = [...new Set(disqualifiers)];
   let suggestedQualification: Qualification;
   if (unique.length > 0) {
     suggestedQualification = "DISQUALIFIED";
+  } else if (websiteUnchecked) {
+    suggestedQualification = "REVIEW";
+    if (total < config.reviewFloor || total >= config.qualifyThreshold) {
+      push({
+        dimension: "DISQUALIFIER",
+        key: "website_unchecked_hold",
+        label: "Held until the website is checked",
+        points: 0,
+        maxPoints: 0,
+        reason: `Scored ${total} without the website, which can add up to ${DIMENSION_MAX.WEBSITE_OPPORTUNITY} points. Held for review rather than ${total < config.reviewFloor ? "disqualified" : "qualified"} until the site is inspected.`,
+        signalTypes: ["WEBSITE_REACHABLE"],
+        sortOrder: 92,
+      });
+    }
   } else if (total < config.reviewFloor) {
     suggestedQualification = "DISQUALIFIED";
     unique.push("NO_RELEVANT_OPPORTUNITY");

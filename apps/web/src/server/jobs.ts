@@ -7,6 +7,8 @@ import { prisma, type JobType, type Prisma } from "@leadengine/db";
  * The worker owns execution (apps/worker); the web app only ever enqueues.
  * Every enqueue carries an idempotency key so clicking "Enrich" twice, or a
  * bulk action overlapping a previous one, does not queue the same work twice.
+ * The worker clears the key when a job finishes, so a key only ever matches
+ * pending or running work and a later re-run always gets a fresh job.
  */
 
 export interface EnqueueResult {

@@ -80,10 +80,15 @@ These set the verdict directly; they are never a silent subtraction.
 ## The verdict
 
 1. Any hard disqualifier → **DISQUALIFIED**.
-2. Total below the review floor (default 30) → **DISQUALIFIED**.
-3. Total at or above the qualify threshold (default 70) **and** business
+2. Has a website that has not been inspected yet → **REVIEW**, whatever the
+   total. Up to 40 points are unmeasured, so the total is a floor rather than
+   a verdict: it can neither drop below the review floor nor qualify until the
+   site is checked. A `website_unchecked_hold` component says so whenever it
+   changed the outcome.
+3. Total below the review floor (default 30) → **DISQUALIFIED**.
+4. Total at or above the qualify threshold (default 70) **and** business
    strength at or above the gate → **QUALIFIED**.
-4. Otherwise → **REVIEW**.
+5. Otherwise → **REVIEW**.
 
 ### The business-strength gate
 

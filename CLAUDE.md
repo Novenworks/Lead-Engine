@@ -130,7 +130,8 @@ refused whenever `NODE_ENV` or `VERCEL_ENV` is production — keep it that way.
 
 `docs/ARCHITECTURE.md` · `docs/DATA_MODEL.md` · `docs/SCORING.md` ·
 `docs/SECURITY.md` · `docs/INTEGRATIONS.md` · `docs/DEPLOYMENT.md` ·
-`docs/ROADMAP.md`. The superseded inbound-CRM product is archived under
+`docs/ROADMAP.md`. Current state, known bugs and the V1 build order:
+`docs/INTERNAL_TOOL_ASSESSMENT.md` — read it before starting new work. The superseded inbound-CRM product is archived under
 `docs/legacy/inbound-lead-crm/`.
 
 Keep these current when architecture, scoring, security or integration

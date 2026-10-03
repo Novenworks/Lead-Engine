@@ -11,6 +11,10 @@ const config: NextConfig = {
   serverExternalPackages: ["@prisma/adapter-pg", "pg"],
   typedRoutes: false,
   poweredByHeader: false,
+  // Browsers request /favicon.ico regardless of the <link rel="icon"> tag.
+  // Point it at the app mark instead of adding a third copy of a logo that is
+  // not yet final; temporary, so the eventual replacement is not cached away.
+  redirects: async () => [{ source: "/favicon.ico", destination: "/icon.svg", permanent: false }],
   headers: async () => [
     {
       source: "/:path*",

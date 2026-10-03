@@ -57,11 +57,17 @@ export async function claimJobs(workerId: string, limit: number): Promise<Claime
   return rows;
 }
 
+/**
+ * Finished jobs give up their idempotency key. The key exists to collapse
+ * duplicate *pending* work; a finished job still holding it would make the
+ * next deliberate re-run silently resolve to work that has already happened.
+ */
 export async function completeJob(jobId: string): Promise<void> {
   await prisma.job.update({
     where: { id: jobId },
     data: {
       state: "SUCCEEDED",
+      idempotencyKey: null,
       finishedAt: new Date(),
       lockedAt: null,
       lockedBy: null,
@@ -90,6 +96,7 @@ export async function failJob(
       where: { id: jobId },
       data: {
         state: "FAILED",
+        idempotencyKey: null,
         finishedAt: new Date(),
         lockedAt: null,
         lockedBy: null,
